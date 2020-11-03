@@ -1,0 +1,82 @@
+{
+  "appTitle": "Quiz App",
+  "@appTitle": {
+    "description": "Title of the app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "drawerTitle": "Menu",
+  "@drawerTitle": {
+    "description": "Title for the drawer widget",
+    "type": "text",
+    "placeholders": {}
+  },
+  "homepage": "Homepage",
+  "@homepage": {
+    "description": "Title for the Demo application",
+    "type": "text",
+    "placeholders": {}
+  },
+  "language": "Language:",
+  "@language": {
+    "description": "Text for language dropdown button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "quiz": "{howMany,plural, =1{Quiz}other{Quizzes}}",
+  "@quiz": {
+    "description": "Quiz text",
+    "type": "text",
+    "placeholders": {
+      "howMany": {}
+    }
+  },
+  "question": "{howMany,plural, =1{Question}other{Questions}}",
+  "@question": {
+    "description": "Question text",
+    "type": "text",
+    "placeholders": {
+      "howMany": {}
+    }
+  },
+  "startQuiz": "Start Quiz!",
+  "@startQuiz": {
+    "description": "Start quiz button text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "goodJob": "Good Job!",
+  "@goodJob": {
+    "description": "Good job text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "wrong": "Wrong",
+  "@wrong": {
+    "description": "Wrong text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "onward": "Onward!",
+  "@onward": {
+    "description": "Continue onward button text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tryAgain": "Try again...",
+  "@tryAgain": {
+    "description": "Try again button text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "congratsQuiz": "Congrats! You completed \"{quizName}\"!",
+  "@congratsQuiz": {
+    "description": "Quiz congratulation message",
+    "type": "text",
+    "placeholders": {
+      "quizName": {
+        "example": "Quiz"
+      }
+    }
+  }
+}

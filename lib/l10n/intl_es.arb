@@ -1,0 +1,14 @@
+{
+  "appTitle": "App de Questionarios",
+  "drawerTitle": "Menú",
+  "homepage": "Página Principal",
+  "language": "Idioma:",
+  "quiz": "{howMany,plural, =1{Questionario}other{Questionarios}}",
+  "question": "{howMany,plural, =1{Pregunta}other{Preguntas}}",
+  "startQuiz": "Empezar Questionario!",
+  "goodJob": "Buen Trabajo!",
+  "wrong": "Mal",
+  "onward": "Adelante!",
+  "tryAgain": "Intentalo de nuevo...",
+  "congratsQuiz": "Felicidades! Has completado \"{quizName}\"!"
+}
