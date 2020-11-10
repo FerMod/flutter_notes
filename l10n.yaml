@@ -1,0 +1,8 @@
+# Flutter Internationalization User Guide:
+# https://docs.google.com/document/d/10e0saTfAv32OZLRmONy866vnaw0I2jwL8zukykpgWBc/view
+template-arb-file: intl_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+preferred-supported-locales:
+  - en
+use-deferred-loading: false
