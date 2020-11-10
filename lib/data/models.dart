@@ -1,110 +1,65 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
-class Option {
-  String value;
-  bool isCorrect;
-
-  Option({this.value, this.isCorrect = false});
-
-  factory Option.fromMap(Map<String, dynamic> data) {
-    return Option(
-      value: data['value'] ?? '',
-      isCorrect: data['isCorrect'] ?? false,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value': value,
-      'isCorrect': isCorrect,
-    };
-  }
-
-  @override
-  String toString() => '${objectRuntimeType(this, 'Option')}("$value", $isCorrect)';
-}
-
-class Question {
-  int id;
-  String text;
-  // String image;
-  int difficulty;
-  int rating;
-  String subject;
-  List<Option> options;
-
-  Question({this.id, this.text, this.difficulty, this.rating, this.subject, this.options});
-
-  factory Question.fromMap(Map<String, dynamic> data) {
-    return Question(
-      id: data['id'] ?? 0,
-      text: data['text'] ?? '',
-      difficulty: data['difficulty'] ?? 0,
-      rating: data['rating'] ?? 0,
-      subject: data['subject'] ?? '',
-      options: (data['options'] as List ?? []).map((v) => Option.fromMap(v)).toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'text': text,
-      'difficulty': difficulty,
-      'rating': rating,
-      'subject': subject,
-      'options': options.map((e) => e.toJson()).toList(),
-    };
-  }
-
-  @override
-  String toString() => '${objectRuntimeType(this, 'Question')}($id, "$text", $difficulty, $rating, "$subject", $options)';
-}
-
-class Quiz {
-  int id;
+class Note {
+  String id;
   String title;
-  String description;
-  List<Question> questions;
+  String content;
 
-  Quiz({this.id, this.title, this.description, this.questions});
+  Note({String id, this.title = '', this.content = ''}) : id = id ?? Uuid().v4();
 
-  factory Quiz.fromMap(Map<String, dynamic> data) {
-    return Quiz(
-      id: data['id'] ?? 0,
+  factory Note.fromMap(Map<String, dynamic> data) {
+    return Note(
+      id: data['id'] ?? '',
       title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      questions: (data['questions'] as List ?? []).map((v) => Question.fromMap(v)).toList(),
+      content: data['content'] ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
-      'description': description,
-      'questions': questions.map((e) => e.toJson()).toList(),
+      'content': content,
     };
   }
 
+  factory Note.fromJson(String str) => Note.fromMap(json.decode(str));
+  String toJson() => json.encode(toMap());
+
   @override
-  String toString() {
-    return '${objectRuntimeType(this, 'Quiz')}($id, "$title", "$description", $questions}';
-  }
+  String toString() => '${objectRuntimeType(this, 'Note')}("$id", "$title", "$content")';
 }
 
-/*
-// Question fields //
-id
-email
-statement
-options -> ( option1 , option2, ...)
-complexity
-subject
-img
-rating
+class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
+  final List<Note> _notes;
+  List<Note> get notes => _notes;
 
-// Options fields //
-value
-isCorrect
-*/
+  NotesListModel({List<Note> notes}) : _notes = notes ?? [];
+
+  void addNote(Note note) {
+    _notes.add(note);
+    notifyListeners();
+  }
+
+  void removeNote(Note note) {
+    _notes.removeWhere((element) => element.id == note.id);
+    notifyListeners();
+  }
+
+  void updateNote(Note note) {
+    assert(note != null);
+    assert(note.id != null);
+    var oldNote = _notes.firstWhere((element) => element.id == note.id);
+    var replaceIndex = _notes.indexOf(oldNote);
+    _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
+    notifyListeners();
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty('notes', notes));
+  }
+}
