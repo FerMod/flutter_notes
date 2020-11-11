@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-// Code from:
+// Code derived from:
 // https://medium.com/flutter/managing-flutter-application-state-with-inheritedwidgets-1140452befe1
 // https://gist.github.com/HansMuller/a3a6d520c6a24238bf1b1b9e3d473bf5
 

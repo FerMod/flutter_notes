@@ -24,6 +24,8 @@ class AppOptions {
 
   Locale get locale => _locale ?? deviceLocale;
 
+  /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
+  /// If the theme is dark, returns light; if the theme is light, returns dark.
   SystemUiOverlayStyle resolvedSystemUiOverlayStyle() {
     Brightness brightness;
     switch (themeMode) {
