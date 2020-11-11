@@ -1,5 +1,5 @@
 {
-  "appTitle": "Quiz App",
+  "appTitle": "Notes App",
   "@appTitle": {
     "description": "Title of the app",
     "type": "text",
@@ -23,9 +23,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "quiz": "{howMany,plural, =1{Quiz}other{Quizzes}}",
-  "@quiz": {
-    "description": "Quiz text",
+  "note": "{howMany,plural, =1{Note}other{Notes}}",
+  "@note": {
+    "description": "Note text",
     "type": "text",
     "placeholders": {
       "howMany": {}
@@ -78,5 +78,11 @@
         "example": "Quiz"
       }
     }
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text",
+    "type": "text",
+    "placeholders": {}
   }
 }

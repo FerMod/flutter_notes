@@ -3,12 +3,13 @@
   "drawerTitle": "Menú",
   "homepage": "Página Principal",
   "language": "Idioma:",
-  "quiz": "{howMany,plural, =1{Questionario}other{Questionarios}}",
+  "note": "{howMany,plural, =1{Nota}other{Notas}}",
   "question": "{howMany,plural, =1{Pregunta}other{Preguntas}}",
   "startQuiz": "Empezar Questionario!",
   "goodJob": "Buen Trabajo!",
   "wrong": "Mal",
   "onward": "Adelante!",
   "tryAgain": "Intentalo de nuevo...",
-  "congratsQuiz": "Felicidades! Has completado \"{quizName}\"!"
+  "congratsQuiz": "Felicidades! Has completado \"{quizName}\"!",
+  "save": "Guardar"
 }

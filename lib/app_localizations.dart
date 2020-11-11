@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import 'l10n/messages_all.dart';
 
+@deprecated
 class AppLocalizations {
   AppLocalizations(this.localeName);
 
@@ -139,7 +140,6 @@ class AppLocalizations {
         name: 'tryAgain',
         desc: 'Try again button text',
         locale: localeName,
-        meaning: "The meaning of try again"
       );
 
   String congratsQuiz(String quizName) => Intl.message(
@@ -152,6 +152,7 @@ class AppLocalizations {
       );
 }
 
+@deprecated
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 
