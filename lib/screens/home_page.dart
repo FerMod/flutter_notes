@@ -5,8 +5,6 @@ import '../data/app_options.dart';
 import '../menu/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final options = AppOptions.of(context);
