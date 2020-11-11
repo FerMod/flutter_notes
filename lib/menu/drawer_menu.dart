@@ -5,6 +5,12 @@ import '../screens/home_page.dart';
 import '../screens/notes_list.dart';
 
 class DrawerMenu extends StatelessWidget {
+  Future _navigate(BuildContext context, Widget widget) {
+    return Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => widget),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -32,21 +38,13 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text(localizations.homepage),
-            onTap: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-            },
+            onTap: () => _navigate(context, HomePage()),
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.sticky_note_2),
-            title: Text(localizations.quizzes),
-            onTap: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => NotesList()),
-              );
-            },
+            title: Text(localizations.note(2)),
+            onTap: () => _navigate(context, NotesListScreen()),
           ),
           /* 
          ListTile(
