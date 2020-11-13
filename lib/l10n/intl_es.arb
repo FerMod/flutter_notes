@@ -4,12 +4,6 @@
   "homepage": "Página Principal",
   "language": "Idioma:",
   "note": "{howMany,plural, =1{Nota}other{Notas}}",
-  "question": "{howMany,plural, =1{Pregunta}other{Preguntas}}",
-  "startQuiz": "Empezar Questionario!",
-  "goodJob": "Buen Trabajo!",
-  "wrong": "Mal",
-  "onward": "Adelante!",
-  "tryAgain": "Intentalo de nuevo...",
-  "congratsQuiz": "Felicidades! Has completado \"{quizName}\"!",
-  "save": "Guardar"
+  "save": "Guardar",
+  "addNote": "Añadir nota"
 }

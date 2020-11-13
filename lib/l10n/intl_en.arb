@@ -31,57 +31,15 @@
       "howMany": {}
     }
   },
-  "question": "{howMany,plural, =1{Question}other{Questions}}",
-  "@question": {
-    "description": "Question text",
-    "type": "text",
-    "placeholders": {
-      "howMany": {}
-    }
-  },
-  "startQuiz": "Start Quiz!",
-  "@startQuiz": {
-    "description": "Start quiz button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "goodJob": "Good Job!",
-  "@goodJob": {
-    "description": "Good job text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "wrong": "Wrong",
-  "@wrong": {
-    "description": "Wrong text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "onward": "Onward!",
-  "@onward": {
-    "description": "Continue onward button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "tryAgain": "Try again...",
-  "@tryAgain": {
-    "description": "Try again button text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "congratsQuiz": "Congrats! You completed \"{quizName}\"!",
-  "@congratsQuiz": {
-    "description": "Quiz congratulation message",
-    "type": "text",
-    "placeholders": {
-      "quizName": {
-        "example": "Quiz"
-      }
-    }
-  },
   "save": "Save",
   "@save": {
     "description": "Save button text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "addNote": "Add note",
+  "@addNote": {
+    "description": "Add note button text",
     "type": "text",
     "placeholders": {}
   }
