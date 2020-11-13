@@ -1,93 +1,111 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 
-import '../data/db.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+
 import '../data/models.dart';
 import '../menu/drawer_menu.dart';
 import '../menu/loader.dart';
-import 'make_quiz.dart';
+import 'edit_note.dart';
 
-class NotesList extends StatelessWidget {
-  NotesList({Key key}) : super(key: key);
+class NotesListScreen extends StatelessWidget {
+  void _newNote(BuildContext context) async {
+    final resultNote = await _navigateEditNote(context, Note());
+    Provider.of<NotesListModel>(context, listen: false).updateNote(resultNote);
+  }
 
-  Future<List<Quiz>> _fetchQuizzes() async {
-    final _db = DBProvider.instance;
-    return await _db.getAllQuizzes();
+  void _editNote(BuildContext context, Note note) async {
+    final resultNote = await _navigateEditNote(context, note);
+    Provider.of<NotesListModel>(context, listen: false).add(resultNote);
+  }
+
+  Future<Note> _navigateEditNote(BuildContext context, Note note) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditNoteScreen(note: note),
+      ),
+    );
+    developer.log('Edit note result: $result');
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-      ),
-      drawer: DrawerMenu(),
-      body: FutureBuilder(
-        future: _fetchQuizzes(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.hasError) {
-            return LoadingScreen();
-          }
-
-          List<Quiz> quizzes = snapshot.data;
-          return Column(
-            children: quizzes.map((quiz) => _createCard(context, quiz)).toList(),
-          );
-        },
+    return ChangeNotifierProvider(
+      create: (context) => NotesListModel()..load(),
+      builder: (context, child) => Scaffold(
+        appBar: AppBar(),
+        drawer: DrawerMenu(),
+        body: Selector<NotesListModel, bool>(
+          selector: (context, model) => model.isLoading,
+          builder: (context, isLoading, child) {
+            if (isLoading) {
+              return Loader();
+            }
+            return NoteListWidget(
+              onTap: (note) => _editNote(context, note),
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _newNote(context),
+          tooltip: AppLocalizations.of(context).addNote,
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
+}
 
-  Card _createCard(BuildContext context, Quiz quiz) {
+class NoteListWidget extends StatelessWidget {
+  final void Function(Note) onTap;
+  const NoteListWidget({Key key, this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final notesList = Provider.of<NotesListModel>(context);
+    return ListView.builder(
+      itemCount: notesList.notes.length,
+      itemBuilder: (context, index) {
+        return NoteWidget(
+          note: notesList.notes[index],
+          onTap: onTap,
+        );
+      },
+    );
+  }
+}
+
+class NoteWidget extends StatelessWidget {
+  final Note note;
+  final void Function(Note) onTap;
+  // final void Function() onRemove;
+  const NoteWidget({Key key, this.note, this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      //shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      //elevation: 4,
-      //margin: EdgeInsets.all(4),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      elevation: 8,
+      margin: EdgeInsets.all(4),
       child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => MakeQuiz(quizId: quiz.id),
-            ),
-          );
-        },
+        onTap: () => onTap(note),
         child: Column(
           children: [
             ListTile(
               // leading: Icon(Icons.note),
-              title: const Text('Card title 2'),
+              title: Text(note.title),
               subtitle: Text(
-                'Secondary Text',
-                style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                note.content,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
-                style: TextStyle(color: Colors.black.withOpacity(0.6)),
-              ),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.start,
-              children: [
-                FlatButton(
-                  textColor: const Color(0xFF6200EE),
-                  onPressed: () {
-                    // Perform some action
-                  },
-                  child: const Text('ACTION 1'),
-                ),
-                FlatButton(
-                  textColor: const Color(0xFF6200EE),
-                  onPressed: () {
-                    // Perform some action
-                  },
-                  child: const Text('ACTION 2'),
-                ),
-              ],
-            ),
-            //Image.asset('assets/card-sample-image-2.jpg'),
           ],
         ),
       ),
