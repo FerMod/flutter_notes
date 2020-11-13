@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer' as developer;
@@ -51,33 +52,20 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   bool get isLoading => _isLoading;
 
-  Future<void> load() async {
+  bool get isNotLoading => !isLoading;
+
+  Future load(Future<List<Note>> operation()) {
     _isLoading = true;
     notifyListeners();
 
-    try {
-      final loadedNotes = await Future.delayed(Duration(seconds: 0), () async => notesList);
+    return operation().then((loadedNotes) {
       _notes.addAll(loadedNotes);
-      // final loadedNotes = await repository.loadNotes();
-      // _notes.addAll(loadedNotes.map(Note.fromEntity));
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-  /*  Future load() {
-    _isLoading = true;
-    notifyListeners();
-
-    return repository.loadNotes().then((loadedNotes) {
-      _notes.addAll(loadedNotes.map(Note.fromEntity));
-      _isLoading = false;
-      notifyListeners();
-    }).catchError((err) {
+    }).whenComplete(() {
+      // Whetever if it does complete with an error or not
       _isLoading = false;
       notifyListeners();
     });
-  } */
+  }
 
   void add(Note note) {
     _notes.add(note);
@@ -106,11 +94,12 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(IterableProperty('notes', notes));
+    properties.add(FlagProperty('isLoading', value: isLoading));
   }
 }
 
 @deprecated
-final List<Note> notesList = [
+final List<Note> _notesList = [
   Note(
       title: "Note title",
       content:
