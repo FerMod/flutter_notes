@@ -121,38 +121,22 @@ class NoteListWidget extends StatelessWidget {
             tag: 'note-${note.id}',
             color: note.color,
             onTap: () => onTap(note),
-            child: NoteWidget(
-              note: note,
-              // onTap: onTap,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(note.title),
+                  subtitle: Text(
+                    note.content,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           );
         },
       ),
       onRefresh: notesList.refreshDelayed,
-    );
-  }
-}
-
-class NoteWidget extends StatelessWidget {
-  final Note note;
-  final void Function(Note) onTap;
-  // final void Function() onRemove;
-  const NoteWidget({Key key, this.note, this.onTap}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          // leading: Icon(Icons.note),
-          title: Text(note.title),
-          subtitle: Text(
-            note.content,
-            maxLines: 4,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }

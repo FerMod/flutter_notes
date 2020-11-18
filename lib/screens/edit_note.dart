@@ -48,17 +48,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
   }
 
-  String _validateName(String value) {
-    // if (value.isEmpty) {
-    //   return AppLocalizations.of(context).titleFieldRequired;
-    // }
-    // final nameExp = RegExp(r'^[A-Za-z ]+$');
-    // if (!nameExp.hasMatch(value)) {
-    //   return AppLocalizations.of(context).demoTextFieldOnlyAlphabeticalChars;
-    // }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -109,14 +98,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
               expands: true,
             ),
           ),
-          // Align(
-          //   alignment: Alignment.centerRight,
-          //   child: ElevatedButton.icon(
-          //     onPressed: _handleSubmit,
-          //     icon: const Icon(Icons.save),
-          //     label: Text(localizations.save),
-          //   ),
-          // ),
         ],
       ),
     );
