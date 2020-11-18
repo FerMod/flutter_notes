@@ -8,12 +8,12 @@ import 'package:intl/intl.dart';
 import 'l10n/messages_all.dart';
 
 @deprecated
-class AppLocalizations {
-  AppLocalizations(this.localeName);
+class AppLocales {
+  AppLocales(this.localeName);
 
   final String localeName;
 
-  static Future<AppLocalizations> load(Locale locale) {
+  static Future<AppLocales> load(Locale locale) {
     assert(locale != null);
 
     // final name = locale.countryCode.isEmpty ? locale.languageCode : locale.toString();
@@ -22,15 +22,15 @@ class AppLocalizations {
     final localeName = Intl.canonicalizedLocale(name);
 
     return initializeMessages(localeName).then((_) {
-      return AppLocalizations(localeName);
+      return AppLocales(localeName);
     });
   }
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  static AppLocales of(BuildContext context) {
+    return Localizations.of<AppLocales>(context, AppLocales);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocales> delegate = AppLocalesDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -153,15 +153,15 @@ class AppLocalizations {
 }
 
 @deprecated
-class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-  const AppLocalizationsDelegate();
+class AppLocalesDelegate extends LocalizationsDelegate<AppLocales> {
+  const AppLocalesDelegate();
 
   @override
   bool isSupported(Locale locale) => ['en', 'es'].contains(locale.languageCode);
 
   @override
-  Future<AppLocalizations> load(Locale locale) => AppLocalizations.load(locale);
+  Future<AppLocales> load(Locale locale) => AppLocales.load(locale);
 
   @override
-  bool shouldReload(AppLocalizationsDelegate old) => false;
+  bool shouldReload(AppLocalesDelegate old) => false;
 }
