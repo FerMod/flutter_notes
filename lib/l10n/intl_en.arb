@@ -17,9 +17,21 @@
     "type": "text",
     "placeholders": {}
   },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Text for the settings button",
+    "type": "text",
+    "placeholders": {}
+  },
   "language": "Language:",
   "@language": {
     "description": "Text for language dropdown button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "",
     "type": "text",
     "placeholders": {}
   },
@@ -37,9 +49,27 @@
     "type": "text",
     "placeholders": {}
   },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text",
+    "type": "text",
+    "placeholders": {}
+  },
   "addNote": "Add note",
   "@addNote": {
     "description": "Add note button text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "titleHint": "Insert title...",
+  "@titleHint": {
+    "description": "Add note title hint text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "contentHint": "Insert text...",
+  "@contentHint": {
+    "description": "Add note content hint text",
     "type": "text",
     "placeholders": {}
   }

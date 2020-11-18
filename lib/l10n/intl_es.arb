@@ -2,8 +2,13 @@
   "appTitle": "App de Questionarios",
   "drawerTitle": "Menú",
   "homepage": "Página Principal",
+  "settings": "Configuración",
   "language": "Idioma:",
+  "theme": "Tema",
   "note": "{howMany,plural, =1{Nota}other{Notas}}",
   "save": "Guardar",
-  "addNote": "Añadir nota"
+  "edit": "Editar",
+  "addNote": "Añadir nota",
+  "titleHint": "Inserte título...",
+  "contentHint": "Inserte texto..."
 }
