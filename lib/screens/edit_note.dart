@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_notes/menu/card_hero.dart';
 
 import '../data/models.dart';
 
@@ -17,7 +17,6 @@ class EditNoteScreen extends StatefulWidget {
 //https://github.com/flutter/gallery/blob/master/lib/demos/material/text_field_demo.dart
 class _EditNoteScreenState extends State<EditNoteScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController _titleEditingController;
   TextEditingController _contentEditingController;
@@ -44,7 +43,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       widget.note
         ..title = _titleEditingController.text
         ..content = _contentEditingController.text;
-      Navigator.of(context).pop(widget.note);
+      //Navigator.of(context).pop(widget.note);
+      Navigator.of(context).pop();
     }
   }
 
@@ -61,43 +61,78 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: TextFormField(
-            controller: _titleEditingController,
-            decoration: InputDecoration(
-              hintText: 'Title...',
+    final localizations = AppLocalizations.of(context);
+    return Scaffold(
+      //backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: _handleSubmit,
+        ),
+        title: Text(localizations.edit),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Hero(
+          tag: 'note-${widget.note.id}',
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(4.0),
+                bottom: Radius.zero,
+              ),
             ),
-            style: Theme.of(context).textTheme.headline5,
+            elevation: 8,
+            margin: EdgeInsets.all(0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: widget.note.color, width: 4),
+                ),
+              ),
+              child: _buildCardContent(localizations, context),
+            ),
           ),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-                controller: _contentEditingController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(borderSide: BorderSide.none),
-                ),
-                textAlignVertical: TextAlignVertical.top,
-                autofocus: false,
-                maxLines: null,
-                expands: true,
-              ),
+      ),
+    );
+  }
+
+  Padding _buildCardContent(AppLocalizations localizations, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: _titleEditingController,
+            decoration: InputDecoration(
+              hintText: localizations.titleHint,
             ),
-            Center(
-              child: ElevatedButton(
-                child: Text(AppLocalizations.of(context).save),
-                onPressed: _handleSubmit,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          Expanded(
+            child: TextFormField(
+              controller: _contentEditingController,
+              decoration: InputDecoration(
+                hintText: localizations.contentHint,
+                //border: OutlineInputBorder(borderSide: BorderSide.none),
               ),
+              textAlignVertical: TextAlignVertical.top,
+              autofocus: false,
+              maxLines: null,
+              expands: true,
             ),
-          ],
-        ),
+          ),
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: ElevatedButton.icon(
+          //     onPressed: _handleSubmit,
+          //     icon: const Icon(Icons.save),
+          //     label: Text(localizations.save),
+          //   ),
+          // ),
+        ],
       ),
     );
   }
