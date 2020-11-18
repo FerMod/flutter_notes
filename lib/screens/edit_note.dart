@@ -43,8 +43,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       widget.note
         ..title = _titleEditingController.text
         ..content = _contentEditingController.text;
-      //Navigator.of(context).pop(widget.note);
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(widget.note);
     }
   }
 

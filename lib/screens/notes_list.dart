@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/menu/fade_page_route.dart';
 import 'package:provider/provider.dart';
 
 import '../data/models.dart';
@@ -31,7 +30,6 @@ class NotesListScreen extends StatelessWidget {
   }
 
   PageRoute _pageRoutBuilder(Widget widget) {
-    // return FadePageRoute(builder: (context) => widget);
     // return MaterialPageRoute(builder: (context) => widget);
     // return PageRouteBuilder(
     //   pageBuilder: (context, animation, secondaryAnimation) => widget,
