@@ -32,101 +32,13 @@ class NotesApp extends StatelessWidget {
             themeMode: AppOptions.of(context).themeMode,
             darkTheme: ThemeData.dark(),
             home: HomePage(),
+            // home: Scaffold(
+            //   appBar: AppBar(title: Text('Test')),
+            //   body: RichTextEditor(onSubmitted: (value) => developer.log(value),),
+            // ),
           );
         },
       ),
     );
   }
 }
-
-/*
-class QuizApp2 extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _QuizAppState();
-
-  /*
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return ModelBinding(
-      initialModel: AppOptions(
-        themeMode: ThemeMode.system,
-        locale: null,
-        platform: defaultTargetPlatform,
-      ),
-      child: Builder(
-        builder: (context) => MaterialApp(
-            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: AppOptions.of(context).locale,
-            localeResolutionCallback: (locale, supportedLocales) {
-              deviceLocale = locale;
-              return locale;
-            },
-            themeMode: AppOptions.of(context).themeMode,
-            darkTheme: ThemeData.dark(),
-              home: HomePage(),
-          ),
-      ),
-    );
-  }
-  */
-}
-
-class _QuizApp2State extends State<QuizApp2> {
-  final _routerDelegate = BookRouterDelegate();
-  final _routeInformationParser = BookRouteInformationParser();
-
-  @deprecated
-  MaterialApp _buildMaterialApp(BuildContext context, bool useRouter) {
-    if (useRouter) {
-      return MaterialApp.router(
-        routerDelegate: _routerDelegate,
-        routeInformationParser: _routeInformationParser,
-        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: AppOptions.of(context).locale,
-        localeResolutionCallback: (locale, supportedLocales) {
-          deviceLocale = locale;
-          return locale;
-        },
-        themeMode: AppOptions.of(context).themeMode,
-        darkTheme: ThemeData.dark(),
-      );
-    }
-
-    return MaterialApp(
-      // MaterialApp.router(
-      // routerDelegate: _routerDelegate,
-      // routeInformationParser: _routeInformationParser,
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: AppOptions.of(context).locale,
-      localeResolutionCallback: (locale, supportedLocales) {
-        deviceLocale = locale;
-        return locale;
-      },
-      themeMode: AppOptions.of(context).themeMode,
-      darkTheme: ThemeData.dark(),
-      home: HomePage(),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ModelBinding(
-      initialModel: AppOptions(
-        themeMode: ThemeMode.system,
-        locale: null,
-        platform: defaultTargetPlatform,
-      ),
-      child: Builder(
-        builder: (context) => _buildMaterialApp(context, false),
-      ),
-    );
-  }
-}
-*/
