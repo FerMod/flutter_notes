@@ -4,30 +4,62 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/menu/fade_page_route.dart';
 import 'package:provider/provider.dart';
 
 import '../data/models.dart';
+import '../menu/card_hero.dart';
 import '../menu/drawer_menu.dart';
 import '../menu/loader.dart';
 import 'edit_note.dart';
 
 class NotesListScreen extends StatelessWidget {
+  const NotesListScreen({Key key}) : super(key: key);
+
   void _newNote(BuildContext context) async {
     final resultNote = await _navigateEditNote(context, Note());
-    Provider.of<NotesListModel>(context, listen: false).updateNote(resultNote);
+    if (resultNote != null) {
+      Provider.of<NotesListModel>(context, listen: false).addNote(resultNote);
+    }
   }
 
   void _editNote(BuildContext context, Note note) async {
     final resultNote = await _navigateEditNote(context, note);
-    Provider.of<NotesListModel>(context, listen: false).add(resultNote);
+    if (resultNote != null) {
+      Provider.of<NotesListModel>(context, listen: false).updateNote(resultNote);
+    }
+  }
+
+  PageRoute _pageRoutBuilder(Widget widget) {
+    // return FadePageRoute(builder: (context) => widget);
+    // return MaterialPageRoute(builder: (context) => widget);
+    // return PageRouteBuilder(
+    //   pageBuilder: (context, animation, secondaryAnimation) => widget,
+    // );
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return AnimatedBuilder(
+          animation: animation,
+          child: widget,
+          builder: (context, child) {
+            return FadeTransition(
+              opacity: animation.drive(
+                CurveTween(curve: Curves.easeInOut),
+              ),
+              child: child,
+            );
+          },
+        );
+      },
+      transitionDuration: Duration(milliseconds: 400),
+      reverseTransitionDuration: Duration(milliseconds: 400),
+    );
   }
 
   Future<Note> _navigateEditNote(BuildContext context, Note note) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => EditNoteScreen(note: note),
-      ),
+      _pageRoutBuilder(EditNoteScreen(note: note)),
     );
     developer.log('Edit note result: $result');
     return result;
@@ -35,10 +67,21 @@ class NotesListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return ChangeNotifierProvider(
-      create: (context) => NotesListModel()..load(),
+      create: (context) => NotesListModel()..loadDelayed(),
       builder: (context, child) => Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: localizations.settings,
+              onPressed: () {
+                //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+          ],
+        ),
         drawer: DrawerMenu(),
         body: Selector<NotesListModel, bool>(
           selector: (context, model) => model.isLoading,
@@ -53,8 +96,8 @@ class NotesListScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _newNote(context),
-          tooltip: AppLocalizations.of(context).addNote,
-          child: Icon(Icons.add),
+          tooltip: localizations.addNote,
+          child: const Icon(Icons.add),
         ),
       ),
     );
@@ -68,14 +111,22 @@ class NoteListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notesList = Provider.of<NotesListModel>(context);
-    return ListView.builder(
-      itemCount: notesList.notes.length,
-      itemBuilder: (context, index) {
-        return NoteWidget(
-          note: notesList.notes[index],
-          onTap: onTap,
-        );
-      },
+    return RefreshIndicator(
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: notesList.notes.length,
+        itemBuilder: (context, index) {
+          final note = notesList.notes[index];
+          return Hero(
+            tag: 'note-${note.id}',
+            child: NoteWidget(
+              note: note,
+              onTap: onTap,
+            ),
+          );
+        },
+      ),
+      onRefresh: notesList.refreshDelayed,
     );
   }
 }
@@ -90,23 +141,32 @@ class NoteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
       elevation: 8,
       margin: EdgeInsets.all(4),
       child: InkWell(
         onTap: () => onTap(note),
-        child: Column(
-          children: [
-            ListTile(
-              // leading: Icon(Icons.note),
-              title: Text(note.title),
-              subtitle: Text(
-                note.content,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: note.color, width: 4),
             ),
-          ],
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                // leading: Icon(Icons.note),
+                title: Text(note.title),
+                subtitle: Text(
+                  note.content,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
