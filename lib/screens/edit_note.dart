@@ -72,27 +72,12 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: Hero(
+        child:
+         CardHero(
           tag: 'note-${widget.note.id}',
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(4.0),
-                bottom: Radius.zero,
-              ),
-            ),
-            elevation: 8,
-            margin: EdgeInsets.all(0),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: widget.note.color, width: 4),
-                ),
-              ),
-              child: _buildCardContent(localizations, context),
-            ),
-          ),
+          color: widget.note.color,
+          margin: EdgeInsets.zero,
+          child: _buildCardContent(localizations, context),
         ),
       ),
     );

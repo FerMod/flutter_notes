@@ -117,11 +117,13 @@ class NoteListWidget extends StatelessWidget {
         itemCount: notesList.notes.length,
         itemBuilder: (context, index) {
           final note = notesList.notes[index];
-          return Hero(
+          return CardHero(
             tag: 'note-${note.id}',
+            color: note.color,
+            onTap: () => onTap(note),
             child: NoteWidget(
               note: note,
-              onTap: onTap,
+              // onTap: onTap,
             ),
           );
         },
@@ -139,36 +141,18 @@ class NoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      elevation: 8,
-      margin: EdgeInsets.all(4),
-      child: InkWell(
-        onTap: () => onTap(note),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: note.color, width: 4),
-            ),
-          ),
-          child: Column(
-            children: [
-              ListTile(
-                // leading: Icon(Icons.note),
-                title: Text(note.title),
-                subtitle: Text(
-                  note.content,
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+    return Column(
+      children: [
+        ListTile(
+          // leading: Icon(Icons.note),
+          title: Text(note.title),
+          subtitle: Text(
+            note.content,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-      ),
+      ],
     );
   }
 }
