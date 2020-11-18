@@ -2,22 +2,35 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class Note {
   String id;
   String title;
   String content;
+  DateTime lastEdit;
+  Color color;
 
-  Note({String id, this.title = '', this.content = ''}) : id = id ?? Uuid().v4();
+  Note({
+    String id,
+    this.title = '',
+    this.content = '',
+    DateTime lastEdit,
+    Color color = const Color(0xFFFFFF8D),
+  })  : id = id ?? Uuid().v4(),
+        lastEdit = lastEdit ?? DateTime.now();
 
   factory Note.fromMap(Map<String, dynamic> data) {
     return Note(
       id: data['id'] ?? '',
       title: data['title'] ?? '',
       content: data['content'] ?? '',
+      lastEdit: data['lastEdit'] ?? DateTime.now(),
+      color: data['color'] ?? const Color(0xFFFFFF8D),
     );
   }
 
@@ -26,14 +39,17 @@ class Note {
       'id': id,
       'title': title,
       'content': content,
+      'lastEdit': lastEdit,
+      'color': color,
     };
   }
 
   factory Note.fromJson(String str) => Note.fromMap(json.decode(str));
+
   String toJson() => json.encode(toMap());
 
   @override
-  String toString() => '${objectRuntimeType(this, 'Note')}("$id", "$title", "$content")';
+  String toString() => 'Note("$id", "$title", "$content", "$lastEdit", ${color.toString()})';
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
@@ -52,14 +68,22 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   bool get isLoading => _isLoading;
 
-  bool get isNotLoading => !isLoading;
+  @deprecated
+  Future loadDelayed() {
+    return load(() => Future.delayed(Duration(seconds: 2), () async => _notesList));
+  }
 
-  Future load(Future<List<Note>> operation()) {
+  @deprecated
+  Future refreshDelayed() {
+    return refresh(() => Future.delayed(Duration(seconds: 2), () async => _notesList));
+  }
+
+  Future load(Future<List<Note>> operation(), {bool notifyLoading = false}) {
     _isLoading = true;
     notifyListeners();
 
     return operation().then((loadedNotes) {
-      _notes.addAll(loadedNotes);
+      _notes = loadedNotes;
     }).whenComplete(() {
       // Whetever if it does complete with an error or not
       _isLoading = false;
@@ -67,12 +91,18 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     });
   }
 
-  void add(Note note) {
+  Future refresh(Future<List<Note>> operation()) {
+    return operation().then((loadedNotes) {
+      _notes = loadedNotes;
+    }).whenComplete(notifyListeners);
+  }
+
+  void addNote(Note note) {
     _notes.add(note);
     notifyListeners();
   }
 
-  void remove(Note note) {
+  void removeNote(Note note) {
     _notes.removeWhere((element) => element.id == note.id);
     notifyListeners();
   }
@@ -80,8 +110,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   void updateNote(Note note) {
     assert(note != null);
     assert(note.id != null);
-    var oldNote = _notes.firstWhere((element) => element.id == note.id);
-    var replaceIndex = _notes.indexOf(oldNote);
+    var replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
     notifyListeners();
   }
@@ -105,17 +134,19 @@ final List<Note> _notesList = [
       content:
           'The note content, this should be extense text.\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dignissim pretium felis, aliquet ultrices risus dapibus quis. Integer non egestas dui, eu volutpat risus. Phasellus congue erat enim, quis iaculis nibh faucibus non. Phasellus commodo elementum porta. Morbi volutpat pulvinar vestibulum. In hac habitasse platea dictumst. Maecenas eget bibendum sapien. Fusce congue mauris a nisl faucibus malesuada. In imperdiet facilisis sem aliquet posuere. Etiam ornare lobortis auctor. Donec sollicitudin, dui id cursus fermentum, leo est ultrices orci, in commodo erat eros ut dolor. Donec felis justo, faucibus et varius a, lacinia eu leo. Donec dolor elit, suscipit eget molestie fringilla, feugiat a nisl. Interdum et malesuada fames ac ante ipsum primis in faucibus.\nDonec venenatis blandit eros iaculis viverra. Proin quis velit augue. Phasellus sit amet nunc augue. Proin eget neque et ex malesuada faucibus. Fusce dictum nunc ut molestie interdum. Suspendisse potenti. Donec ut elementum urna, tempor lobortis lectus. Phasellus eget neque risus. Nulla pretium eget quam eget eleifend. Donec pretium sapien at lectus lobortis tincidunt. Praesent imperdiet neque vitae dapibus scelerisque. Quisque vel turpis justo.'),
   Note(title: "Another note", content: "The content should be here."),
-  // Note(id: 2, title: "Note title", content: "The note content, this should be extense text."),
-  // Note(id: 3, title: "Note 3", content: "The note 3 content, this should be extense text."),
-  // Note(id: 4, title: "Note 4", content: "The note 4 content, this should be extense text."),
-  // Note(id: 5, title: "Note 5", content: "The note 5 content, this should be extense text."),
-  // Note(id: 6, title: "Note 6", content: "The note 6 content, this should be extense text."),
-  // Note(id: 7, title: "Note 7", content: "The note 7 content, this should be extense text."),
-  // Note(id: 8, title: "Note 8", content: "The note 8 content, this should be extense text."),
-  // Note(id: 9, title: "Note 9", content: "The note 9 content, this should be extense text."),
-  // Note(id: 10, title: "Note 10", content: "The note10 content, this should be extense text."),
-  // Note(id: 11, title: "Note 11", content: "The note11 content, this should be extense text."),
-  // Note(id: 12, title: "Note 12", content: "The note12 content, this should be extense text."),
-  // Note(id: 13, title: "Note 13", content: "The note13 content, this should be extense text."),
-  // Note(id: 14, title: "Note 14", content: "The note14 content, this should be extense text."),
+  Note(title: "Note title", content: "The note content, this should be extense text.", color: Colors.yellowAccent),
+  Note(title: "Note 1", content: "The note 1 content, this should be extense text."),
+  Note(title: "Note 2", content: "The note 2 content, this should be extense text."),
+  Note(title: "Note 3", content: "The note 3 content, this should be extense text."),
+  Note(title: "Note 4", content: "The note 4 content, this should be extense text."),
+  Note(title: "Note 5", content: "The note 5 content, this should be extense text."),
+  Note(title: "Note 6", content: "The note 6 content, this should be extense text."),
+  Note(title: "Note 7", content: "The note 7 content, this should be extense text."),
+  Note(title: "Note 8", content: "The note 8 content, this should be extense text."),
+  Note(title: "Note 9", content: "The note 9 content, this should be extense text."),
+  Note(title: "Note 10", content: "The note 10 content, this should be extense text."),
+  Note(title: "Note 11", content: "The note 11 content, this should be extense text."),
+  Note(title: "Note 12", content: "The note 12 content, this should be extense text."),
+  Note(title: "Note 13", content: "The note 13 content, this should be extense text."),
+  Note(title: "Note 14", content: "The note 14 content, this should be extense text."),
 ];
