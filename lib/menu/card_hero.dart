@@ -7,6 +7,7 @@ class CardHero extends StatelessWidget {
     this.child,
     this.onTap,
     this.color,
+    this.shape,
     this.margin,
   }) : super(key: key);
 
@@ -14,6 +15,7 @@ class CardHero extends StatelessWidget {
   final Widget child;
   final VoidCallback onTap;
   final Color color;
+  final ShapeBorder shape;
   final EdgeInsetsGeometry margin;
 
   Widget build(BuildContext context) {
@@ -21,9 +23,7 @@ class CardHero extends StatelessWidget {
       tag: tag,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
+        shape: shape,
         elevation: 8,
         margin: margin,
         child: Material(

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/menu/card_hero.dart';
 
 import '../data/models.dart';
+import '../menu/card_hero.dart';
 
 class EditNoteScreen extends StatefulWidget {
   EditNoteScreen({Key key, this.note}) : super(key: key);
@@ -60,10 +60,12 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       ),
       body: Form(
         key: _formKey,
-        child:
-         CardHero(
+        child: CardHero(
           tag: 'note-${widget.note.id}',
           color: widget.note.color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(4.0)),
+          ),
           margin: EdgeInsets.zero,
           child: _buildCardContent(localizations, context),
         ),
