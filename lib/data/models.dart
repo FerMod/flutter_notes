@@ -49,7 +49,7 @@ class Note {
   String toJson() => json.encode(toMap());
 
   @override
-  String toString() => 'Note("$id", "$title", "$content", "$lastEdit", $color)';
+  String toString() => 'Note(id: "$id", title: "$title", content: "$content", lastEdit: "$lastEdit", color: $color)';
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
@@ -78,7 +78,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return refresh(() => Future.delayed(Duration(seconds: 2), () async => _notesList));
   }
 
-  Future load(Future<List<Note>> operation(), {bool notifyLoading = false}) {
+  Future load(Future<List<Note>> Function() operation) {
     _isLoading = true;
     notifyListeners();
 
@@ -91,7 +91,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     });
   }
 
-  Future refresh(Future<List<Note>> operation()) {
+  Future refresh(Future<List<Note>> Function() operation) {
     return operation().then((loadedNotes) {
       _notes = loadedNotes;
     }).whenComplete(notifyListeners);

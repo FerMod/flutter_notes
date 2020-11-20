@@ -1,8 +1,11 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'data/app_options.dart';
+import 'menu/rich_text_editor.dart';
 import 'model_binding.dart';
 import 'screens/home_page.dart';
 
@@ -34,7 +37,7 @@ class NotesApp extends StatelessWidget {
             home: HomePage(),
             // home: Scaffold(
             //   appBar: AppBar(title: Text('Test')),
-            //   body: RichTextEditor(onSubmitted: (value) => developer.log(value),),
+            //   body: RichTextEditor(onSubmitted: (value) => developer.log(value)),
             // ),
           );
         },

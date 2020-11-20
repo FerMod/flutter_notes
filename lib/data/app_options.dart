@@ -84,5 +84,5 @@ class AppOptions {
       );
 
   @override
-  String toString() => '${objectRuntimeType(this, 'AppOptions')}($themeMode, $locale, $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, locale: $locale, platform: $platform)';
 }
