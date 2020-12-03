@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 
 class CardHero extends StatelessWidget {
@@ -6,6 +8,7 @@ class CardHero extends StatelessWidget {
     this.tag,
     this.child,
     this.onTap,
+    this.onLongPress,
     this.color,
     this.shape,
     this.margin,
@@ -13,7 +16,8 @@ class CardHero extends StatelessWidget {
 
   final String tag;
   final Widget child;
-  final VoidCallback onTap;
+  final GestureTapCallback onTap;
+  final GestureLongPressCallback onLongPress;
   final Color color;
   final ShapeBorder shape;
   final EdgeInsetsGeometry margin;
@@ -26,18 +30,16 @@ class CardHero extends StatelessWidget {
         shape: shape,
         elevation: 8,
         margin: margin,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: color, width: 4),
-                ),
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: color, width: 4),
               ),
-              child: child,
             ),
+            child: child,
           ),
         ),
       ),
