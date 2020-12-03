@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:787552385461:android:184872ae69ad3ddf6501fc",
+        "mobilesdk_app_id": "1:787552385461:android:6eee430d3a3362316501fc",
         "android_client_info": {
-          "package_name": "com.fermod.flutter_app"
+          "package_name": "com.fermod.flutter_notes"
         }
       },
       "oauth_client": [
