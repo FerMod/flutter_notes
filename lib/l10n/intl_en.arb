@@ -72,5 +72,11 @@
     "description": "Add note content hint text",
     "type": "text",
     "placeholders": {}
+  },
+  "changeColor": "Change color",
+  "@changeColor": {
+    "description": "Change color of the note",
+    "type": "text",
+    "placeholders": {}
   }
 }

@@ -1,5 +1,5 @@
 {
-  "appTitle": "App de Questionarios",
+  "appTitle": "App de Notas",
   "drawerTitle": "Menú",
   "homepage": "Página Principal",
   "settings": "Configuración",
@@ -10,5 +10,6 @@
   "edit": "Editar",
   "addNote": "Añadir nota",
   "titleHint": "Inserte título...",
-  "contentHint": "Inserte texto..."
+  "contentHint": "Inserte texto...",
+  "changeColor": "Cambiar color"
 }
