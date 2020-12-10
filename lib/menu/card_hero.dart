@@ -6,40 +6,43 @@ class CardHero extends StatelessWidget {
   const CardHero({
     Key key,
     this.tag,
+    this.shape,
+    this.margin,
+    this.color,
     this.child,
     this.onTap,
     this.onLongPress,
-    this.color,
-    this.shape,
-    this.margin,
   }) : super(key: key);
 
   final String tag;
+  final ShapeBorder shape;
+  final EdgeInsetsGeometry margin;
+  final Color color;
   final Widget child;
   final GestureTapCallback onTap;
   final GestureLongPressCallback onLongPress;
-  final Color color;
-  final ShapeBorder shape;
-  final EdgeInsetsGeometry margin;
 
   Widget build(BuildContext context) {
     return Hero(
       tag: tag,
       child: Card(
-        clipBehavior: Clip.antiAlias,
+        elevation: 8.0,
         shape: shape,
-        elevation: 8,
         margin: margin,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: color, width: 4),
+        clipBehavior: Clip.antiAlias,
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onTap,
+            onLongPress: onLongPress,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: color, width: 4.0),
+                ),
               ),
+              child: child,
             ),
-            child: child,
           ),
         ),
       ),
