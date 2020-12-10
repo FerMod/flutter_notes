@@ -8,6 +8,7 @@
   "note": "{howMany,plural, =1{Nota}other{Notas}}",
   "save": "Guardar",
   "edit": "Editar",
+  "delete": "Eliminar",
   "addNote": "Añadir nota",
   "titleHint": "Inserte título...",
   "contentHint": "Inserte texto...",

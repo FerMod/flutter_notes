@@ -55,6 +55,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text",
+    "type": "text",
+    "placeholders": {}
+  },
   "addNote": "Add note",
   "@addNote": {
     "description": "Add note button text",
