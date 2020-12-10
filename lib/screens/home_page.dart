@@ -1,7 +1,10 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/app_options.dart';
+import '../data/firebase_service.dart';
 import '../menu/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
@@ -16,16 +19,62 @@ class HomePage extends StatelessWidget {
         title: Text(localizations.homepage),
       ),
       drawer: DrawerMenu(),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: DropdownButton(
-          value: options.locale.languageCode,
-          items: _dropdownMenuItems,
-          onChanged: (value) => AppOptions.update(
-            context,
-            options.copyWith(locale: Locale(value)),
+      // body: Container(
+      //   padding: EdgeInsets.all(20.0),
+      //   child: DropdownButton(
+      //     value: options.locale.languageCode,
+      //     items: _dropdownMenuItems,
+      //     onChanged: (value) => AppOptions.update(
+      //       context,
+      //       options.copyWith(locale: Locale(value)),
+      //     ),
+      //   ),
+      // ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(20.0),
+            child: DropdownButton(
+              value: options.locale.languageCode,
+              items: _dropdownMenuItems,
+              onChanged: (value) => AppOptions.update(
+                context,
+                options.copyWith(locale: Locale(value)),
+              ),
+            ),
           ),
-        ),
+          Container(
+            child: ElevatedButton(
+              child: const Text('Test'),
+              onPressed: () {
+                final user = UserData<UserModel>(collection: 'users');
+                user.signInAnonymously();
+                var stream = user.stream((snapshot) => UserModel.fromSnapshot(snapshot));
+                stream.map((i) => 'Stream: $i').listen(print);
+              },
+            ),
+          ),
+          Container(
+            child: ElevatedButton(
+              child: const Text('Sign In'),
+              onPressed: () {
+                final userData = UserData<UserModel>(collection: 'users');
+                userData.signIn('test@email.com', 'password123');
+                userData.data((snapshot) => UserModel.fromSnapshot(snapshot)).then((value) => developer.log(value.toString()));
+              },
+            ),
+          ),
+          Container(
+            child: ElevatedButton(
+              child: const Text('Sign Up'),
+              onPressed: () async {
+                final userData = UserData<UserModel>(collection: 'users');
+                userData.signUp('test@email.com', 'password123');
+                userData.data((snapshot) => UserModel.fromSnapshot(snapshot)).then((value) => developer.log(value.toString()));
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,35 +1,30 @@
 import 'dart:developer' as developer;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../data/firebase_service.dart';
 import '../data/models.dart';
 import '../menu/card_hero.dart';
 import '../menu/drawer_menu.dart';
 import '../menu/loader.dart';
 import 'edit_note.dart';
 
+enum Operation {
+  insert,
+  update,
+  delete,
+}
+
 class NotesListScreen extends StatelessWidget {
   const NotesListScreen({Key key}) : super(key: key);
 
-  void _newNote(BuildContext context) async {
-    final resultNote = await _navigateEditNote(context, Note());
-    if (resultNote != null) {
-      Provider.of<NotesListModel>(context, listen: false).addNote(resultNote);
-    }
-  }
-
-  void _editNote(BuildContext context, Note note) async {
-    final resultNote = await _navigateEditNote(context, note);
-    if (resultNote != null) {
-      Provider.of<NotesListModel>(context, listen: false).updateNote(resultNote);
-    }
-  }
-
-  PageRoute _pageRoutBuilder(Widget widget) {
+  PageRoute _pageRouteBuilder(Widget widget) {
     // return MaterialPageRoute(builder: (context) => widget);
     // return PageRouteBuilder(
     //   pageBuilder: (context, animation, secondaryAnimation) => widget,
@@ -54,20 +49,75 @@ class NotesListScreen extends StatelessWidget {
     );
   }
 
-  Future<Note> _navigateEditNote(BuildContext context, Note note) async {
+  Future<NoteModel> _navigateEditNote(BuildContext context, NoteModel note) async {
     final result = await Navigator.push(
       context,
-      _pageRoutBuilder(EditNoteScreen(note: note)),
+      _pageRouteBuilder(EditNoteScreen(note: note)),
     );
     developer.log('Edit note result: $result');
     return result;
+  }
+
+  void _newNote(BuildContext context) async {
+    final user = Provider.of<User>(context, listen: false);
+    final note = NoteModel(userId: user?.uid);
+    final resultNote = await _navigateEditNote(context, note);
+    if (resultNote == null) return;
+
+    final notesListModel = Provider.of<NotesListModel>(context, listen: false);
+    notesListModel.addNote(resultNote);
+  }
+
+  void _editNote(BuildContext context, NoteModel note) async {
+    final resultNote = await _navigateEditNote(context, note);
+    if (resultNote == null) return;
+
+    final notesListModel = Provider.of<NotesListModel>(context, listen: false);
+    notesListModel.updateNote(resultNote);
+  }
+
+  void _removeNote(BuildContext context, NoteModel note) async {
+    final resultNote = await _navigateEditNote(context, note);
+    if (resultNote == null) return;
+
+    final notesListModel = Provider.of<NotesListModel>(context, listen: false);
+    notesListModel.removeNote(resultNote);
+  }
+
+  Future<T> _showAlertDialog<T>(BuildContext context) async {
+    final localizations = AppLocalizations.of(context);
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Alert Dialog"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text("Would you like to continue learning how to use Flutter alerts?"),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {},
+            ),
+            TextButton(
+              child: Text("Continue"),
+              onPressed: () {},
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     return ChangeNotifierProvider(
-      create: (context) => NotesListModel()..loadDelayed(),
+      create: (context) => NotesListModel()..loadDelayed(), //loadData(),
       builder: (context, child) => Scaffold(
         appBar: AppBar(
           actions: [
@@ -103,7 +153,7 @@ class NotesListScreen extends StatelessWidget {
 }
 
 class NoteListWidget extends StatelessWidget {
-  final void Function(Note) onTap;
+  final void Function(NoteModel) onTap;
   const NoteListWidget({Key key, this.onTap}) : super(key: key);
 
   @override
@@ -119,9 +169,11 @@ class NoteListWidget extends StatelessWidget {
             tag: 'note-${note.id}',
             color: note.color,
             onTap: () => onTap(note),
+            onLongPress: () => developer.log("Long press"),
             child: Column(
               children: [
                 ListTile(
+                  mouseCursor: MouseCursor.defer,
                   title: Text(note.title),
                   subtitle: Text(
                     note.content,
@@ -134,7 +186,7 @@ class NoteListWidget extends StatelessWidget {
           );
         },
       ),
-      onRefresh: notesList.refreshDelayed,
+      onRefresh: notesList.refresh, // refreshDelayed,
     );
   }
 }
