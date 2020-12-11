@@ -33,6 +33,8 @@ void _initFirebaseEmulator(bool useEmulators) async {
 }
 
 class NotesApp extends StatelessWidget {
+  final FirebaseAuth _authInstance = FirebaseAuth.instance;
+
   // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,7 @@ class NotesApp extends StatelessWidget {
             locale: AppOptions.of(context).locale,
             localeResolutionCallback: (locale, supportedLocales) {
               deviceLocale = locale;
+              _authInstance.setLanguageCode(locale.languageCode);
               return locale;
             },
             themeMode: AppOptions.of(context).themeMode,
