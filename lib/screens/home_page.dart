@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/app_options.dart';
+import '../data/db/user_entity.dart';
 import '../data/firebase_service.dart';
-import '../menu/drawer_menu.dart';
+import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
   @override

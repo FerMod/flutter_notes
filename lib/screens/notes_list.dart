@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 
 import '../data/firebase_service.dart';
 import '../data/models.dart';
-import '../menu/card_hero.dart';
-import '../menu/drawer_menu.dart';
-import '../menu/loader.dart';
+import '../widgets/card_hero.dart';
+import '../widgets/drawer_menu.dart';
+import '../widgets/loader.dart';
 import 'edit_note.dart';
 
 enum Operation {

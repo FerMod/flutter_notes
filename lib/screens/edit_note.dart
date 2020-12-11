@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/firebase_service.dart';
-import '../menu/card_hero.dart';
-import '../menu/color_toggle_buttons.dart';
+import '../widgets/card_hero.dart';
+import '../widgets/color_toggle_buttons.dart';
 
 enum Commands {
   delete,
