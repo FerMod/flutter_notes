@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'firebase_service.dart';
+import 'models/note_model.dart';
+import 'models/user_model.dart';
 
 // ignore: prefer_mixin
 class UserDataModel with ChangeNotifier, DiagnosticableTreeMixin {

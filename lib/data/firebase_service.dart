@@ -1,11 +1,9 @@
 import 'dart:developer' as developer;
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:uuid/uuid.dart';
 
 typedef QueryFunction = Query Function(Query query);
 typedef FromSnapshot<T> = T Function(DocumentSnapshot snapshot);
@@ -407,84 +405,3 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
 //   }
 // }
 
-class NoteModel {
-  String id;
-  String userId;
-  String title;
-  String content;
-  Color color;
-  DateTime lastEdit;
-
-  DocumentReference reference;
-
-  NoteModel({
-    String id,
-    this.title = '',
-    this.content = '',
-    this.color = const Color(0xFFFFFF8D),
-    DateTime lastEdit,
-    this.userId = '',
-    this.reference,
-  })  : id = id ?? Uuid().v4(),
-        lastEdit = lastEdit ?? DateTime.now();
-
-  factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data();
-    return NoteModel(
-      id: snapshot.id,
-      title: data['title'],
-      content: data['content'],
-      color: Color(data['color']),
-      lastEdit: (data['lastEdit'] as Timestamp).toDate(),
-      userId: data['userId'],
-      reference: snapshot.reference,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'content': content,
-      'lastEdit': Timestamp.fromDate(lastEdit),
-      'color': color.value,
-    };
-  }
-
-  @override
-  String toString() => 'NoteModel(id: "$id", title: "$title", content: "$content", color: $color, lastEdit: "$lastEdit", userId: "$userId", reference: $reference)';
-}
-
-class UserModel {
-  String id;
-  String name;
-  String image;
-
-  DocumentReference reference;
-
-  UserModel({
-    String id,
-    this.name = '',
-    this.image = '',
-    this.reference,
-  }) : id = id ?? Uuid().v4();
-
-  factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data();
-    return UserModel(
-      id: snapshot.id,
-      name: data['name'],
-      image: data['image'],
-      reference: snapshot.reference,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'image': image,
-    };
-  }
-
-  @override
-  String toString() => 'UserModel(id: "$id", name: "$name", image: "$image", reference: $reference)';
-}

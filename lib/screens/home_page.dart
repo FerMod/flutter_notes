@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/data/models/user_model.dart';
 
 import '../data/app_options.dart';
 import '../data/db/user_entity.dart';

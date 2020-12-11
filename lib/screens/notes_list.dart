@@ -8,8 +8,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../data/firebase_service.dart';
 import '../data/models.dart';
+import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/drawer_menu.dart';
 import '../widgets/loader.dart';

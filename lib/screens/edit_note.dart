@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/firebase_service.dart';
+import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/color_toggle_buttons.dart';
 
