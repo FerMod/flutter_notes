@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 // Code derived from:
 // https://medium.com/flutter/managing-flutter-application-state-with-inheritedwidgets-1140452befe1
@@ -21,26 +22,31 @@ class _ModelBindingScope<T> extends InheritedWidget {
 
 /// A generic implementation of an [InheritedWidget].
 ///
-/// Any descendant of this widget can obtain `initialModel` using [ModelBinding.of].
+/// Any descendant of this widget can obtain `initialModel` with an instance of
+/// ModelBinding returned by [ModelBinding.of].
 class ModelBinding<T> extends StatefulWidget {
-  ModelBinding({
+  const ModelBinding({
     Key key,
     @required this.initialModel,
     this.child,
   })  : assert(initialModel != null),
         super(key: key);
 
-  /// The model returned by [ModelBinding.of] will be specific to this initial model.
+  /// The model returned by [ModelBinding.of] will be specific to this initial 
+  /// model.
   final T initialModel;
 
   /// The widget below this widget in the tree.
-  ///
-  /// {@macro flutter.widgets.child}
   final Widget child;
 
+  @override
   _ModelBindingState<T> createState() => _ModelBindingState<T>();
 
-  /// Obtains the nearest [ModelBinding] up its widget tree and returns its value.
+  /// Returns the nearest [ModelBinding] widget up its widget tree that
+  /// corresponds to the given [context] and returns its value.
+  ///
+  /// If no [ModelBinding] widget is in scope then this function will return
+  /// null.
   static T of<T>(BuildContext context) {
     assert(context != null);
     final scope =
@@ -48,8 +54,11 @@ class ModelBinding<T> extends StatefulWidget {
     return scope?.modelBindingState?.currentModel;
   }
 
-  /// Update the model with the given one and notify the framework that the
-  /// internal state of this object has changed.
+  /// Updates its model with the new given one and notifies the framework that
+  /// the internal state of this object has changed.
+  ///
+  /// Returns the nearest [ModelBinding] widget up its widget tree that
+  /// corresponds to the given [context] and returns its value.
   static void update<T>(BuildContext context, T newModel) {
     assert(context != null);
     assert(newModel != null);
@@ -67,28 +76,29 @@ class ModelBinding<T> extends StatefulWidget {
 }
 
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
-  final GlobalKey _localizedResourcesScopeKey = GlobalKey();
+  final GlobalKey _modelBindingScopeKey = GlobalKey();
 
-  T currentModel;
+  T _currentModel;
+  T get currentModel => _currentModel;
 
   @override
   void initState() {
     super.initState();
-    currentModel = widget.initialModel;
+    updateModel(widget.initialModel);
   }
 
   @override
-  void didUpdateWidget(ModelBinding<T> old) {
-    super.didUpdateWidget(old);
-    if (widget.initialModel != old.initialModel) {
+  void didUpdateWidget(ModelBinding<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialModel != oldWidget.initialModel) {
       updateModel(widget.initialModel);
     }
   }
 
   void updateModel(T newModel) {
-    if (newModel != currentModel) {
+    if (newModel != _currentModel) {
       setState(() {
-        currentModel = newModel;
+        _currentModel = newModel;
       });
     }
   }
@@ -96,7 +106,7 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   @override
   Widget build(BuildContext context) {
     return _ModelBindingScope<T>(
-      key: _localizedResourcesScopeKey,
+      key: _modelBindingScopeKey,
       modelBindingState: this,
       child: widget.child,
     );
