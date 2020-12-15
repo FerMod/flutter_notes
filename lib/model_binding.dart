@@ -11,7 +11,7 @@ class _ModelBindingScope<T> extends InheritedWidget {
     Key key,
     this.model,
     @required this.modelBindingState,
-    Widget child,
+    @required Widget child,
   })  : assert(modelBindingState != null),
         super(key: key, child: child);
 
@@ -24,7 +24,7 @@ class _ModelBindingScope<T> extends InheritedWidget {
 
 /// A generic implementation of an [InheritedWidget].
 ///
-/// Any descendant of this widget can obtain `initialModel` with an instance of
+/// Any descendant of this widget can obtain [initialModel] with an instance of
 /// ModelBinding returned by [ModelBinding.of].
 class ModelBinding<T> extends StatefulWidget {
   const ModelBinding({
@@ -34,7 +34,7 @@ class ModelBinding<T> extends StatefulWidget {
   })  : assert(initialModel != null),
         super(key: key);
 
-  /// The model returned by [ModelBinding.of] will be specific to this initial 
+  /// The model returned by [ModelBinding.of] will be specific to this initial
   /// model.
   final T initialModel;
 
@@ -47,10 +47,16 @@ class ModelBinding<T> extends StatefulWidget {
   /// Returns the nearest [ModelBinding] widget up its widget tree that
   /// corresponds to the given [context] and returns its value.
   ///
-  /// If no [ModelBinding] widget is in scope then this function will return
-  /// null.
+  /// If no [ModelBinding] widget is in scope then the [ModelBinding.of]
+  /// method will return null.
   static T of<T>(BuildContext context) {
     assert(context != null);
+    assert(
+      T != dynamic,
+      'Tried to call ModelBinding.of<dynamic>.\n'
+      'If you want to expose a variable that can be anything, consider '
+      'replacing `dynamic` with `Object` instead.',
+    );
     final scope =
         context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
     return scope?.modelBindingState?.currentModel;
@@ -63,7 +69,13 @@ class ModelBinding<T> extends StatefulWidget {
   /// corresponds to the given [context] and returns its value.
   static void update<T>(BuildContext context, T newModel) {
     assert(context != null);
-    assert(newModel != null);
+    // assert(newModel != null); // Should we allow null?
+    assert(
+      T != dynamic,
+      'Tried to call ModelBinding.update<dynamic>.\n'
+      'If you want to expose a variable that can be anything, consider '
+      'replacing `dynamic` with `Object` instead.',
+    );
     final scope =
         context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
     assert(scope != null, 'a ModelBinding<T> ancestor was not found');
