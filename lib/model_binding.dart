@@ -9,15 +9,17 @@ import 'package:flutter/rendering.dart';
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
     Key key,
+    this.model,
     @required this.modelBindingState,
     Widget child,
   })  : assert(modelBindingState != null),
         super(key: key, child: child);
 
+  final T model;
   final _ModelBindingState<T> modelBindingState;
 
   @override
-  bool updateShouldNotify(_ModelBindingScope oldWidget) => true;
+  bool updateShouldNotify(_ModelBindingScope<T> old) => model != old.model;
 }
 
 /// A generic implementation of an [InheritedWidget].
@@ -96,17 +98,16 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   }
 
   void updateModel(T newModel) {
-    if (newModel != _currentModel) {
-      setState(() {
-        _currentModel = newModel;
-      });
-    }
+    setState(() {
+      _currentModel = newModel;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return _ModelBindingScope<T>(
       key: _modelBindingScopeKey,
+      model: _currentModel,
       modelBindingState: this,
       child: widget.child,
     );
