@@ -135,6 +135,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
               controller: _contentEditingController,
+              keyboardType: TextInputType.multiline,
               decoration: InputDecoration.collapsed(
                 hintText: localizations.contentHint,
               ),
