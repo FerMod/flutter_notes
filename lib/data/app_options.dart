@@ -21,11 +21,11 @@ class AppOptions {
   final ThemeMode themeMode;
   final TargetPlatform platform;
   final Locale _locale;
-
   Locale get locale => _locale ?? deviceLocale;
 
   /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
   /// If the theme is dark, returns light; if the theme is light, returns dark.
+  @Deprecated('Not used anywhere in the code. Already exists \'ThemeMode.system\'')
   SystemUiOverlayStyle resolvedSystemUiOverlayStyle() {
     Brightness brightness;
     switch (themeMode) {
@@ -56,12 +56,32 @@ class AppOptions {
     );
   }
 
+  /// Returns the [AppOptions] object for the widget tree that corresponds to
+  /// the given `context`.
+  ///
+  /// Returns null if no object exists within the given `context`.
   static AppOptions of(BuildContext context) {
     return ModelBinding.of<AppOptions>(context);
   }
 
   static void update(BuildContext context, AppOptions newModel) {
     ModelBinding.update<AppOptions>(context, newModel);
+  }
+
+  static void updateField(
+    BuildContext context, {
+    ThemeMode themeMode,
+    Locale locale,
+    TargetPlatform platform,
+  }) {
+    AppOptions.update(
+      context,
+      AppOptions.of(context).copyWith(
+        themeMode: themeMode,
+        locale: locale,
+        platform: platform,
+      ),
+    );
   }
 
   @override
