@@ -98,21 +98,23 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   @override
   void initState() {
     super.initState();
-    updateModel(widget.initialModel);
+    _currentModel = widget.initialModel;
   }
 
   @override
   void didUpdateWidget(ModelBinding<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initialModel != oldWidget.initialModel) {
-      updateModel(widget.initialModel);
+      _currentModel = widget.initialModel;
     }
   }
 
   void updateModel(T newModel) {
-    setState(() {
-      _currentModel = newModel;
-    });
+    if (_currentModel != newModel) {
+      setState(() {
+        _currentModel = newModel;
+      });
+    }
   }
 
   @override
