@@ -1,88 +1,316 @@
 {
+  "@@locale": "en",
   "appTitle": "Notes App",
   "@appTitle": {
-    "description": "Title of the app",
-    "type": "text",
-    "placeholders": {}
+    "description": "Title of the app."
   },
   "drawerTitle": "Menu",
   "@drawerTitle": {
-    "description": "Title for the drawer widget",
-    "type": "text",
-    "placeholders": {}
+    "description": "Title for the drawer widget."
   },
   "homepage": "Homepage",
   "@homepage": {
-    "description": "Title for the Demo application",
-    "type": "text",
-    "placeholders": {}
+    "description": "Title for the Demo application."
   },
-  "settings": "Settings",
-  "@settings": {
-    "description": "Text for the settings button",
-    "type": "text",
-    "placeholders": {}
+  "settingsAplicationHeader": "APLICATION",
+  "@settingsAplicationHeader": {
+    "description": "Title for the aplication settings header."
   },
-  "language": "Language:",
-  "@language": {
-    "description": "Text for language dropdown button",
-    "type": "text",
-    "placeholders": {}
+  "settingsAplication": "Aplication",
+  "@settingsAplication": {
+    "description": "Title for the aplication setting."
   },
-  "theme": "Theme",
-  "@theme": {
-    "description": "",
-    "type": "text",
-    "placeholders": {}
+  "settingsAccountHeader": "ACCOUNT",
+  "@settingsAccountHeader": {
+    "description": "Title for the account setting header."
   },
-  "note": "{howMany,plural, =1{Note}other{Notes}}",
+  "settingsAccount": "Account",
+  "@settingsAccount": {
+    "description": "Title for the account setting."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Title for the language setting."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Title for the theme setting."
+  },
+  "settingsDarkTheme": "Dark",
+  "@settingsDarkTheme": {
+    "description": "Title for the dark theme setting."
+  },
+  "settingsLightTheme": "Light",
+  "@settingsLightTheme": {
+    "description": "Title for the light theme setting."
+  },
+  "settingsSystemDefault": "System default",
+  "@settingsSystemDefault": {
+    "description": "Option label to indicate the system default will be used."
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Title for the settings screen."
+  },
+  "settingsButtonLabel": "Settings",
+  "@settingsButtonLabel": {
+    "description": "Accessibility label for the settings button when settings are not showing."
+  },
+  "settingsButtonCloseLabel": "Close settings",
+  "@settingsButtonCloseLabel": {
+    "description": "Accessibility label for the settings button when settings are showing."
+  },
+  "note": "{howMany, plural, =1{Note} other{Notes}}",
   "@note": {
-    "description": "Note text",
-    "type": "text",
+    "description": "Note text.",
     "placeholders": {
-      "howMany": {}
+      "howMany": {
+        "example": "2"
+      }
     }
   },
   "save": "Save",
   "@save": {
-    "description": "Save button text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Save menu text."
   },
   "edit": "Edit",
   "@edit": {
-    "description": "Edit button text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Edit menu text."
   },
   "delete": "Delete",
   "@delete": {
-    "description": "Delete button text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Delete menu text."
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close menu text."
+  },
+  "closeButton": "CLOSE",
+  "@closeButton": {
+    "description": "Close button text."
+  },
+  "saveButton": "SAVE",
+  "@saveButton": {
+    "description": "Save button text."
+  },
+  "deleteButton": "DELETE",
+  "@deleteButton": {
+    "description": "Delete button text."
+  },
+  "cancelButton": "CANCEL",
+  "@cancelButton": {
+    "description": "Cancel button text."
+  },
+  "deleteDialogTitle": "Delete Note?",
+  "@deleteDialogTitle": {
+    "description": "Title of delete alert dialog."
+  },
+  "deleteDialogContent": "This will permanently delete the note.",
+  "@deleteDialogContent": {
+    "description": "Content of delete alert dialog."
   },
   "addNote": "Add note",
   "@addNote": {
-    "description": "Add note button text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Add note label text."
   },
   "titleHint": "Insert title...",
   "@titleHint": {
-    "description": "Add note title hint text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Add note title hint text."
   },
   "contentHint": "Insert text...",
   "@contentHint": {
-    "description": "Add note content hint text",
-    "type": "text",
-    "placeholders": {}
+    "description": "Add note content hint text."
   },
   "changeColor": "Change color",
   "@changeColor": {
-    "description": "Change color of the note",
-    "type": "text",
-    "placeholders": {}
+    "description": "Change color of the note."
+  },
+  "username": "Username",
+  "@username": {
+    "description": "The username field in an form."
+  },
+  "usernameHelper": "username",
+  "@usernameHelper": {
+    "description": "The helper text of the username field in an form."
+  },
+  "password": "Password",
+  "@password": {
+    "description": "The password field in an form."
+  },
+  "signIn": "Sign in",
+  "@signIn": {
+    "description": "Label text to sign in."
+  },
+  "signInWith": "Sign in with {socialMedia}",
+  "@signInWith": {
+    "description": "Label text to sign in with the specified [socialMedia] social media account.",
+    "placeholders": {
+      "socialMedia": {
+        "type": "String",
+        "example": "Google"
+      }
+    }
+  },
+  "signInError": "Incorrect username or password.",
+  "@signInError": {
+    "description": "Sign in error message, when the username or the password are missing or wrong."
+  },
+  "signInNoAccount": "Don't have an account?",
+  "@signInNoAccount": {
+    "description": "Prompt for signing up for an account."
+  },
+  "signInRememberMe": "Remember me",
+  "@signInRememberMe": {
+    "description": "Text if the user wants to stay signed in."
+  },
+  "signInOr": "OR",
+  "@signInOr": {
+    "description": "Text when signing in placed between dividers. Used to separate and show the user that alternative sign in methods exist."
+  },
+  "signOut": "Sign out",
+  "@signOut": {
+    "description": "Label text to sign out."
+  },
+  "signUpTitle": "Create your account",
+  "@signUpTitle": {
+    "description": "Title of the sign up screen."
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "Label text to sign up."
+  },
+  "signUpCreateAccount": "Create account",
+  "@signUpCreateAccount": {
+    "description": "Text of the button to create account."
+  },
+  "passwordReset": "Reset your password",
+  "@passwordReset": {
+    "description": "Label text to password reset."
+  },
+  "passwordResetMessage": "Enter your user account's verified email address and we will send you a password reset link.",
+  "@passwordResetMessage": {
+    "description": "Label text to sign up."
+  },
+  "passwordResetHint": "Enter your email address",
+  "@passwordResetHint": {
+    "description": "Hint text of the field, to enter the password reset email address."
+  },
+  "passwordResetButton": "Send password reset email address",
+  "@passwordResetButton": {
+    "description": "Text of the button to send a password reset email."
+  },
+  "passwordResetReturn": "Return to sign in",
+  "@passwordResetReturn": {
+    "description": "Text of the button once a password reset email is sent."
+  },
+  "passwordResetError": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
+  "@passwordResetError": {
+    "description": "Error message when no matching email address is found."
+  },
+  "passwordResetSuccess": "Check your email for a link to reset your password. If it doesn’t appear within a few minutes, check your spam folder.",
+  "@passwordResetSuccess": {
+    "description": "Message when a password reset email is sent."
+  },
+  "validationEmptyField": "Please fill out this field.",
+  "@validationEmptyField": {
+    "description": "Validation message to show when required field is empty. To provide a field name use [validationEmpty]."
+  },
+  "validationEmpty": "Please fill in the {fieldName} field.",
+  "@validationEmpty": {
+    "description": "Validation message to show when the required [fieldName] is empty.",
+    "placeholders": {
+      "fieldName": {
+        "type": "String",
+        "example": "Username"
+      }
+    }
+  },
+  "und": "Undefined",
+  "@und": {
+    "description": "Name of the 'und' locale. The undefined locale."
+  },
+  "en": "English",
+  "@en": {
+    "description": "Name of the 'en' locale."
+  },
+  "es": "Spanish",
+  "@es": {
+    "description": "Name of the 'es' locale."
+  },
+  "colorsRed": "Red",
+  "@colorsRed": {
+    "description": "Color name of red."
+  },
+  "colorsPink": "Pink",
+  "@colorsPink": {
+    "description": "Color name of pink."
+  },
+  "colorsPurple": "Purple",
+  "@colorsPurple": {
+    "description": "Color name of purple."
+  },
+  "colorsDeepPurple": "Deep purple",
+  "@colorsDeepPurple": {
+    "description": "Color name of deep purple."
+  },
+  "colorsIndigo": "Indigo",
+  "@colorsIndigo": {
+    "description": "Color name of indigo."
+  },
+  "colorsBlue": "Blue",
+  "@colorsBlue": {
+    "description": "Color name of blue."
+  },
+  "colorsLightBlue": "Light blue",
+  "@colorsLightBlue": {
+    "description": "Color name of light blue."
+  },
+  "colorsCyan": "Cyan",
+  "@colorsCyan": {
+    "description": "Color name of cyan."
+  },
+  "colorsTeal": "Teal",
+  "@colorsTeal": {
+    "description": "Color name of teal."
+  },
+  "colorsGreen": "Green",
+  "@colorsGreen": {
+    "description": "Color name of green."
+  },
+  "colorsLightGreen": "Light green",
+  "@colorsLightGreen": {
+    "description": "Color name of light green."
+  },
+  "colorsLime": "Lime",
+  "@colorsLime": {
+    "description": "Color name of lime."
+  },
+  "colorsYellow": "Yellow",
+  "@colorsYellow": {
+    "description": "Color name of yellow."
+  },
+  "colorsAmber": "Amber",
+  "@colorsAmber": {
+    "description": "Color name of amber."
+  },
+  "colorsOrange": "Orange",
+  "@colorsOrange": {
+    "description": "Color name of orange."
+  },
+  "colorsDeepOrange": "Deep orange",
+  "@colorsDeepOrange": {
+    "description": "Color name of deep orange."
+  },
+  "colorsBrown": "Brown",
+  "@colorsBrown": {
+    "description": "Color name of brown."
+  },
+  "colorsGrey": "Grey",
+  "@colorsGrey": {
+    "description": "Color name of grey."
+  },
+  "colorsBlueGrey": "Blue grey",
+  "@colorsBlueGrey": {
+    "description": "Color name of blue grey."
   }
 }
