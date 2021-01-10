@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,6 +13,8 @@ typedef FromSnapshot<T> = T Function(DocumentSnapshot snapshot);
 // typedef ToMap<T> = Map<String, dynamic> Function(T entity);
 
 abstract class FirebaseDocument<T> {
+  const FirebaseDocument();
+
   Future<T> data(FromSnapshot<T> entityFromSnapshot);
   Stream<T> stream(FromSnapshot<T> entityFromSnapshot);
   Future<void> update(Map<String, dynamic> data);
@@ -18,6 +22,8 @@ abstract class FirebaseDocument<T> {
 }
 
 abstract class FirebaseCollection<T> {
+  const FirebaseCollection();
+
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot);
   Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot);
   Future<DocumentReference> insert(Map<String, dynamic> data, {String id, bool merge});
@@ -26,6 +32,8 @@ abstract class FirebaseCollection<T> {
 }
 
 abstract class FirebaseAuthentication {
+  const FirebaseAuthentication();
+
   Future<UserCredential> signInAnonymously();
   Future<UserCredential> signIn(String email, String password);
   Future<UserCredential> signUp(String email, String password);
@@ -46,12 +54,12 @@ class Document<T> extends FirebaseDocument<T> {
 
   @override
   Future<T> data(FromSnapshot<T> entityFromSnapshot) {
-    return reference.get().then(entityFromSnapshot);
+    return reference.get()?.then(entityFromSnapshot);
   }
 
   @override
   Stream<T> stream(FromSnapshot<T> entityFromSnapshot) {
-    return reference.snapshots().map(entityFromSnapshot);
+    return reference.snapshots()?.map(entityFromSnapshot);
   }
 
   /// Updates data on the document. The data will be merged with any existing
@@ -89,14 +97,22 @@ class Collection<T> extends FirebaseCollection<T> {
 
   @override
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot, [QueryFunction query]) async {
-    final queryFunction = query(reference) ?? reference;
+    // final queryFunction = query(reference) ?? reference;
+    // final queryFunction = query != null ? query(reference) : reference;
+    final queryFunction = query?.call(reference) ?? reference;
     final snapshots = await queryFunction.get();
     return snapshots.docs.map(entityFromSnapshot).toList();
   }
 
   @override
   Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot, [QueryFunction query]) {
-    final queryFunction = query(reference) ?? reference;
+    final queryFunction = query?.call(reference) ?? reference;
+    // final dataStream =
+    // StreamController<List<T>> streamController;
+    // streamController = StreamController(onListen: () {
+    //   streamController.addStream(dataStream);
+    // });
+    // return streamController.stream;
     return queryFunction.snapshots().map((snapshot) => snapshot.docs.map(entityFromSnapshot).toList());
   }
 
@@ -145,53 +161,38 @@ class Collection<T> extends FirebaseCollection<T> {
   }
 }
 
-@deprecated
-class AuthService extends FirebaseAuthentication {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  @override
-  Future<User> get currentUser => _auth.authStateChanges().first;
-
-  @override
-  Future<UserCredential> signIn(String email, String password) {
-    return _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
-
-  @override
-  Future<UserCredential> signUp(String email, String password) {
-    return _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
-
-  @override
-  Future<void> sendEmailVerification() {
-    // TODO: implement sendEmailVerification
-    throw UnimplementedError();
-  }
-
-  Future<void> signOut() => _auth.signOut();
-
-  @override
-  Future<void> delete() {
-    // TODO: implement delete
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<UserCredential> signInAnonymously() {
-    // TODO: implement signInAnonymously
-    throw UnimplementedError();
-  }
-}
-
 class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String collection;
+
+  /// Notifies about changes to the user's sign-in state (such as sign-in or
+  /// sign-out).
+  Stream<User> get authStateChange => _auth.authStateChanges().distinct();
+
+  /// Notifies about changes to the user's sign-in state (such as sign-in or
+  /// sign-out) and also token refresh events.
+  ///
+  /// It notifies the same state changes as [authStateChange] in addition to
+  /// notifications about token refresh events.
+  Stream<User> get idTokenChanges => _auth.userChanges().distinct();
+
+  /// Notifies about changes to any user updates.
+  ///
+  /// This is a superset of both [authStateChanges] and [idTokenChanges].
+  /// It provides events on all user changes, such as when credentials are
+  /// linked, unlinked and when updates to the user profile are made.
+  ///
+  /// The purpose of this Stream is to for listening to realtime updates to the
+  /// user without manually having to call [reload].
+  Stream<User> get userChanges => _auth.userChanges().distinct();
+
+  /// Returns the current [User] if they are currently signed-in, or `null` if
+  /// not.
+  ///
+  /// You should not use this getter to listen to users state changes, instead
+  /// use [authStateChanges], [idTokenChanges] or [userChanges] to subscribe to
+  /// updates.
+  User get currentUser => _auth.currentUser;
 
   UserData({@required this.collection});
 
@@ -206,7 +207,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
 
   @override
   Stream<T> stream(FromSnapshot<T> entityFromSnapshot) {
-    return _auth.authStateChanges().switchMap((user) {
+    final dataStream = userChanges.switchMap((user) {
       if (user == null) {
         print('User is currently signed out!');
         return Stream<T>.value(null);
@@ -216,7 +217,27 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
       final doc = Document<T>(path: '$collection/${user.uid}');
       return doc.stream(entityFromSnapshot);
     });
+
+    StreamController<T> streamController;
+    streamController = StreamController<T>(onListen: () {
+      dataStream.pipe(streamController);
+    });
+    return streamController.stream;
   }
+
+  //  @override
+  // Stream<T> stream(FromSnapshot<T> entityFromSnapshot) {
+  //   return authStateChange.switchMap((user) {
+  //     if (user == null) {
+  //       print('User is currently signed out!');
+  //       return Stream<T>.value(null);
+  //     }
+
+  //     print('User is signed in!');
+  //     final doc = Document<T>(path: '$collection/${user.uid}');
+  //     return doc.stream(entityFromSnapshot);
+  //   });
+  // }
 
   @override
   Future<void> update(Map<String, dynamic> data) async {
@@ -241,8 +262,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   }
 
   Future<UserCredential> signIn(String email, String password) async {
-    var userCredential;
-
+    UserCredential userCredential;
     try {
       userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -252,10 +272,16 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
       switch (e.code) {
         case 'user-not-found':
           print('No user found for that email.');
-          break;
+          rethrow;
         case 'wrong-password':
           print('Wrong password provided for that user.');
-          break;
+          rethrow;
+        case 'invalid-email':
+          print('The email address is not valid.');
+          rethrow;
+        case 'user-disabled':
+          print('The user corresponding to the given email has been disabled.');
+          rethrow;
       }
     }
 
@@ -263,7 +289,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   }
 
   Future<UserCredential> signUp(String email, String password) async {
-    var userCredential;
+    UserCredential userCredential;
 
     try {
       userCredential = await _auth.createUserWithEmailAndPassword(
@@ -282,14 +308,16 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
         case 'weak-password':
           print('The password provided is too weak.');
           rethrow;
-          break;
+        case 'invalid-email':
+          print('The email address is not valid.');
+          rethrow;
         case 'email-already-in-use':
           print('The account already exists for that email.');
           rethrow;
-          break;
       }
     } on Exception catch (e) {
-      print(e);
+      print('Exception thrown when signing up.\n$e');
+      rethrow;
     }
 
     return userCredential;
@@ -335,73 +363,21 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   }
 
   @override
-  Future<void> signOut() async {
-    _auth.signOut();
-  }
-
-  // Stream<T> get documentStream {
-
-  //   return _auth.authStateChanges().switchMap((user) {
-  //     if (user != null) {
-  //       var doc = Document<T>(path: '$collection/${user.uid}');
-  //       return doc.stream();
-  //     } else {
-  //       return Stream<T>.value(null);
-  //     }
-  //   });
-  // }
-
-  // Future<T> getDocument() async {
-  //   final user = await _auth.currentUser;
-
-  //   if (user != null) {
-  //     final doc = Document<T>(path: '$collection/${user.uid}');
-  //     return doc.data((snapshot) => User);
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-  // Future<void> update(Map data) async {
-  //   final user = await _auth.currentUser;
-  //   final doc = Document<T>(path: '$collection/${user.uid}');
-  //   return doc.update(data);
-  // }
+  Future<void> signOut() => _auth.signOut();
 }
 
-// class UserData<T> {
-//   final FirebaseFirestore _db = FirebaseFirestore.instance;
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-//   final String collection;
+class CustomException implements Exception {
+  const CustomException([this.message = '']);
 
-//   UserData({this.collection});
+  /// A message describing the error.
+  final String message;
 
-//   Stream<T> get documentStream {
-//     return _auth.onAuthStateChanged.switchMap((user) {
-//       if (user != null) {
-//         Document<T> doc = Document<T>(path: '$collection/${user.uid}');
-//         return doc.streamData();
-//       } else {
-//         return Stream<T>.value(null);
-//       }
-//     });
-//   }
-
-//   Future<T> getDocument() async {
-//     FirebaseUser user = await _auth.currentUser();
-
-//     if (user != null) {
-//       Document doc = Document<T>(path: '$collection/${user.uid}');
-//       return doc.getData();
-//     } else {
-//       return null;
-//     }
-//   }
-
-//   Future<void> upsert(Map data) async {
-//     FirebaseUser user = await _auth.currentUser();
-//     Document<T> ref = Document(path: '$collection/${user.uid}');
-//     return ref.upsert(data);
-//   }
-// }
-
+  @override
+  String toString() {
+    var report = "FormatException";
+    if (message != null && "" != message) {
+      report = "$report: $message";
+    }
+    return report;
+  }
+}
