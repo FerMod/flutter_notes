@@ -159,9 +159,27 @@ class CachedColor {
   ///
   /// If the [relativeLuminance] is greater than the [contrastRatio], the
   /// returned color is [Colors.black], otherwise, returns [Colors.white].
+  ///
+  /// See:
+  ///  - [CachedColor.brightness]
   Color contrastingColor() {
+    return brightness() == Brightness.light ? Colors.black : Colors.white;
+  }
+
+  /// Returns the estimated [Brightness] of the color [value]. The returned
+  /// values are [Brightness.light], when it's considered a light color and
+  /// [Brightness.dark], when it's considered a dark color.
+  ///
+  /// If the [relativeLuminance] is greater than the [contrastRatio], the
+  /// returned brightness is [Brightness.light], otherwise, it returns
+  /// [Brightness.dark].
+  ///
+  /// [Brightness.light] means that it will require a dark color to achieve
+  /// readable contrast, and with [Brightness.dark] it will require a light
+  /// color.
+  Brightness brightness() {
     // https://stackoverflow.com/a/3943023/4134376
-    return relativeLuminance > contrastRatio ? Colors.black : Colors.white;
+    return relativeLuminance > contrastRatio ? Brightness.light : Brightness.dark;
   }
 
   @override
