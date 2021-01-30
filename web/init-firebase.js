@@ -10,19 +10,17 @@ var firebaseConfig = {
   storageBucket: "notesproject-ab12c.appspot.com",
   messagingSenderId: "787552385461",
   appId: "1:787552385461:web:900c05d7826287726501fc",
-  //measurementId: "G-PZZ7F85GVT"
+  // measurementId: "G-PZZ7F85GVT"
 };
 
 // Initialize Firebase
 var app = firebase.initializeApp(firebaseConfig);
-//firebase.analytics();
+// firebase.analytics();
 
 
 var db = firebase.firestore();
 if (location.hostname === "localhost") {
-  firebase.auth().useEmulator('http://localhost:9099/');
-
-  //db.useEmulator("localhost", 8080);
+  db.useEmulator("localhost", 8080);
   db.settings({
     cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
   });
