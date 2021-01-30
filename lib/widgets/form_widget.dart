@@ -15,13 +15,6 @@ class FormFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //  return ListView.separated(
-    //   shrinkWrap: true,
-    //   itemBuilder: (context, index) => fields[index],
-    //   itemCount: fields.length,
-    //   separatorBuilder: const SizedBox(height: 16),
-    // );
-
     final _listLength = fields.length * 2;
 
     return Column(
