@@ -43,7 +43,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _lastEdit = widget.note.lastEdit;
 
     _titleEditingController.addListener(_updateLastEdit);
-    _titleEditingController.addListener(_updateLastEdit);
   }
 
   @override
@@ -104,7 +103,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         actions: [
           _createMenuButton(),
         ],
-        elevation: 0, // Prevents the shadow from darkening other colors
+        elevation: 0.0, // Prevents the shadow from darkening other colors
       ),
       body: SafeArea(
         child: CardHero(
