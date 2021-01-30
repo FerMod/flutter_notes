@@ -13,6 +13,7 @@ import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/drawer_menu.dart';
 import '../widgets/loader.dart';
+import '../widgets/user_account.dart';
 import 'edit_note.dart';
 import 'settings.dart';
 import 'sign_in.dart';
@@ -114,40 +115,7 @@ class NotesListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    // return ChangeNotifierProvider(
-    //   create: (context) => NotesListModel()..streamData(), //..loadDelayed(), //loadData(),
-    //   builder: (context, child) => Scaffold(
-    //     appBar: AppBar(
-    //       actions: [
-    //         IconButton(
-    //           icon: const Icon(Icons.settings),
-    //           tooltip: localizations.settings,
-    //           onPressed: () {
-    //             //ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //           },
-    //         ),
-    //       ],
-    //     ),
-    //     drawer: DrawerMenu(),
-    //     body: Selector<NotesListModel, bool>(
-    //       selector: (context, model) => model.isLoading,
-    //       builder: (context, isLoading, child) {
-    //         if (isLoading) {
-    //           return Loader();
-    //         }
-    //         return NoteListWidget(
-    //           onTap: (note) => _editNote(context, note),
-    //           onMenuTap: (note) => _removeNote(context, note),
-    //         );
-    //       },
-    //     ),
-    //     floatingActionButton: FloatingActionButton(
-    //       onPressed: () => _newNote(context),
-    //       tooltip: localizations.addNote,
-    //       child: const Icon(Icons.add),
-    //     ),
-    //   ),
-    // );
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -190,11 +158,14 @@ class NotesListScreen extends StatelessWidget {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _newNote(context),
-        tooltip: localizations.addNote,
-        child: const Icon(Icons.add),
-        heroTag: 'note-new',
+      floatingActionButton: Visibility(
+        child: FloatingActionButton(
+          onPressed: () => _newNote(context),
+          tooltip: localizations.addNote,
+          child: const Icon(Icons.add),
+          heroTag: 'note-new',
+        ),
+        visible: notesListModel.userData.currentUser != null,
       ),
     );
   }
@@ -205,10 +176,13 @@ class _AccountWidget extends StatelessWidget {
     Key key,
     this.userData,
     this.onTap,
-  }) : super(key: key);
+    this.onTapImage,
+  })  : assert(userData != null),
+        super(key: key);
 
   final UserData userData;
   final VoidCallback onTap;
+  final VoidCallback onTapImage;
 
   @override
   Widget build(BuildContext context) {
@@ -217,58 +191,25 @@ class _AccountWidget extends StatelessWidget {
 
     final user = userData.currentUser;
 
-    Widget titleWidget;
-    Widget subtitleWidget;
-    Widget iconWidget;
-
-    if (user == null) {
-      titleWidget = Text(localizations.signIn);
-      iconWidget = const Icon(Icons.account_circle);
+    Widget accountWidget;
+    if (user != null) {
+      accountWidget = UserAccount(
+        imageUrl: user.photoURL,
+        nameText: user.displayName,
+        emailText: user.email,
+      );
     } else {
-      if (user?.displayName != null) {
-        titleWidget = Text(user.displayName);
-      }
-
-      if (user?.email != null) {
-        subtitleWidget = Text(user.email);
-      }
-
-      if (user?.photoURL != null) {
-        iconWidget = CircleAvatar(
-          backgroundColor: Colors.transparent,
-          backgroundImage: NetworkImage(user.photoURL),
-        );
-      } else {
-        iconWidget = const Icon(Icons.account_circle);
-      }
+      accountWidget = ListTile(
+        leading: const Icon(
+          Icons.account_circle,
+          size: UserAccount.alternativeImageIconSize,
+        ),
+        title: Text(localizations.signIn),
+        onTap: onTap,
+      );
     }
 
-    // TODO: finish sign in icon
-    return ListTile(
-      leading: Container(
-        width: 48,
-        height: 48,
-        padding: EdgeInsets.symmetric(vertical: 4.0),
-        alignment: Alignment.center,
-        child: iconWidget,
-      ),
-      title: titleWidget,
-      subtitle: subtitleWidget,
-      dense: false,
-      onTap: onTap
-    );
-    // return ListTile(
-    //   leading: const Icon(Icons.account_circle),
-    //   title: Text(
-    //     localizations.signIn,
-    //     style: TextStyle(fontWeight: FontWeight.bold),
-    //   ),
-    //   subtitle: subtitleWidget ?? Text('test'),
-    //   onTap: widget.onTap,
-    //   minLeadingWidth: 0.0,
-    //   //contentPadding: EdgeInsets.all(0.0),
-    //   // minVerticalPadding: 0.0,
-    // );
+    return accountWidget;
   }
 }
 
@@ -360,9 +301,9 @@ class NoteListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final notesList = Provider.of<NotesListModel>(context);
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
+
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: Scrollbar(
