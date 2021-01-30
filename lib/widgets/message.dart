@@ -8,8 +8,6 @@ class MessageWidget extends StatelessWidget {
   /// `decoration: BoxDecoration(color: color)`.
   const MessageWidget({
     Key key,
-    // this.visible = false,
-    // this.onVisibilityChange,
     this.leading,
     this.title,
     this.contentTextStyle,
@@ -32,20 +30,6 @@ class MessageWidget extends StatelessWidget {
           'To provide both, use "decoration: BoxDecoration(color: color)".',
         ),
         super(key: key);
-
-  /// Switches between showing [MessageWidget] or hiding it.
-  // final bool visible;
-
-  /// Called when the visibility of the [MessageWidget] should change.
-  ///
-  /// The [MessageWidget] passes the new value to the callback but does not
-  /// actually change state until the parent widget rebuilds the [MessageWidget]
-  /// with the new value.
-  ///
-  /// The callback provided to [onVisibilityChange] should update the state of
-  /// the parent [StatefulWidget] using the [State.setState] method, so that the
-  /// parent gets rebuilt.
-  // final ValueChanged<bool> onVisibilityChange;
 
   /// A widget to display before the title.
   ///
@@ -182,14 +166,8 @@ class MessageWidget extends StatelessWidget {
     return Colors.transparent;
   }
 
-  // void _handleOnVisibilityChange() {
-  //   onVisibilityChange?.call(false);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    //if (!visible) return SizedBox.shrink();
-
     final theme = Theme.of(context);
     final bannerTheme = MaterialBannerTheme.of(context);
 
@@ -221,14 +199,7 @@ class MessageWidget extends StatelessWidget {
       layoutBehavior: ButtonBarLayoutBehavior.constrained,
       buttonPadding: actionsPadding ?? _defaultActionsPadding,
       buttonHeight: minActionsHeight,
-      children: [
-        // if (actions?.isEmpty ?? true)
-        //   CloseButton(
-        //     color: _iconColor(theme),
-        //     onPressed: _handleOnVisibilityChange,
-        //   ),
-        ...?actions,
-      ],
+      children: actions ?? const [],
     );
 
     final resolvedContentPadding = contentPadding ?? bannerTheme.padding ?? _defaultContentPadding;
