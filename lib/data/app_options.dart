@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
@@ -18,10 +20,27 @@ class AppOptions {
     this.platform,
   }) : _locale = locale;
 
+  /// Creates the settings used in the app from a Json string .
+  factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
+
+  /// Creates the settings used in the app from a map.
+  factory AppOptions.fromMap(Map<String, dynamic> map) {
+    return AppOptions(
+      themeMode: map['themeMode'],
+      locale: map['locale'],
+      platform: map['platform'],
+    );
+  }
+
+  /// Describes which theme will be used.
   final ThemeMode themeMode;
+
+  /// The platform that user interaction should adapt to target.
   final TargetPlatform platform;
-  final Locale _locale;
+
+  /// An identifier used to select a user's language and formatting preferences.
   Locale get locale => _locale ?? deviceLocale;
+  final Locale _locale;
 
   /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
   /// If the theme is dark, returns light; if the theme is light, returns dark.
@@ -64,24 +83,38 @@ class AppOptions {
     return ModelBinding.of<AppOptions>(context);
   }
 
-  static void update(BuildContext context, AppOptions newModel) {
-    ModelBinding.update<AppOptions>(context, newModel);
+  /// Update the [AppOptions] with the new given [model] parameter, and notifies
+  /// that the internal state of this object has changed.
+  static void update(BuildContext context, AppOptions model) {
+    ModelBinding.update<AppOptions>(context, model);
   }
 
+  /// Update the [AppOptions] with the new given fields parameters, and notifies
+  /// that the internal state of this object has changed.
   static void updateField(
     BuildContext context, {
     ThemeMode themeMode,
     Locale locale,
     TargetPlatform platform,
   }) {
-    AppOptions.update(
-      context,
-      AppOptions.of(context).copyWith(
-        themeMode: themeMode,
-        locale: locale,
-        platform: platform,
-      ),
+    final objectCopy = AppOptions.of(context).copyWith(
+      themeMode: themeMode,
+      locale: locale,
+      platform: platform,
     );
+    AppOptions.update(context, objectCopy);
+  }
+
+  /// Returns a Json string of this class.
+  String toJson() => json.encode(toMap());
+
+  /// Converts this class to a [Map].
+  Map<String, dynamic> toMap() {
+    return {
+      'themeMode': themeMode,
+      'locale': locale,
+      'platform': platform,
+    };
   }
 
   @override
@@ -104,5 +137,5 @@ class AppOptions {
       );
 
   @override
-  String toString() => 'AppOptions(themeMode: $themeMode, locale: $locale, platform: $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, locale: $_locale, platform: $platform)';
 }
