@@ -158,7 +158,7 @@ class NotesListScreen extends StatelessWidget {
         titleSpacing: 0.0,
         actions: [
           _SettingsButton(
-            onPressed: () => _navigate(context, Settings()),
+            onPressed: () => _navigate(context, SettingsScreen()),
           ),
         ],
       ),

@@ -5,8 +5,8 @@ import '../data/app_options.dart';
 import '../extensions/locale_name.dart';
 import '../widgets/setting_widget.dart';
 
-class Settings extends StatelessWidget {
-  const Settings({Key key}) : super(key: key);
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({Key key}) : super(key: key);
 
   void _navigate(BuildContext context, Widget widget) {
     Navigator.of(context).push(
