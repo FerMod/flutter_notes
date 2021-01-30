@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:ui';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 import 'firebase_service.dart';
 import 'models/note_model.dart';
@@ -23,7 +21,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   final Collection<NoteModel> collection = Collection<NoteModel>(path: 'notes');
   final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
 
-  static StreamController<List<NoteModel>> _controller; // = StreamController<List<NoteModel>>.broadcast();
+  StreamController<List<NoteModel>> _controller; // = StreamController<List<NoteModel>>.broadcast();
 
   NotesListModel({List<NoteModel> notes}) : _notes = notes ?? [] {
     //_controller.stream.pipe(streamConsumer)
