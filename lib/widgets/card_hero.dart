@@ -6,9 +6,10 @@ class CardHero extends StatelessWidget {
     Key key,
     this.tag,
     this.shape,
-    // this.decoration,
     this.elevation = 8.0,
     this.margin,
+    this.decoration,
+    this.width = 5.0,
     this.color,
     this.child,
     this.onTap,
@@ -29,7 +30,29 @@ class CardHero extends StatelessWidget {
   /// with a circular corner radius of 4.0.
   final ShapeBorder shape;
 
-  // final Decoration decoration;
+  /// The decoration to paint behind the [child].
+  ///
+  /// If this property is null then as the default decoration is:
+  ///
+  /// ```dart
+  /// Border(
+  ///   top: Divider.createBorderSide(
+  ///     context,
+  ///     color: color,
+  ///     width: width,
+  ///   ),
+  /// )
+  /// ```
+  /// See:
+  ///  - [width] to change the border width.
+  ///  - [color] to change the border color.
+  final Decoration decoration;
+
+  /// The width of the the default [decoration] border.
+  final double width;
+
+  /// The color of the default [decoration] border.
+  final Color color;
 
   /// The z-coordinate at which to place this card. This controls the size of
   /// the shadow below the card.
@@ -48,9 +71,6 @@ class CardHero extends StatelessWidget {
   /// [ThemeData.cardTheme] is used. If that's null, the default margin is 4.0
   /// logical pixels on all sides: `EdgeInsets.all(4.0)`.
   final EdgeInsetsGeometry margin;
-
-  /// The color of this side of the border.
-  final Color color;
 
   /// The widget below this widget in the tree.
   final Widget child;
@@ -76,11 +96,16 @@ class CardHero extends StatelessWidget {
           onTap: onTap,
           onLongPress: onLongPress,
           child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: color, width: 5.0),
-              ),
-            ),
+            decoration: decoration ??
+                BoxDecoration(
+                  border: Border(
+                    top: Divider.createBorderSide(
+                      context,
+                      color: color,
+                      width: width,
+                    ),
+                  ),
+                ),
             child: child,
           ),
         ),
