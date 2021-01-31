@@ -73,7 +73,7 @@ void main() {
       final globalKey = GlobalKey(debugLabel: 'Test Key');
       await tester.pumpWidget(Container(key: globalKey));
 
-      expect(ModelBinding.of<TestModel>(globalKey.currentContext), isNull);
+      expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext), isNull);
     });
 
     /*
@@ -170,6 +170,20 @@ void main() {
 
       expect(model, equals(ModelBinding.of<Object>(globalKey.currentContext)));
     });
+
+    testWidgets('throws when no model exist', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
+      await tester.pumpWidget(Container(key: globalKey));
+
+      expect(
+        () => ModelBinding.of<TestModel>(globalKey.currentContext),
+        throwsA(isAssertionError.having(
+          (e) => e.message,
+          'message',
+          contains('No ModelBinding<$TestModel> widget found.'),
+        )),
+      );
+    });
   });
 
   group('ModelBinding.update', () {
@@ -225,7 +239,7 @@ void main() {
         throwsA(isAssertionError.having(
           (e) => e.message,
           'message',
-          contains('ancestor was not found'),
+          contains('No ModelBinding<$TestModel> widget found.'),
         )),
       );
     });
