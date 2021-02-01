@@ -125,21 +125,41 @@
   "@changeColor": {
     "description": "Change color of the note."
   },
+  "email": "Email",
+  "@email": {
+    "description": "Label for a field for the user to input their email."
+  },
+  "emailConfirm": "Corfirm email",
+  "@emailConfirm": {
+    "description": "Label for a field for the user to confirm their email."
+  },
   "username": "Username",
   "@username": {
-    "description": "The username field in an form."
+    "description": "Label for a field for the user to input their username."
   },
   "usernameHelper": "username",
   "@usernameHelper": {
     "description": "The helper text of the username field in an form."
   },
+  "displayName": "Display name",
+  "@displayName": {
+    "description": "Label for a field for the user to input their display name."
+  },
   "password": "Password",
   "@password": {
     "description": "The password field in an form."
   },
+  "passwordConfirm": "Confirm password",
+  "@passwordConfirm": {
+    "description": "The password confirmation field in an form."
+  },
   "signIn": "Sign in",
   "@signIn": {
     "description": "Label text to sign in."
+  },
+  "signInTitle": "Sign in",
+  "@signInTitle": {
+    "description": "Title of the sign in screen."
   },
   "signInWith": "Sign in with {socialMedia}",
   "@signInWith": {
@@ -183,6 +203,10 @@
   "@signUpCreateAccount": {
     "description": "Text of the button to create account."
   },
+  "signUpHaveAccount": "Already have an account?",
+  "@signUpHaveAccount": {
+    "description": "Prompt for signing in with an existing account."
+  },
   "passwordReset": "Reset your password",
   "@passwordReset": {
     "description": "Label text to password reset."
@@ -211,7 +235,7 @@
   "@passwordResetSuccess": {
     "description": "Message when a password reset email is sent."
   },
-  "validationEmptyField": "Please fill out this field.",
+  "validationEmptyField": "Please fill in this field.",
   "@validationEmptyField": {
     "description": "Validation message to show when required field is empty. To provide a field name use [validationEmpty]."
   },
@@ -224,6 +248,50 @@
         "example": "Username"
       }
     }
+  },
+  "validationNotMatchingField": "Value do not match.",
+  "@validationNotMatchingField": {
+    "description": "Validation message to show when a field does not match with the value of other field. To provide a field name use [validationMatch]."
+  },
+  "validationNotMatching": "Please enter the same value in both {fieldName} fields.",
+  "@validationNotMatching": {
+    "description": "Validation message to show when a field value does not match with the value of the other [fieldName] field.",
+    "placeholders": {
+      "fieldName": {
+        "type": "String",
+        "example": "Password"
+      }
+    }
+  },
+  "validationNotSame": "Please enter the same {valueDescription} in both {fieldName} fields.",
+  "@validationNotSame": {
+    "description": "Validation message to show when a field value does not match with the value of the other [fieldName] field.",
+    "placeholders": {
+      "valueDescription": {
+        "type": "String",
+        "example": "address"
+      },
+      "fieldName": {
+        "type": "String",
+        "example": "email address"
+      }
+    }
+  },
+  "errorWeakPassword": "The password is too weak.",
+  "@errorWeakPassword": {
+    "description": "Message text to show when a the introduced password is weak."
+  },
+  "errorInvalidEmail": "Please enter a valid email address.",
+  "@errorInvalidEmail": {
+    "description": "Message text to show when a the introduced email has not a valid format."
+  },
+  "errorEmailAlreadyInUse": "The email is already in use by another account.",
+  "@errorEmailAlreadyInUse": {
+    "description": "Message text to show when a the introduced email is already in use by another account."
+  },
+  "errorUnknown": "An unknown error happened.",
+  "@errorUnknown": {
+    "description": "Message text to show when an unknown error happens."
   },
   "und": "Undefined",
   "@und": {
