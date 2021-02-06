@@ -1,5 +1,4 @@
 import 'dart:developer' as developer;
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,27 +9,38 @@ import '../data/firebase/auth_exceptions.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
 import '../widgets/checkbox_field.dart';
-import '../widgets/drawer_menu.dart';
-import '../widgets/message.dart';
+import '../widgets/form_message.dart';
+import '../widgets/form_widget.dart';
 import 'notes_list.dart';
+import 'sign_form.dart';
 import 'sign_up.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends StatelessWidget {
   const SignInScreen({Key key}) : super(key: key);
 
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return SignFormScreen(
+      title: Text(localizations.signIn),
+      builder: (context) => _SignInForm(),
+    );
+  }
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInForm extends StatefulWidget {
+  const _SignInForm({Key key}) : super(key: key);
+
+  @override
+  _SignInFormState createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<_SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   final _userData = UserData<UserModel>(collection: 'users');
-
-  bool _isMessageVisible;
-  String _message;
 
   @override
   void initState() {
@@ -39,10 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
     _emailController.text = 'test@email.com';
     //_emailController.text = 'a';
     _passwordController.text = 'password123';
-
     /////////////////////////
-
-    _isMessageVisible = false;
   }
 
   @override
@@ -61,11 +68,11 @@ class _SignInScreenState extends State<SignInScreen> {
       developer.log('$credential');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName('/notes'),
+        ModalRoute.withName('/notes'), // TODO: Improve routes
       );
     } on AuthException catch (e) {
       print('$e');
-      _showMessage(true, e.toString());
+      Message.show(context, message: e.message);
     }
   }
 
@@ -75,111 +82,43 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _showMessage(bool isVisible, [String message]) {
-    setState(() {
-      _message = message;
-      _isMessageVisible = isVisible;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    final isWeb = kIsWeb;
-
-    BoxConstraints constraints;
-    if (isWeb) {
-      final textScaleFactor = MediaQuery.textScaleFactorOf(context);
-      final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
-      constraints = BoxConstraints(maxWidth: desktopMaxWidth);
-    }
-
-    Widget messageWidget;
-    if (_isMessageVisible) {
-      messageWidget = Card(
-        clipBehavior: Clip.antiAlias,
-        margin: EdgeInsets.all(_isMessageVisible ? 8.0 : 0.0),
-        child: MessageWidget(
-          // visible: _isMessageVisible,
-          margin: EdgeInsets.zero,
-          leading: const Icon(Icons.warning_rounded),
-          title: Text(localizations.signInError),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 2.0,
-              color: theme.colorScheme.error,
+    return Form(
+      key: _formKey,
+      child: Column(
+        //mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
+        children: [
+          Text(
+            localizations.signIn,
+            style: theme.textTheme.headline4,
+          ),
+          Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _BodyWidget(
+                emailController: _emailController,
+                passwordController: _passwordController,
+                onSignIn: _handleOnSignIn,
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              child: Text(localizations.closeButton),
-              onPressed: () => _showMessage(false),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return GestureDetector(
-      onTap: () {
-        final currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(localizations.signIn),
-        ),
-        drawer: DrawerMenu(),
-        body: SafeArea(
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Center(
-                  child: Container(
-                    constraints: constraints,
-                    child: Column(
-                      //mainAxisAlignment: isWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
-                      children: [
-                        if (_isMessageVisible) messageWidget,
-                        Text(
-                          localizations.signIn,
-                          style: theme.textTheme.headline4,
-                        ),
-                        Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: _BodyWidget(
-                              emailController: _emailController,
-                              passwordController: _passwordController,
-                              onSignIn: _handleOnSignIn,
-                            ),
-                          ),
-                        ),
-                        Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              child: _NoAccount(
-                                onPressed: _handleOnSignUp,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: _NoAccount(
+                  onPressed: _handleOnSignUp,
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -198,122 +137,53 @@ class _BodyWidget extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
-  @override
-  Widget build(BuildContext context) {
+  Validation<String> _validateNotEmpty(BuildContext context, String labelText) {
     final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-
-    final listViewChildren = [
-      _EmailInput(
-        icon: Icon(Icons.person, color: theme.iconTheme.color),
-        emailController: emailController,
-      ),
-      const SizedBox(height: 16.0),
-      _PasswordInput(
-        icon: Icon(Icons.lock, color: theme.iconTheme.color),
-        passwordController: passwordController,
-      ),
-      const SizedBox(height: 16.0),
-      _SignInButton(
-        onPressed: onSignIn,
-      ),
-      const SizedBox(height: 16.0),
-      Stack(
-        alignment: Alignment.center,
-        children: [
-          Divider(thickness: 2.0),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(localizations.signInOr),
-            color: theme.cardColor,
-          ),
-        ],
-      ),
-      // ...signInMethods(context),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: listViewChildren,
-    );
-    return ListView.separated(
-      shrinkWrap: true,
-      itemBuilder: (context, index) => listViewChildren[index],
-      itemCount: listViewChildren.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+    return Validation(
+      errorMessage: localizations.validationEmpty(labelText),
+      test: (value) => value.isEmpty,
     );
   }
-}
-
-class _EmailInput extends StatelessWidget {
-  const _EmailInput({
-    Key key,
-    this.icon,
-    this.emailController,
-  }) : super(key: key);
-
-  final Icon icon;
-  final TextEditingController emailController;
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    return TextFormField(
+
+    final usernameInput = TextFormInput(
+      labelText: localizations.email,
+      icon: Icon(Icons.person, color: theme.iconTheme.color),
       controller: emailController,
-      validator: (value) {
-        if (value.isEmpty) {
-          return localizations.validationEmpty(localizations.email);
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        // enabledBorder: InputBorder.none,
-        // focusedBorder: InputBorder.none,
-        icon: icon,
-        labelText: localizations.email,
-        // labelStyle: TextStyle(color: theme.hintColor),
-        contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        // suffixIcon: const Icon(Icons.check_circle),
-        filled: true,
-      ),
+      validations: [
+        _validateNotEmpty(context, localizations.username),
+      ],
     );
-  }
-}
 
-class _PasswordInput extends StatelessWidget {
-  const _PasswordInput({
-    Key key,
-    this.icon,
-    this.passwordController,
-  }) : super(key: key);
-
-  final Icon icon;
-  final TextEditingController passwordController;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    return TextFormField(
-      controller: passwordController,
+    final passwordInput = TextFormInput(
+      labelText: localizations.email,
+      icon: Icon(Icons.lock, color: theme.iconTheme.color),
       obscureText: true,
-      validator: (value) {
-        if (value.isEmpty) {
-          return localizations.validationEmpty(localizations.password);
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        // enabledBorder: InputBorder.none,
-        // focusedBorder: InputBorder.none,
-        icon: icon,
-        labelText: localizations.password,
-        // labelStyle: TextStyle(color: theme.hintColor),
-        contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        filled: true,
-      ),
+      controller: passwordController,
+      validations: [
+        _validateNotEmpty(context, localizations.password),
+      ],
     );
+
+    final signUpButton = _SignInButton(onPressed: onSignIn);
+
+    final divider = DividerText(
+      text: Text(localizations.signInOr),
+      color: theme.cardColor,
+    );
+
+    final formFields = [
+      usernameInput,
+      passwordInput,
+      signUpButton,
+      divider,
+      //...signInMethods,
+    ];
+    return FormFields(fields: formFields);
   }
 }
 

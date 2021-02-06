@@ -8,20 +8,33 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../data/firebase/auth_exceptions.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
-import '../widgets/drawer_menu.dart';
+import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
-import '../widgets/message.dart';
 import 'notes_list.dart';
+import 'sign_form.dart';
 import 'sign_in.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({Key key}) : super(key: key);
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return SignFormScreen(
+      title: Text(localizations.signUp),
+      builder: (context) => _SignUpForm(),
+    );
+  }
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpForm extends StatefulWidget {
+  const _SignUpForm({Key key}) : super(key: key);
+
+  @override
+  _SignUpFormState createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<_SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -29,9 +42,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
 
   final _userData = UserData<UserModel>(collection: 'users');
-
-  bool _isMessageVisible;
-  String _message;
 
   @override
   void initState() {
@@ -42,9 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.text = 'new_usermail.co4m';
     _passwordController.text = 'password123';
     _confirmPasswordController.text = 'password123';
-    //
-
-    _isMessageVisible = false;
+    ////////////
   }
 
   @override
@@ -67,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       developer.log('$credential');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName('/notes'),
+        ModalRoute.withName('/notes'), // TODO: Improve routes
       );
     } on AuthException catch (e) {
       //var errorMessage;
@@ -87,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       //     break;
       // }
       developer.log(e.toString());
-      _showMessage(true, e.message);
+      Message.show(context, message: e.message);
     }
   }
 
@@ -97,96 +105,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ));
   }
 
-  void _showMessage(bool isVisible, [String message]) {
-    if (_isMessageVisible != isVisible || _message != message) {
-      setState(() {
-        _message = message;
-        _isMessageVisible = isVisible;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    final isWeb = kIsWeb;
-
-    BoxConstraints constraints;
-    if (isWeb) {
-      final textScaleFactor = MediaQuery.textScaleFactorOf(context);
-      final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
-      constraints = BoxConstraints(maxWidth: desktopMaxWidth);
-    }
-
-    Widget messageWidget;
-    if (_isMessageVisible) {
-      messageWidget = Card(
-        margin: EdgeInsets.all((isWeb && _isMessageVisible) ? 8.0 : 0.0),
-        child: MessageWidget(
-          // visible: _isMessageVisible,
-          leading: const Icon(Icons.warning_rounded),
-          title: Text(_message ?? localizations.signInError),
-          actions: [
-            TextButton(
-              child: Text(localizations.closeButton),
-              onPressed: () => _showMessage(false),
-            )
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.signUp),
-      ),
-      drawer: DrawerMenu(),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Center(
-              child: Container(
-                constraints: constraints,
-                child: Column(
-                  //mainAxisAlignment: isWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
-                  children: [
-                    if (isWeb)
-                      Text(
-                        localizations.signUpTitle,
-                        style: theme.textTheme.headline4,
-                      ),
-                    if (_isMessageVisible) messageWidget,
-                    Card(
-                      margin: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: _BodyWidget(
-                          usernameController: _usernameController,
-                          emailController: _emailController,
-                          passwordController: _passwordController,
-                          confirmPasswordController: _confirmPasswordController,
-                          onSignUp: _handleOnSignUp,
-                        ),
-                      ),
-                    ),
-                    Card(
-                      margin: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _HaveAccount(
-                          onPressed: _handleOnSignIn,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        //mainAxisAlignment: kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.start,
+        children: [
+          Text(
+            localizations.signUpTitle,
+            style: theme.textTheme.headline4,
+          ),
+          Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _BodyWidget(
+                usernameController: _usernameController,
+                emailController: _emailController,
+                passwordController: _passwordController,
+                confirmPasswordController: _confirmPasswordController,
+                onSignUp: _handleOnSignUp,
               ),
             ),
           ),
-        ),
+          Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _HaveAccount(
+                onPressed: _handleOnSignIn,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -276,29 +231,17 @@ class _BodyWidget extends StatelessWidget {
       color: theme.cardColor,
     );
 
-    return FormFields(
-      fields: [
-        usernameInput,
-        emailInput,
-        passwordInput,
-        confirmPasswordInput,
-        signUpButton,
-        divider,
-        //...signInMethods
-      ],
-    );
-    // return ListView.separated(
-    //   shrinkWrap: true,
-    //   itemBuilder: (context, index) => formList[index],
-    //   itemCount: formList.length,
-    //   separatorBuilder: (context, index) => const SizedBox(height: 26),
-    // );
-    // return ListView.separated(
-    //   shrinkWrap: true,
-    //   itemBuilder: (context, index) => listViewChildren[index],
-    //   itemCount: listViewChildren.length,
-    //   separatorBuilder: (context, index) => const SizedBox(height: 16),
-    // );
+    final formFields = [
+      usernameInput,
+      emailInput,
+      passwordInput,
+      confirmPasswordInput,
+      signUpButton,
+      divider,
+      //...signInMethods,
+    ];
+
+    return FormFields(fields: formFields);
   }
 }
 
@@ -366,48 +309,3 @@ class _SignUpButton extends StatelessWidget {
     );
   }
 }
-/*
-final listViewChildren = [
-  _TextFormInput(
-    labelText: localizations.username,
-    icon: Icon(Icons.person, color: theme.iconTheme.color),
-    controller: usernameController,
-    validator: (value) => _validateNotEmpty(context, value, localizations.username),
-  ),
-  _TextFormInput(
-    labelText: localizations.email,
-    icon: Icon(Icons.email, color: theme.iconTheme.color),
-    controller: emailController,
-    validator: (value) => _validateNotEmpty(context, value, localizations.email),
-  ),
-  _TextFormInput(
-    labelText: localizations.password,
-    icon: Icon(Icons.lock, color: theme.iconTheme.color),
-    controller: passwordController,
-    validator: (value) => _validateNotEmpty(context, value, localizations.password),
-    obscureText: true,
-  ),
-  _TextFormInput(
-    labelText: localizations.passwordConfirm,
-    icon: const Icon(null),
-    controller: confirmPasswordController,
-    validator: (value) => _validateConfirmValue(context, value, passwordController.text, localizations.passwordConfirm),
-    obscureText: true,
-  ),
-  _SignUpButton(
-    onPressed: onSignUp,
-  ),
-  Stack(
-    alignment: Alignment.center,
-    children: [
-      Divider(thickness: 2.0),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(localizations.signInOr),
-        color: theme.cardColor,
-      ),
-    ],
-  ),
-  //...signInMethods
-];
-*/
