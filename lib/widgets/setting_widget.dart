@@ -40,34 +40,42 @@ class SettingListTile extends StatelessWidget {
   const SettingListTile({
     Key key,
     @required this.title,
-    this.subtitle,
     this.icon,
+    this.subtitle,
+    this.trailing,
     this.onTap,
   }) : super(key: key);
 
+  final Widget icon;
   final Widget title;
   final Widget subtitle;
-  final Icon icon;
+  final Widget trailing;
   final GestureTapCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return ListTile(
-          leading: icon,
-          title: title,
-          subtitle: subtitle,
-          trailing: Icon(Icons.chevron_right, color: theme.dividerColor),
-          onTap: onTap,
-        );
-      },
+
+    return ListTile(
+      leading: icon,
+      title: title,
+      subtitle: subtitle,
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          trailing ??
+              Icon(
+                Icons.chevron_right,
+                color: theme.textTheme.caption.color,
+              ),
+        ],
+      ),
+      onTap: onTap,
     );
   }
 }
 
-class SettingRadioListItems<T> extends StatefulWidget {
+class SettingRadioListItems<T> extends StatelessWidget {
   SettingRadioListItems({
     Key key,
     @required this.selectedOption,
@@ -75,61 +83,62 @@ class SettingRadioListItems<T> extends StatefulWidget {
     @required this.onChanged,
   }) : super(key: key);
 
+  /// The currently selected value.
   final T selectedOption;
+
+  /// The map of options value and [DisplayOption] pairs. The map keys,
+  /// represent the values of the available options. The map values, are the
+  /// [DisplayOption] associated to given option.
+  ///
+  /// A radio list tile button is considered selected if its [selectedOption]
+  /// matches a key in the [optionsMap].
   final Map<T, DisplayOption> optionsMap;
 
+  /// Called when the user selects a radio list item.
+  ///
+  /// The widget passes [value] as a parameter to this callback. The widget does
+  /// not change state until the parent widget rebuilds the radio list items
+  /// with the new [selectedOption].
+  ///
+  /// If `null`, the radio list items will be displayed as disabled.
+  ///
+  /// The provided callback will not be invoked if this radio button is already
+  /// selected.
+  ///
+  /// The callback provided to [onChanged] should update the state of the parent
+  /// [StatefulWidget] using the [State.setState] method, so that the parent
+  /// gets rebuilt. For example:
+  ///
+  /// ```dart
+  /// SettingRadioListItems<int>(
+  ///   selectedOption: _amount,
+  ///   optionsMap: _amountOptions,
+  ///   onChanged: (value) {
+  ///     setState(() {
+  ///       _amount = value;
+  ///     });
+  ///   },
+  /// )
+  /// ```
   final ValueChanged<T> onChanged;
 
   @override
-  _SettingRadioListItemsState createState() => _SettingRadioListItemsState<T>();
-}
-
-class _SettingRadioListItemsState<T> extends State<SettingRadioListItems<T>> {
-  T _selectedOption;
-
-  // For ease of use. Correspond to the keys and values of `widget.optionsMap`.
-  Iterable<T> _options;
-  Iterable<DisplayOption> _displayOptions;
-
-  @override
-  void initState() {
-    super.initState();
-    _options = widget.optionsMap.keys;
-    _displayOptions = widget.optionsMap.values;
-    _selectedOption = widget.selectedOption;
-  }
-
-  @override
-  void didUpdateWidget(SettingRadioListItems<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.optionsMap != oldWidget.optionsMap) {
-      _options = widget.optionsMap.keys;
-      _displayOptions = widget.optionsMap.values;
-    }
-  }
-
-  void _handleOnChanged(T value) {
-    setState(() {
-      _selectedOption = value;
-    });
-    // Notify of the value change
-    widget.onChanged(value);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final _options = optionsMap.keys;
+    final _displayOptions = optionsMap.values;
+
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: _options.length,
+      itemCount: optionsMap.length,
       itemBuilder: (context, index) {
         final value = _options.elementAt(index);
         final displayOption = _displayOptions.elementAt(index);
         return RadioListTile<T>(
           value: value,
-          groupValue: _selectedOption,
+          groupValue: selectedOption,
           title: displayOption.title,
           subtitle: displayOption.subtitle,
-          onChanged: _handleOnChanged,
+          onChanged: onChanged,
         );
       },
     );
