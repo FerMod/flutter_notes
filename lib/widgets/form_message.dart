@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'message.dart';
 
 @immutable
-class MessageData {
+class MessageData with Diagnosticable {
   const MessageData({
     this.isVisible = false,
     this.message,
@@ -26,6 +26,27 @@ class MessageData {
       isVisible: isVisible ?? this.isVisible,
       message: message ?? this.message,
       actions: actions ?? this.actions,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    return other is MessageData
+        && other.isVisible == isVisible
+        && other.message == message
+        && other.actions == actions;
+  }
+
+  @override
+  int get hashCode {
+    return hashValues(
+      isVisible,
+      message,
+      actions,
     );
   }
 }
@@ -232,6 +253,7 @@ class FormMessageWidget extends StatelessWidget {
   }
 }
 
+@deprecated
 class FormMessage extends StatelessWidget {
   const FormMessage({
     Key key,

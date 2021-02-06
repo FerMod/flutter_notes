@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
 class FormFields extends StatelessWidget {
-  final List<Widget> fields;
-
   const FormFields({
     Key key,
     this.fields = const <Widget>[],
   }) : super(key: key);
 
+  final List<Widget> fields;
+
   Widget _buildItem(int index) {
     final itemIndex = index ~/ 2;
-    return index.isEven ? fields[itemIndex] : const SizedBox(height: 16);
+    return index.isEven ? fields[itemIndex] : const SizedBox(height: 16.0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _listLength = fields.length * 2;
+    final _listLength = fields.length * 2 - 1;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -20,9 +20,7 @@ class MessageWidget extends StatelessWidget {
     this.margin,
     this.minActionsHeight = 52.0,
     this.forceActionsBelow = false,
-  })  :
-        // assert(visible != null),
-        assert(actions != null),
+  })  : assert(actions != null),
         assert(forceActionsBelow != null),
         assert(
           color == null || decoration == null,
