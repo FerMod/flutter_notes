@@ -107,6 +107,7 @@ class _AccountDetails extends StatefulWidget {
     this.accountPicture,
     @required this.accountName,
     @required this.accountEmail,
+    this.child,
     this.onTap,
     @required this.isOpen,
     this.showArrow = false,
@@ -116,6 +117,7 @@ class _AccountDetails extends StatefulWidget {
   final Widget accountPicture;
   final Widget accountName;
   final Widget accountEmail;
+  final Widget child;
   final VoidCallback onTap;
   final bool isOpen;
   final bool showArrow;
