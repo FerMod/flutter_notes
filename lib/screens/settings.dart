@@ -2,21 +2,71 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/app_options.dart';
+import '../data/firebase_service.dart';
+import '../data/models/user_model.dart';
 import '../extensions/locale_name.dart';
 import '../widgets/setting_widget.dart';
+import '../widgets/user_account.dart';
+import 'sign_in.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key key}) : super(key: key);
 
   void _navigate(BuildContext context, Widget widget) {
     Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => widget),
+    );
+  }
+
+  void _navigateSetting(BuildContext context, Widget widget) {
+    Navigator.of(context).push(
       SettingsRouteBuilder(builder: (context) => widget),
+    );
+  }
+
+  Widget _buildAccountSettings(BuildContext context) {
+    final userData = UserData<UserModel>(collection: 'users');
+    final user = userData.currentUser;
+
+    final isSignedIn = user != null;
+
+    Widget iconWidget;
+    Widget titleWidget;
+    Widget subtitleWidget;
+    if (isSignedIn) {
+      iconWidget = UserAvatar(
+        imageUrl: user.photoURL,
+        nameText: user.displayName,
+      );
+      titleWidget = Text(user.displayName);
+      subtitleWidget = Text(user.email);
+    } else {
+      final localizations = AppLocalizations.of(context);
+      iconWidget = const Icon(
+        Icons.account_circle,
+        size: UserAvatar.alternativeImageIconSize,
+      );
+      titleWidget = Text(localizations.settingsAccount);
+    }
+
+    return SettingListTile(
+      icon: iconWidget,
+      title: titleWidget,
+      subtitle: subtitleWidget,
+      onTap: () {
+        if (isSignedIn) {
+          _navigateSetting(context, AccountSettingScreen(userData: userData));
+        } else {
+          _navigate(context, SignInScreen());
+        }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.settingsTitle),
@@ -28,11 +78,7 @@ class SettingsScreen extends StatelessWidget {
             SettingsHeader(
               title: Text(localizations.settingsAccountHeader),
             ),
-            SettingListTile(
-              icon: const Icon(Icons.person),
-              title: Text(localizations.settingsAccount),
-              onTap: () {}, //TODO: Add account settings.
-            ),
+            _buildAccountSettings(context),
             Divider(),
             SettingsHeader(
               title: Text(localizations.settingsAplicationHeader),
@@ -41,17 +87,68 @@ class SettingsScreen extends StatelessWidget {
               icon: const Icon(Icons.translate),
               title: Text(localizations.settingsLanguage),
               onTap: () {
-                _navigate(context, LocalizationSettingScreen());
+                _navigateSetting(context, LocalizationSettingScreen());
               },
             ),
             SettingListTile(
               icon: const Icon(Icons.palette),
               title: Text(localizations.settingsTheme),
               onTap: () {
-                _navigate(context, ThemeModeSettingScreen());
+                _navigateSetting(context, ThemeModeSettingScreen());
               },
             ),
             Placeholder(fallbackHeight: 900),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AccountSettingScreen extends StatelessWidget {
+  const AccountSettingScreen({
+    Key key,
+    this.userData,
+    this.onTap,
+    this.onTapImage,
+  }) : super(key: key);
+
+  final UserData<UserModel> userData;
+
+  final VoidCallback onTap;
+  final VoidCallback onTapImage;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final user = userData.currentUser;
+
+    Widget picture = UserAvatar(
+      imageUrl: user.photoURL,
+      nameText: user.displayName,
+    );
+    Widget name = Text(user.displayName);
+    Widget email = Text(user.email);
+
+    return Scaffold(
+      appBar: AppBar(title: Text(localizations.settingsAccount)),
+      body: Scrollbar(
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              margin: EdgeInsets.zero,
+              currentAccountPicture: picture,
+              accountName: name,
+              accountEmail: email,
+            ),
+            ListTile(
+              leading: const Icon(Icons.login),
+              title: Text(localizations.signOut),
+              onTap: () {
+                userData.signOut();
+                Navigator.popUntil(context, ModalRoute.withName('/'));
+              },
+            ),
           ],
         ),
       ),

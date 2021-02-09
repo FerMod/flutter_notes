@@ -114,13 +114,12 @@ class NotesListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         title: _AccountWidget(
-          onTap: () {},
+          onTap: () => _navigate(context, SignInScreen()),
           userData: notesListModel.userData,
         ),
         titleSpacing: 0.0,
@@ -187,13 +186,12 @@ class _AccountWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
 
     final user = userData.currentUser;
 
     Widget accountWidget;
     if (user != null) {
-      accountWidget = UserAccount(
+      accountWidget = UserAccountListTile(
         imageUrl: user.photoURL,
         nameText: user.displayName,
         emailText: user.email,
@@ -202,7 +200,7 @@ class _AccountWidget extends StatelessWidget {
       accountWidget = ListTile(
         leading: const Icon(
           Icons.account_circle,
-          size: UserAccount.alternativeImageIconSize,
+          size: UserAvatar.alternativeImageIconSize,
         ),
         title: Text(localizations.signIn),
         onTap: onTap,
@@ -302,7 +300,6 @@ class NoteListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
 
     return RefreshIndicator(
       onRefresh: onRefresh,

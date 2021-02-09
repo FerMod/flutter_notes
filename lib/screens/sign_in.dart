@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/routes.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import '../data/firebase/auth_exceptions.dart';
@@ -68,7 +69,7 @@ class _SignInFormState extends State<_SignInForm> {
       developer.log('$credential');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName('/notes'), // TODO: Improve routes
+        ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
     } on AuthException catch (e) {
       print('$e');
