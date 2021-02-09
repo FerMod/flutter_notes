@@ -16,12 +16,4 @@ var firebaseConfig = {
 // Initialize Firebase
 var app = firebase.initializeApp(firebaseConfig);
 // firebase.analytics();
-
-
-var db = firebase.firestore();
-if (location.hostname === "localhost") {
-  db.useEmulator("localhost", 8080);
-  db.settings({
-    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
-  });
-}
+firebase.firestore();
