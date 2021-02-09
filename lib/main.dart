@@ -10,31 +10,34 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'data/app_options.dart';
 import 'globals.dart';
 import 'model_binding.dart';
-import 'screens/home_page.dart';
+import 'routes.dart';
+import 'screens/sign_in.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   _initFirebase();
   runApp(const NotesApp());
 }
 
 Future<void> _initFirebase() async {
-  await Firebase.initializeApp();
-
   if (Global.useFirebaseEmulator) {
     final isAndroid = defaultTargetPlatform == TargetPlatform.android;
-
     // Switch host based on platform.
     final firestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
-    FirebaseFirestore.instance.settings = Settings(
+
+    final settings = Settings(
       host: firestoreHost,
       sslEnabled: false,
       persistenceEnabled: false,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
+    FirebaseFirestore.instance.settings = settings;
 
-    // Only for web
-    // await FirebaseFirestore.instance.enablePersistence();
+    // Only for web platforms
+    if (kIsWeb && settings.persistenceEnabled) {
+      await FirebaseFirestore.instance.enablePersistence();
+    }
   }
 }
 
@@ -89,7 +92,8 @@ class _NotesAppState extends State<NotesApp> {
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
             themeMode: AppOptions.of(context).themeMode,
-            home: HomePage(),
+            home: SignInScreen(), // TODO: Only for testing, change to real home
+            routes: AppRoute.routes,
           );
         },
       ),
