@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'color_toggle_buttons.dart';
+import '../src/cache/cached_color.dart';
 
 /// A material design that identifies the app's user.
 class UserAvatar extends StatelessWidget {
