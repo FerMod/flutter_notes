@@ -5,6 +5,7 @@ import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
 import '../extensions/locale_name.dart';
+import '../routes.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
 import 'sign_in.dart';
@@ -146,7 +147,11 @@ class AccountSettingScreen extends StatelessWidget {
               title: Text(localizations.signOut),
               onTap: () {
                 userData.signOut();
-                Navigator.popUntil(context, ModalRoute.withName('/'));
+                // TODO: Improve route navigation
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoute.notes,
+                  ModalRoute.withName('/'),
+                );
               },
             ),
           ],
