@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - FerMod*
   pull_request:
 jobs:
   test:
@@ -40,12 +39,12 @@ jobs:
       - name: Get packages for the Flutter project
         run: flutter pub get
         working-directory: code
-      - name: Analyze the project's Dart code
-        run: flutter analyze
-        working-directory: code
-      - name: Ensure the Dart code is formatted correctly
-        run: flutter format --set-exit-if-changed --dry-run .
-        working-directory: code
+      # - name: Analyze the project's Dart code
+      #   run: flutter analyze
+      #   working-directory: code
+      # - name: Ensure the Dart code is formatted correctly
+      #   run: flutter format --set-exit-if-changed --dry-run .
+      #   working-directory: code
       - name: Enable build on web
         run: flutter config --enable-web
         working-directory: code
