@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -142,6 +143,12 @@ class CachedColor {
   /// See <https://www.w3.org/TR/WCAG20/#contrast-ratiodef>.
   static double contrastRatio = math.sqrt(1.05 * 0.05) - 0.05;
 
+  /// A view of the cached colors [Map]. This view disallow modifying the map.
+  ///
+  /// The cached map is wrapped around with an [UnmodifiableMapView], that
+  /// forwards all members to the map, except for operations that modify the
+  /// map. Modifying operations throw instead.
+  static UnmodifiableMapView<Color, CachedColor> get cache => UnmodifiableMapView(_cache);
   static final Map<Color, CachedColor> _cache = {};
 
   /// Creates a [CachedColor] instance that caches the color [value].
@@ -183,5 +190,5 @@ class CachedColor {
   }
 
   @override
-  String toString() => "CachedColor(value: $value, relativeLuminance: $_relativeLuminance, contrastRatio: $contrastRatio)";
+  String toString() => "$CachedColor(value: $value, relativeLuminance: $_relativeLuminance, contrastRatio: $contrastRatio)";
 }
