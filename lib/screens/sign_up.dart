@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/firebase/auth_exceptions.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
 import '../routes.dart';
@@ -78,23 +78,7 @@ class _SignUpFormState extends State<_SignUpForm> {
         MaterialPageRoute(builder: (context) => NotesListScreen()),
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
-    } on AuthException catch (e) {
-      //var errorMessage;
-      // switch (e.errorCode) {
-      //   case AuthErrorCode.weakPassword:
-      //     errorMessage = localizations.errorWeakPassword;
-      //     break;
-      //   case AuthErrorCode.invalidEmail:
-      //     errorMessage = localizations.errorInvalidEmail;
-      //     break;
-      //   case AuthErrorCode.emailAlreadyInUse:
-      //     errorMessage = localizations.errorEmailAlreadyInUse;
-      //     break;
-      //   case AuthErrorCode.unknown:
-      //   default:
-      //     errorMessage = localizations.errorUnknown;
-      //     break;
-      // }
+    } on FirebaseAuthException catch (e) {
       developer.log(e.toString());
       Message.show(context, message: e.message);
     }

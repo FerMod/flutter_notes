@@ -1,14 +1,14 @@
 import 'dart:developer' as developer;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/routes.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
-import '../data/firebase/auth_exceptions.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
+import '../routes.dart';
 import '../widgets/checkbox_field.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
@@ -71,8 +71,8 @@ class _SignInFormState extends State<_SignInForm> {
         MaterialPageRoute(builder: (context) => NotesListScreen()),
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
-    } on AuthException catch (e) {
-      print('$e');
+    } on FirebaseAuthException catch (e) {
+      developer.log('$e');
       Message.show(context, message: e.message);
     }
   }

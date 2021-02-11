@@ -269,20 +269,26 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-not-found':
-          print('No user found for that email.');
-          rethrow;
-        case 'wrong-password':
-          print('Wrong password provided for that user.');
-          rethrow;
-        case 'invalid-email':
-          print('The email address is not valid.');
-          rethrow;
-        case 'user-disabled':
-          print('The user corresponding to the given email has been disabled.');
-          rethrow;
-      }
+      developer.log('${e.code}: ${e.message}');
+      // switch (e.code) {
+      //   case 'user-not-found':
+      //     print('No user found for that email.');
+      //     //rethrow;
+      //     break;
+      //   case 'wrong-password':
+      //     print('Wrong password provided for that user.');
+      //     // rethrow;
+      //     break;
+      //   case 'invalid-email':
+      //     print('The email address is not valid.');
+      //     // rethrow;
+      //     break;
+      //   case 'user-disabled':
+      //     print('The user corresponding to the given email has been disabled.');
+      //     // rethrow;
+      //     break;
+      // }
+      rethrow;
     }
 
     return userCredential;
@@ -302,19 +308,23 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
         'name': user.displayName ?? '',
         'image': user.photoURL ?? '',
       }, id: user.uid);
-      return userCredential;
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'weak-password':
-          print('The password provided is too weak.');
-          rethrow;
-        case 'invalid-email':
-          print('The email address is not valid.');
-          rethrow;
-        case 'email-already-in-use':
-          print('The account already exists for that email.');
-          rethrow;
-      }
+      developer.log('${e.code}: ${e.message}');
+      // switch (e.code) {
+      //   case 'weak-password':
+      //     print('The password provided is too weak.');
+      //     // rethrow;
+      //     break;
+      //   case 'invalid-email':
+      //     print('The email address is not valid.');
+      //     // rethrow;
+      //     break;
+      //   case 'email-already-in-use':
+      //     print('The account already exists for that email.');
+      //     // rethrow;
+      //     break;
+      // }
+      rethrow;
     } on Exception catch (e) {
       print('Exception thrown when signing up.\n$e');
       rethrow;
@@ -333,9 +343,11 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
       final col = Collection<T>(path: collection);
       col.delete(user.uid);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        print('The user must reauthenticate before this operation can be executed.');
-      }
+      developer.log('${e.code}: ${e.message}');
+      // if (e.code == 'requires-recent-login') {
+      //   print('The user must reauthenticate before this operation can be executed.');
+      // }
+      rethrow;
     }
   }
 
@@ -364,20 +376,4 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
 
   @override
   Future<void> signOut() => _auth.signOut();
-}
-
-class CustomException implements Exception {
-  const CustomException([this.message = '']);
-
-  /// A message describing the error.
-  final String message;
-
-  @override
-  String toString() {
-    var report = "FormatException";
-    if (message != null && "" != message) {
-      report = "$report: $message";
-    }
-    return report;
-  }
 }
