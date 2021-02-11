@@ -40,6 +40,8 @@ jobs:
           - os: ubuntu-18.04
             target: apk
             path: build/app/outputs/apk/release/
+            env:
+              BUILD_ARGS: --split-per-abi
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
     needs: create-release
@@ -67,9 +69,7 @@ jobs:
         if: startsWith(matrix.target, 'apk')
         uses: actions/setup-java@v1
         with:
-          java-version: "12.x"
-        env:
-          BUILD_ARGS: --split-per-abi
+          java-version: "12.x"        
       - name: Enable desktop support
         run: |
           flutter config --enable-linux-desktop
