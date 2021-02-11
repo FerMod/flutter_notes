@@ -69,7 +69,7 @@ jobs:
         with:
           java-version: "12.x"
         env:
-          BUILD_ARGS: "--split-per-abi"       
+          BUILD_ARGS: "--split-per-abi"
       - name: Enable desktop support
         run: |
           flutter config --enable-linux-desktop
@@ -91,7 +91,7 @@ jobs:
       - name: Build project
         run: |
           flutter create .
-          flutter build -v ${{ matrix.target }} --release ${{ BUILD_ARGS }}
+          flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
         if: startsWith(matrix.target, 'windows')
