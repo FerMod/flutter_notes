@@ -91,6 +91,7 @@ jobs:
       - name: Build project
         run: |
           flutter create .
+          flutter gen-l10n
           flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
