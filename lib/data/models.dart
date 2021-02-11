@@ -175,7 +175,10 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   NoteModel noteById(String id) {
-    return _notes.firstWhere((element) => element.id == id, orElse: () => null);
+    return _notes.firstWhere(
+      (element) => element.id == id,
+      orElse: () => null,
+    );
   }
 
   @override
