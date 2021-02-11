@@ -41,16 +41,14 @@ Future<void> _initFirebase() async {
   }
 }
 
-class NotesApp extends StatefulWidget {
+class NotesApp extends StatelessWidget {
   const NotesApp({
     Key key,
+    this.initialRoute,
   }) : super(key: key);
 
-  @override
-  _NotesAppState createState() => _NotesAppState();
-}
+  final String initialRoute;
 
-class _NotesAppState extends State<NotesApp> {
   Locale _localeListResolution(List<Locale> locales, Iterable<Locale> supportedLocales) {
     final supportedLocalesMap = Map<String, Locale>.fromIterable(
       supportedLocales,
