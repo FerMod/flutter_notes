@@ -81,12 +81,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: "12.x"
+      - if: startsWith(matrix.target, 'apk')
+        env:
+          BUILD_ARGS: '--split-per-abi'
       - name: Enable web support
         if: startsWith(matrix.target, 'web')
         run: flutter config --enable-web
       - name: Enable ${{ matrix.target }} desktop support
         if: startsWith(matrix.target, 'linux') || startsWith(matrix.target, 'windows') || startsWith(matrix.target, 'macos')
-        run: flutter config --enable-${{ matrix.target }}-desktop      
+        run: flutter config --enable-${{ matrix.target }}-desktop
       - name: Run Flutter doctor
         run: flutter doctor -v
         
@@ -99,7 +102,9 @@ jobs:
         run: flutter pub get
         working-directory: code      # Build the application for desktop.
       - name: Build project
-        run: flutter build -v ${{ matrix.target }} --release ${{ matrix.build-args }}
+        run: |
+          echo "Build args: '${BUILD_ARGS}'"
+          flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
         if: startsWith(matrix.target, 'windows')
