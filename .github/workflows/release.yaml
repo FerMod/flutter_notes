@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [apk, web, linux, widows, macos]
+        target: [apk, web, linux, windows, macos]
         include:
           - os: ubuntu-18.04
             target: apk
@@ -78,18 +78,16 @@ jobs:
           java-version: "12.x"
         env:
           BUILD_ARGS: "--split-per-abi"
-      - name: Enable web support
-        #if: contains(matrix.target, 'web')
+      - name: Enable web support #if: contains(matrix.target, 'web')
         run: flutter config --enable-web
-      - name: Enable desktop support
-        #if: startsWith(matrix.target, 'linux') || startsWith(matrix.target, 'windows') || startsWith(matrix.target, 'macos')
+      - name: Enable desktop support  #if: startsWith(matrix.target, 'linux') || startsWith(matrix.target, 'windows') || startsWith(matrix.target, 'macos')
         run: |
           flutter config --enable-linux-desktop
           flutter config --enable-windows-desktop
           flutter config --enable-macos-desktop          
       - name: Run Flutter doctor
         run: flutter doctor -v
-
+        
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
       - name: Clone the repository
         uses: actions/checkout@v2
