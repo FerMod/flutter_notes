@@ -101,14 +101,6 @@ jobs:
       - name: Build project
         run: |
           flutter create .
-          rm -f l10n.yaml
-          flutter gen-l10n -v \
-          --arb-dir=lib/l10n \
-          --template-arb-file=intl_en.arb \
-          --output-localization-file=app_localizations.dart \
-          --output-class=AppLocalizations \
-          --preferred-supported-locales=en \
-          --no-use-deferred-loading
           flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
