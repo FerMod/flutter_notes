@@ -32,7 +32,6 @@ jobs:
             target: apk
             channel: "beta"
             path: build/app/outputs/apk/release/
-            build-args: --split-per-abi
           - os: ubuntu-18.04
             target: appbundle
             channel: "beta"
