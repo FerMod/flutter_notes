@@ -26,20 +26,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [macos, windows, linux, apk]
+        target: [apk, web, linux, widows, macos]
         include:
+          - os: ubuntu-18.04
+            target: apk
+            channel: "beta"
+            path: build/app/outputs/apk/release/
+          - os: ubuntu-18.04
+            target: web
+            channel: "beta"
+            path: build/web/
           - os: macos-10.15
             target: macos
+            channel: "dev"
             path: build/macos/Build/Products/Release
           - os: windows-2019
             target: windows
+            channel: "dev"
             path: build\windows\runner\Release
           - os: ubuntu-18.04
             target: linux
+            channel: "dev"
             path: build/linux/release/bundle
-          - os: ubuntu-18.04
-            target: apk
-            path: build/app/outputs/apk/release/
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
     needs: create-release
@@ -49,7 +57,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "flutter/flutter"
-          ref: "master"
+          ref: ${{ matrix.channel }} #"master"
           path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH for Linux and macOS
@@ -70,11 +78,15 @@ jobs:
           java-version: "12.x"
         env:
           BUILD_ARGS: "--split-per-abi"
+      - name: Enable web support
+        #if: contains(matrix.target, 'web')
+        run: flutter config --enable-web
       - name: Enable desktop support
+        #if: startsWith(matrix.target, 'linux') || startsWith(matrix.target, 'windows') || startsWith(matrix.target, 'macos')
         run: |
           flutter config --enable-linux-desktop
-          flutter config --enable-macos-desktop
           flutter config --enable-windows-desktop
+          flutter config --enable-macos-desktop          
       - name: Run Flutter doctor
         run: flutter doctor -v
 
@@ -91,7 +103,6 @@ jobs:
       - name: Build project
         run: |
           flutter create .
-          flutter gen-l10n
           flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
