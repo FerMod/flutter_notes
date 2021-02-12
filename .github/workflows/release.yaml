@@ -53,11 +53,11 @@ jobs:
     needs: create-release
     steps:
       # Set up Flutter and add it to the path.
-      - name: Clone Flutter repository with master channel
+      - name: Clone Flutter repository with ${{ matrix.channel }} channel
         uses: actions/checkout@v2
         with:
           repository: "flutter/flutter"
-          ref: ${{ matrix.channel }} #"master"
+          ref: ${{ matrix.channel }}
           path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH for Linux and macOS
@@ -101,6 +101,7 @@ jobs:
       - name: Build project
         run: |
           flutter create .
+          flutter gen-l10n -v
           flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
