@@ -26,12 +26,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [apk, web, linux, windows, macos]
+        target: [appbundle, web, linux, windows, macos]
         include:
+          # - os: ubuntu-18.04
+          #   target: apk
+          #   channel: "beta"
+          #   path: build/app/outputs/apk/release/
           - os: ubuntu-18.04
-            target: apk
+            target: appbundle
             channel: "beta"
-            path: build/app/outputs/apk/release/
+            path: build/app/outputs/bundle/release/
           - os: ubuntu-18.04
             target: web
             channel: "beta"
@@ -99,9 +103,7 @@ jobs:
 
       # Build the application for desktop.
       - name: Build project
-        run: |
-          flutter create .
-          flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
+        run: flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
         if: startsWith(matrix.target, 'windows')
