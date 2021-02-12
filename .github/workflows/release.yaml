@@ -108,7 +108,7 @@ jobs:
           --output-localization-file=app_localizations.dart \
           --output-class=AppLocalizations \
           --preferred-supported-locales=en \
-          --use-deferred-loading
+          --no-use-deferred-loading
           flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
         working-directory: code
       - name: Copy VC redistributables to release directory
