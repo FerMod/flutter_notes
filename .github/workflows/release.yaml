@@ -81,9 +81,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: "12.x"
-      - if: startsWith(matrix.target, 'apk')
-        env:
-          BUILD_ARGS: '--split-per-abi'
       - name: Enable web support
         if: startsWith(matrix.target, 'web')
         run: flutter config --enable-web
@@ -102,9 +99,7 @@ jobs:
         run: flutter pub get
         working-directory: code      # Build the application for desktop.
       - name: Build project
-        run: |
-          echo "Build args: '${BUILD_ARGS}'"
-          flutter build -v ${{ matrix.target }} --release $BUILD_ARGS
+        run: flutter build -v ${{ matrix.target }} --release
         working-directory: code
       - name: Copy VC redistributables to release directory
         if: startsWith(matrix.target, 'windows')
