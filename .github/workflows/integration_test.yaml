@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - FerMod*
   pull_request:
 jobs:
   integration-test:
@@ -11,11 +10,11 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       # Set up Flutter and add it to the path.
-      - name: Clone Flutter repository with master channel
+      - name: Clone Flutter repository
         uses: actions/checkout@v2
         with:
           repository: "flutter/flutter"
-          ref: "master"
+          ref: "beta"
           path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH
