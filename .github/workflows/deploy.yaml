@@ -22,8 +22,6 @@ jobs:
         run: flutter config --enable-web
       - name: Run Flutter doctor
         run: flutter doctor -v
-      - name: Get packages for the Flutter project
-        run: flutter pub get
 
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
       - name: Clone the repository
