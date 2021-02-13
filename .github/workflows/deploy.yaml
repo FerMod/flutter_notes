@@ -24,8 +24,8 @@ jobs:
         run: flutter doctor -v
 
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
-      #- name: Clone the repository
-      #  uses: actions/checkout@v2
+      - name: Clone the repository
+        uses: actions/checkout@v2
       #  with:
       #    path: "code"
       - name: Get packages for the Flutter project
