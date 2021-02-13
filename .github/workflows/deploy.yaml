@@ -14,10 +14,10 @@ jobs:
         with:
           repository: "flutter/flutter"
           ref: "beta"
-          path: "flutter"
+          path: "_flutter"
           fetch-depth: 1
       - name: Add Flutter to PATH
-        run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/_flutter/bin" >> $GITHUB_PATH
       - name: Enable web support
         run: flutter config --enable-web
       - name: Run Flutter doctor
