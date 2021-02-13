@@ -96,7 +96,9 @@ jobs:
           path: "code"
       - name: Get packages for the Flutter project
         run: flutter pub get
-        working-directory: code      # Build the application for desktop.
+        working-directory: code
+        
+        # Build the application.
       - name: Build project
         run: flutter build -v ${{ matrix.target }} --release
         working-directory: code
