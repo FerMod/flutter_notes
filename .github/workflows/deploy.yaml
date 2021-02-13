@@ -26,9 +26,9 @@ jobs:
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
       - name: Clone the repository
         uses: actions/checkout@v2
-        ref: "FerMod-workflow"
         with:
           path: "code"
+          ref: "FerMod-workflow"
       - name: Get packages for the Flutter project
         run: flutter pub get
         working-directory: code
