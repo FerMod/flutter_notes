@@ -31,15 +31,15 @@ jobs:
           # - os: ubuntu-18.04
           #   target: apk
           #   channel: "beta"
-          #   path: build/app/outputs/apk/release/
+          #   path: build/app/outputs/apk/release
           - os: ubuntu-18.04
             target: appbundle
             channel: "beta"
-            path: build/app/outputs/bundle/release/
+            path: build/app/outputs/bundle/release
           - os: ubuntu-18.04
             target: web
             channel: "beta"
-            path: build/web/
+            path: build/web
           # - os: ubuntu-18.04
           #   target: linux
           #   channel: "dev"
