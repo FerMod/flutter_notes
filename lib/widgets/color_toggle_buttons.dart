@@ -1,0 +1,115 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import '../src/cache/cached_color.dart';
+
+class ColorToggleButtons extends StatefulWidget {
+  const ColorToggleButtons({
+    Key key,
+    this.initialValue,
+    this.colors = const <Color>[],
+    this.onPressed,
+  }) : super(key: key);
+
+  final List<Color> colors;
+  final Color initialValue;
+  final void Function(int index) onPressed;
+
+  @override
+  _ColorToggleButtonsState createState() => _ColorToggleButtonsState();
+}
+
+class _ColorToggleButtonsState extends State<ColorToggleButtons> {
+  List<CachedColor> _cachedColors;
+  List<Widget> _children;
+  List<bool> _isSelected;
+  int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    final colorsList = widget.colors;
+    // Init list of selection state of buttons
+    _isSelected = List.filled(colorsList.length, false);
+    print(_isSelected.toString());
+
+    // Find the index of the intial value and update the selection state.
+    // If none is found, set the first index as default.
+    final index = colorsList.indexOf(widget.initialValue);
+    _currentIndex = index != -1 ? index : 0;
+    _isSelected[_currentIndex] = true;
+    print(_isSelected.toString());
+
+    // Init list of cached colors
+    _cachedColors = List.generate(
+      colorsList.length,
+      (index) => CachedColor(colorsList[index]),
+    );
+
+    // Init the list of the color buttons that will be used.
+    _children = List.generate(
+      colorsList.length,
+      (index) => ColorButton(color: _cachedColors[index].value),
+    );
+  }
+
+  void _handleOnPressed(int index) {
+    assert(_isSelected[_currentIndex] == true);
+    if (index == _currentIndex) return;
+
+    setState(() {
+      _isSelected[_currentIndex] = false;
+      _isSelected[index] = true;
+    });
+    _currentIndex = index;
+
+    // Call onPressed function if it's not null
+    widget.onPressed?.call(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('build');
+    final theme = Theme.of(context);
+    return ToggleButtons(
+      children: _children,
+      isSelected: _isSelected,
+      onPressed: _handleOnPressed,
+      color: Colors.transparent,
+      //selectedColor: _contrastColor(widget.colors[_currentIndex]), //theme.colorScheme.primary,
+      selectedColor: _cachedColors[_currentIndex].contrastingColor(),
+      fillColor: Colors.transparent,
+      // focusColor: null,
+      // hoverColor: null,
+      // highlightColor: null,
+      // splashColor: null,
+      renderBorder: false,
+      // borderWidth: 1,
+      // borderColor: Colors.transparent,
+      // selectedBorderColor: Colors.transparent,
+      // disabledColor: null,
+      // disabledBorderColor: null,
+    );
+  }
+}
+
+class ColorButton extends StatelessWidget {
+  const ColorButton({
+    Key key,
+    @required this.color,
+  }) : super(key: key);
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      child: Icon(Icons.check),
+      decoration: BoxDecoration(
+        border: Border.all(color: theme.iconTheme.color, width: 1.0),
+        borderRadius: BorderRadius.all(Radius.circular(2.0)),
+        color: color,
+      ),
+    );
+  }
+}

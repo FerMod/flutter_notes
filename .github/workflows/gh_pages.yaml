@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Clone Flutter repository
+        uses: actions/checkout@v2
+        with:
+          repository: "flutter/flutter"
+          ref: "beta"
+          path: "flutter"
+          fetch-depth: 0
+      - name: Add Flutter to PATH
+        run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+      - name: Enable web support
+        run: flutter config --enable-web
+      - name: Run Flutter doctor
+        run: flutter doctor -v
+
+      # Clone the repository under 'code', to avoid conflicts with 'flutter'.
+      - name: Clone the repository
+        uses: actions/checkout@v2
+        with:
+          path: "code"
+      - name: Get packages for the Flutter project
+        run: flutter pub get
+        working-directory: code
+      - name: Build project
+        run: flutter build -v web --release 
+        working-directory: code
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./code/build/web

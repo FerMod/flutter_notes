@@ -1,0 +1,39 @@
+name: Integration Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  integration-test:
+    name: Integration tests
+    runs-on: ubuntu-18.04
+    steps:
+      # Set up Flutter and add it to the path.
+      - name: Clone Flutter repository
+        uses: actions/checkout@v2
+        with:
+          repository: "flutter/flutter"
+          ref: "beta"
+          path: "flutter"
+          fetch-depth: 0
+      - name: Add Flutter to the PATH
+        run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+      - name: Run Flutter doctor
+        run: flutter doctor -v
+      - name: Enable Flutter web
+        run: flutter config --enable-web
+
+      # Clone the repository under 'code', to avoid conflicts with 'flutter'.
+      - name: Clone the repository
+        uses: actions/checkout@v2
+        with:
+          path: "code"
+
+      # Run integration tests.
+      - name: Get packages for the Flutter project
+        run: flutter pub get
+        working-directory: code
+      # - name: Run integration_test
+      #   run: flutter test integration_test/integration_test.dart
+      #   working-directory: code

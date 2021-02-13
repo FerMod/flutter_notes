@@ -1,16 +1,27 @@
-# flutter_notes
-
-A new Flutter project.
+# Flutter Notes
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+### Installing
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Running the tests
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Contributing
+
+Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/FerMod/flutter_notes/tags).
+
+## Authors
+
+- [FerMod](https://github.com/FerMod) **(Ferran Tudela)** - *Initial work*
+
+See also the list of [contributors](https://github.com/FerMod/flutter_notes/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
