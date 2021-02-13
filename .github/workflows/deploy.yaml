@@ -7,13 +7,21 @@ on:
       
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        target: [web]
+        include:
+          - os: ubuntu-18.04
+            target: web
+            channel: "beta"
+            path: build/web
     steps:
       - name: Clone Flutter repository with ${{ matrix.channel }} channel
         uses: actions/checkout@v2
         with:
           repository: "flutter/flutter"
-          ref: "beta"
+          ref: ${{ matrix.channel }}
           path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH
@@ -32,11 +40,11 @@ jobs:
         run: flutter pub get
         working-directory: code
       - name: Build project
-        run: flutter build -v web --release
+        run: flutter build -v ${{ matrix.target }} --release
         working-directory: code
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
+          publish_dir: code\${{ matrix.path }}
