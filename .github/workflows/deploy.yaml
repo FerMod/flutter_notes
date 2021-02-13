@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-18.04
     steps:
-      - name: Clone Flutter repository with ${{ FLUTTER_CHANNEL }} channel
+      - name: Clone Flutter repository
         uses: actions/checkout@v2
         with:
           repository: "flutter/flutter"
