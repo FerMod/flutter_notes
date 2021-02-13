@@ -46,11 +46,12 @@ class _SignInFormState extends State<_SignInForm> {
   @override
   void initState() {
     super.initState();
-    // TODO: remove initState
-    _emailController.text = 'test@email.com';
-    //_emailController.text = 'a';
-    _passwordController.text = 'password123';
-    /////////////////////////
+    if (kDebugMode) {
+      // TODO: remove initState
+      _emailController.text = 'test@email.com';
+      //_emailController.text = 'a';
+      _passwordController.text = 'password123';
+    }
   }
 
   @override

@@ -47,13 +47,14 @@ class _SignUpFormState extends State<_SignUpForm> {
   @override
   void initState() {
     super.initState();
-    // TODO: remove initState
-    // _emailController.text = 'test@email.com';
-    _usernameController.text = 'NewUser';
-    _emailController.text = 'new_usermail.co4m';
-    _passwordController.text = 'password123';
-    _confirmPasswordController.text = 'password123';
-    ////////////
+    if (kDebugMode) {
+      // TODO: remove initState
+      // _emailController.text = 'test@email.com';
+      _usernameController.text = 'NewUser';
+      _emailController.text = 'new_usermail.co4m';
+      _passwordController.text = 'password123';
+      _confirmPasswordController.text = 'password123';
+    }
   }
 
   @override
