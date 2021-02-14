@@ -43,7 +43,7 @@ This project requires to have **JDK 1.8**, and **Maven** which will manage all t
 
 To start contributing to this project you need first to clone the project or fork the project. To clone the project, the command is the following:
 
-```tex
+```
 git clone https://github.com/FerMod/flutter_notes.git
 ```
 
@@ -90,23 +90,23 @@ When refering to issues and pull requests you should reference them in the commi
 
 Any commit that is related to an existing issue should reference the issue. For example, if a commit in a pull request addresses issue #123, it should contain the following at the bottom of the commit message.
 
-```tex
+```
 Issue #123
 ```
 
 Or if the commit references more than one issue:
 
-```tex
+```
 Issue #123, #124
 ```
 
 If the commit closes the issue it should be referenced using one of the available keyworkds that automates the issue closing once the branch merges with the default branch.
 
-```tex
+```
 Add feature
 
 Description in more detail of the commit if needed.
-With synxtax like '#123' references issues and pull request and with 'close #123', can autoclose them.
+With synxtax like '#123' references issues and pull request and with 'close #123', can automatically close them.
 
 Fixes #123
 ```
