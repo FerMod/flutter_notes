@@ -32,9 +32,12 @@ jobs:
       - name: Build project
         run: flutter build -v web --release 
         working-directory: code
+      - name: Create symbolic link
+        run: ln -sf ./build/web ./docs
+        working-directory: code
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./code/build/web
+          publish_dir: ./code
