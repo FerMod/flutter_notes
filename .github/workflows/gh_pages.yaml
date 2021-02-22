@@ -26,6 +26,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: "code"
+      - name: Build project
+        run: ln -s /build/web /docs
+        working-directory: code
       - name: Get packages for the Flutter project
         run: flutter pub get
         working-directory: code
@@ -37,4 +40,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./code/build/web
+          publish_dir: ./code
