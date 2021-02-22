@@ -162,7 +162,7 @@ class _BodyWidget extends StatelessWidget {
     );
 
     final passwordInput = TextFormInput(
-      labelText: localizations.email,
+      labelText: localizations.password,
       icon: Icon(Icons.lock, color: theme.iconTheme.color),
       obscureText: true,
       controller: passwordController,
