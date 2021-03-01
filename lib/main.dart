@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'data/app_options.dart';
+import 'data/local/app_shared_preferences.dart';
 import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
@@ -17,6 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   _initFirebase();
+  await AppSharedPreferences.initialize();
   runApp(const NotesApp());
 }
 
@@ -73,10 +75,12 @@ class NotesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ModelBinding(
-      initialModel: AppOptions(
-        themeMode: ThemeMode.system,
-        locale: null,
-        platform: defaultTargetPlatform,
+      initialModel: AppOptions.load(
+        defaultSettings: AppOptions(
+          themeMode: ThemeMode.system,
+          locale: null,
+          platform: defaultTargetPlatform,
+        ),
       ),
       child: Builder(
         builder: (context) {

@@ -100,7 +100,7 @@ class ModelBinding<T> extends StatefulWidget {
   /// Updates the model that corresponds to the given [context] with the new
   /// given one and notifies the framework that the internal state of this
   /// object has changed.
-  static void update<T>(BuildContext context, T newModel) {
+  static bool update<T>(BuildContext context, T newModel) {
     assert(
       context != null,
       'Tried to call ModelBinding.update<$T> on a `context` that is `null`.\n'
@@ -118,7 +118,7 @@ class ModelBinding<T> extends StatefulWidget {
 
     final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
     //assert(scope != null, 'a ModelBinding<T> ancestor was not found');
-    scope.modelBindingState.updateModel(newModel);
+    return scope.modelBindingState.updateModel(newModel);
   }
 
   @override
@@ -154,12 +154,16 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   /// If the [newModel] is different from the current model, [setState] will be
   /// called, which causes the framework to schedule a [build] for this [State]
   /// object.
-  void updateModel(T newModel) {
-    if (_currentModel != newModel) {
+  ///
+  /// Returns true if the model will rebuild to reflect the changes.
+  bool updateModel(T newModel) {
+    final shouldUpdate = _currentModel != newModel;
+    if (shouldUpdate) {
       setState(() {
         _currentModel = newModel;
       });
     }
+    return shouldUpdate;
   }
 
   @override

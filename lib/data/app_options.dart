@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 import '../model_binding.dart';
+import 'local/app_shared_preferences.dart';
 
 Locale _deviceLocale;
 Locale get deviceLocale => _deviceLocale;
@@ -15,7 +17,7 @@ set deviceLocale(Locale locale) => _deviceLocale ??= locale;
 class AppOptions {
   /// Creates the settings used in the app.
   const AppOptions({
-    this.themeMode,
+    this.themeMode = ThemeMode.system,
     Locale locale,
     this.platform,
   }) : _locale = locale;
@@ -26,10 +28,36 @@ class AppOptions {
   /// Creates the settings used in the app from a map.
   factory AppOptions.fromMap(Map<String, dynamic> map) {
     return AppOptions(
-      themeMode: map['themeMode'],
-      locale: map['locale'],
-      platform: map['platform'],
+      themeMode: ThemeMode.values.firstWhere(
+        (e) => describeEnum(e) == map['themeMode'],
+        orElse: () => ThemeMode.system,
+      ),
+      locale: Locale(map['locale']),
+      platform: TargetPlatform.values.firstWhere(
+        (e) => describeEnum(e) == map['platform'],
+        orElse: () => defaultTargetPlatform,
+      ),
     );
+  }
+
+  factory AppOptions.load({AppOptions defaultSettings = const AppOptions()}) {
+    assert(defaultSettings != null);
+
+    final prefs = AppSharedPreferences.instance;
+    final dataString = prefs.getString('settings');
+    if (dataString?.isNotEmpty ?? false) {
+      try {
+        defaultSettings = AppOptions.fromJson(dataString);
+      } on FormatException catch (e) {
+        developer.log('Could not load the stored settings.\n$e');
+      }
+    }
+    return defaultSettings;
+  }
+
+  static void save(AppOptions settings) {
+    final prefs = AppSharedPreferences.instance;
+    prefs.setString('settings', settings.toJson());
   }
 
   /// Describes which theme will be used.
@@ -86,7 +114,8 @@ class AppOptions {
   /// Update the [AppOptions] with the new given [model] parameter, and notifies
   /// that the internal state of this object has changed.
   static void update(BuildContext context, AppOptions model) {
-    ModelBinding.update<AppOptions>(context, model);
+    final modelUpdated = ModelBinding.update<AppOptions>(context, model);
+    if (modelUpdated) AppOptions.save(model);
   }
 
   /// Update the [AppOptions] with the new given fields parameters, and notifies
@@ -111,9 +140,9 @@ class AppOptions {
   /// Converts this class to a [Map].
   Map<String, dynamic> toMap() {
     return {
-      'themeMode': themeMode,
-      'locale': locale,
-      'platform': platform,
+      'themeMode': describeEnum(themeMode),
+      'locale': locale.languageCode,
+      'platform': describeEnum(platform),
     };
   }
 
