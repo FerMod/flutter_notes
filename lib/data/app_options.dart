@@ -32,7 +32,7 @@ class AppOptions {
         (e) => describeEnum(e) == map['themeMode'],
         orElse: () => ThemeMode.system,
       ),
-      locale: Locale(map['locale']),
+      locale: localeFromLanguageTag(map['locale']),
       platform: TargetPlatform.values.firstWhere(
         (e) => describeEnum(e) == map['platform'],
         orElse: () => defaultTargetPlatform,
@@ -141,9 +141,27 @@ class AppOptions {
   Map<String, dynamic> toMap() {
     return {
       'themeMode': describeEnum(themeMode),
-      'locale': locale.languageCode,
+      'locale': locale.toLanguageTag(),
       'platform': describeEnum(platform),
     };
+  }
+
+  /// Returns a Locale from a valid Unicode BCP47 Locale Identifier.
+  ///
+  /// Some examples of such identifiers: "en", "es-419", "hi-Deva-IN" and
+  /// "zh-Hans-CN". See http://www.unicode.org/reports/tr35/ for technical
+  /// details.
+  static Locale localeFromLanguageTag(String languageTag) {
+    final regExprString = r'^([A-Za-z]{2,3}|[A-Za-z]{5,8})'
+        r'(?:[-_]([A-Za-z]{4}))?'
+        r'(?:[-_]([A-Za-z]{2}|[0-9]{3}))?$';
+    final regExp = RegExp(regExprString);
+    final match = regExp.firstMatch(languageTag);
+    return Locale.fromSubtags(
+      languageCode: match?.group(1),
+      scriptCode: match?.group(2),
+      countryCode: match?.group(3),
+    );
   }
 
   @override
