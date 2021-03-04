@@ -14,6 +14,12 @@ enum Commands {
   delete,
 }
 
+enum ChangesAction {
+  none,
+  save,
+  discard,
+}
+
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
     Key key,
@@ -43,6 +49,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _lastEdit = widget.note.lastEdit;
 
     _titleEditingController.addListener(_updateLastEdit);
+    _contentEditingController.addListener(_updateLastEdit);
   }
 
   @override
@@ -56,15 +63,39 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _lastEdit = DateTime.now();
   }
 
-  void _handleSubmit() {
+  void _saveChanges() {
     widget.note
       ..title = _titleEditingController.text
       ..content = _contentEditingController.text
       ..color = _color
       ..lastEdit = _lastEdit;
+  }
+
+  bool _valuesChanged(NoteModel note) {
+    return note.title != _titleEditingController.text || note.content != _contentEditingController.text || note.color != _color || note.lastEdit != _lastEdit;
+  }
+
+  Future<void> _handleClose() async {
+    if (_valuesChanged(widget.note)) {
+      //FocusScope.of(context).unfocus(); // Hide the keyboard
+      final saveChangesAction = await _showSaveChangesDialog();
+      if (saveChangesAction == ChangesAction.none) return;
+
+      if (saveChangesAction == ChangesAction.save) {
+        _saveChanges();
+      }
+    }
 
     Navigator.of(context).pop(widget.note);
     //widget.onEdit(_titleEditingController.text, _contentEditingController.text, widget.note.color);
+  }
+
+  Widget _createSaveButton() {
+    final localizations = AppLocalizations.of(context);
+    return TextButton(
+      onPressed: _saveChanges,
+      child: Text(localizations.save),
+    );
   }
 
   Widget _createMenuButton() {
@@ -90,17 +121,26 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     );
   }
 
+  Future<ChangesAction> _showSaveChangesDialog() async {
+    final dialogResult = await showDialog<ChangesAction>(
+      context: context,
+      builder: (context) => _SaveChangesAlertDialog(),
+    );
+    return dialogResult ?? ChangesAction.none;
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     return Scaffold(
-      //backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: _handleSubmit,
-        ),
+        leading: CloseButton(
+          onPressed: _handleClose,
+        ), //BackButton(onPressed: _handleSubmit),
         title: Text(localizations.edit),
         actions: [
+          _createSaveButton(),
           _createMenuButton(),
         ],
         elevation: 0.0, // Prevents the shadow from darkening other colors
@@ -268,6 +308,35 @@ class _SectionDivider extends StatelessWidget {
       thickness: 1.1,
       indent: 10,
       endIndent: 10,
+    );
+  }
+}
+
+class _SaveChangesAlertDialog extends StatelessWidget {
+  const _SaveChangesAlertDialog({Key key}) : super(key: key);
+
+  TextButton _createButton(BuildContext context, String text, ChangesAction action) {
+    return TextButton(
+      child: Text(text),
+      onPressed: () => Navigator.of(context, rootNavigator: true).pop(action),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    return AlertDialog(
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            Text(localizations.saveChangesDialogContent),
+          ],
+        ),
+      ),
+      actions: [
+        _createButton(context, localizations.discard, ChangesAction.discard),
+        _createButton(context, localizations.save, ChangesAction.save),
+      ],
     );
   }
 }

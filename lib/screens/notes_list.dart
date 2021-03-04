@@ -35,6 +35,7 @@ class NotesListScreen extends StatelessWidget {
     //   pageBuilder: (context, animation, secondaryAnimation) => widget,
     // );
     return PageRouteBuilder(
+      fullscreenDialog: true,
       pageBuilder: (context, animation, secondaryAnimation) {
         return AnimatedBuilder(
           animation: animation,
