@@ -14,6 +14,16 @@ import 'package:flutter/material.dart';
 ///
 /// * <https://en.wikipedia.org/wiki/Relative_luminance>
 class CachedColor {
+  /// Creates a [CachedColor] instance that caches the color [value].
+  ///
+  /// The value is looked up in the cached colors and if there isn't any, it is
+  /// added to the the cache for future access.
+  factory CachedColor(Color value) {
+    return _cache.putIfAbsent(value, () => CachedColor._internal(value));
+  }
+
+  CachedColor._internal(this.value);
+
   /// The [Color] value stored in the cache.
   final Color value;
 
@@ -37,16 +47,6 @@ class CachedColor {
   /// map. Modifying operations throw instead.
   static UnmodifiableMapView<Color, CachedColor> get cache => UnmodifiableMapView(_cache);
   static final Map<Color, CachedColor> _cache = {};
-
-  /// Creates a [CachedColor] instance that caches the color [value].
-  ///
-  /// The value is looked up in the cached colors and if there isn't any, it is
-  /// added to the the cache for future access.
-  factory CachedColor(Color value) {
-    return _cache.putIfAbsent(value, () => CachedColor._internal(value));
-  }
-
-  CachedColor._internal(this.value);
 
   /// Returns the color [Colors.black] or [Colors.white] that has more contrast
   /// with the color [value].
