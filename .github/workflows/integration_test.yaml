@@ -7,15 +7,15 @@ on:
 jobs:
   integration-test:
     name: Integration tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       # Set up Flutter and add it to the path.
       - name: Clone Flutter repository
         uses: actions/checkout@v2
         with:
-          repository: "flutter/flutter"
-          ref: "stable"
-          path: "flutter"
+          repository: 'flutter/flutter'
+          ref: 'stable'
+          path: 'flutter'
           fetch-depth: 0
       - name: Add Flutter to the PATH
         run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
@@ -28,7 +28,7 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v2
         with:
-          path: "code"
+          path: 'code'
 
       # Run integration tests.
       - name: Get packages for the Flutter project

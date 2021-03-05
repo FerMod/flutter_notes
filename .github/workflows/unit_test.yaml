@@ -11,18 +11,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, windows-2019, macos-10.15]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
     steps:
       # Set up Flutter and add it to the path.
       - name: Clone Flutter repository
         uses: actions/checkout@v2
         with:
-          repository: "flutter/flutter"
-          ref: "stable"
-          path: "flutter"
+          repository: 'flutter/flutter'
+          ref: 'stable'
+          path: 'flutter'
           fetch-depth: 0
       - name: Add Flutter to the PATH for Unix
-        if: startsWith(matrix.os, 'macOS') || startsWith(matrix.os, 'ubuntu')
+        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
         run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
       - name: Add Flutter to the PATH for Windows
         if: startsWith(matrix.os, 'windows')
@@ -34,7 +34,7 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v2
         with:
-          path: "code"
+          path: 'code'
 
       # Run the tests for the repository.
       - name: Get packages for the Flutter project
