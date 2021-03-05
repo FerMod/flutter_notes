@@ -9,22 +9,22 @@ typedef FormErrorListener = void Function(Object exception, StackTrace stackTrac
 
 class SignFormScreen extends StatelessWidget {
   const SignFormScreen({
-    Key key,
+    Key? key,
     this.title,
     this.builder,
   }) : super(key: key);
 
   /// The [AppBar.title] title widget.
-  final Widget title;
+  final Widget? title;
 
   /// The content of this widget.
-  final WidgetBuilder builder;
+  final WidgetBuilder? builder;
 
   @override
   Widget build(BuildContext context) {
     final isWeb = kIsWeb;
 
-    BoxConstraints constraints;
+    BoxConstraints? constraints;
     if (isWeb) {
       final textScaleFactor = MediaQuery.textScaleFactorOf(context);
       final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
@@ -36,7 +36,7 @@ class SignFormScreen extends StatelessWidget {
         child: Center(
           child: Container(
             constraints: constraints,
-            child: Builder(builder: builder),
+            child: Builder(builder: builder!),
           ),
         ),
       ),

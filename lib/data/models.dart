@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -21,9 +22,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   final Collection<NoteModel> collection = Collection<NoteModel>(path: 'notes');
   final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
 
-  StreamController<List<NoteModel>> _controller; // = StreamController<List<NoteModel>>.broadcast();
+  StreamController<List<NoteModel>>? _controller; // = StreamController<List<NoteModel>>.broadcast();
 
-  NotesListModel({List<NoteModel> notes}) : _notes = notes ?? [] {
+  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [] {
     //_controller.stream.pipe(streamConsumer)
   }
 
@@ -49,10 +50,10 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
         return load(
           () => collection.data(
             (snapshot) => NoteModel.fromSnapshot(snapshot),
-            (query) => query.where('userId', isEqualTo: user.uid),
+            (query) => query!.where('userId', isEqualTo: user.uid),
           ),
           notifyIsLoading: notifyIsLoading,
-        );
+        ) as FutureOr<List<NoteModel>>;
       }),
       notifyIsLoading: notifyIsLoading,
     );
@@ -67,7 +68,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return load(
       () => collection.data(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
-        (query) => query.where('userId', isEqualTo: user.uid),
+        (query) => query!.where('userId', isEqualTo: user.uid),
       ),
       notifyIsLoading: notifyIsLoading,
     );
@@ -107,10 +108,10 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return stream(
       () => collection.stream(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
-        (query) => query.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
+        (query) => query!.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
       ),
       notifyIsLoading: notifyIsLoading,
-    );
+    ) as Stream<List<NoteModel>>;
   }
 
   Stream stream(Stream<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
@@ -120,9 +121,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     if (_controller == null) {
       _controller = StreamController<List<NoteModel>>.broadcast(onListen: () {
         // Listen for events of this stream and update the list content
-        _controller.stream.listen((notes) => _notes = notes ?? []);
+        _controller!.stream.listen((notes) => _notes = notes);
         // Pipe events of the data stream into this stream
-        operation().pipe(_controller);
+        operation().pipe(_controller!);
       });
     }
 
@@ -136,7 +137,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     //     // notifyListeners();
     //   });
 
-    return _controller.stream;
+    return _controller!.stream;
   }
 
   void addNote(NoteModel note) {
@@ -146,17 +147,15 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   void updateNote(NoteModel note) {
-    assert(note != null);
     assert(note.id != null);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
-    collection.update(note.id, note.toMap());
+    collection.update(note.id!, note.toMap());
     notifyListeners();
   }
 
   @deprecated
   void upsertNote(NoteModel note) {
-    assert(note != null);
     assert(note.id != null);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     if (replaceIndex != -1) {
@@ -170,14 +169,13 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   void removeNote(NoteModel note) {
     _notes.removeWhere((element) => element.id == note.id);
-    collection.delete(note.id);
+    collection.delete(note.id!);
     notifyListeners();
   }
 
-  NoteModel noteById(String id) {
-    return _notes.firstWhere(
+  NoteModel? noteById(String id) {
+    return _notes.firstWhereOrNull(
       (element) => element.id == id,
-      orElse: () => null,
     );
   }
 

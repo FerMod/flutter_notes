@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 import '../../extensions/theme_mode_extension.dart';
 
 class UserModel {
-  String id;
-  String name;
-  String image;
+  String? id;
+  String? name;
+  String? image;
   Locale locale;
-  ThemeMode themeMode;
+  ThemeMode? themeMode;
 
-  DocumentReference reference;
+  DocumentReference? reference;
 
   UserModel({
     this.id,
@@ -22,15 +23,14 @@ class UserModel {
   });
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data();
+    final data = snapshot.data()!;
     return UserModel(
       id: snapshot.id,
       name: data['name'],
       image: data['image'],
       locale: Locale(data['locale']),
-      themeMode: ThemeMode.values.firstWhere(
+      themeMode: ThemeMode.values.firstWhereOrNull(
         (e) => e.name == data['themeMode'],
-        orElse: () => null,
       ),
       reference: snapshot.reference,
     );
@@ -43,17 +43,17 @@ class UserModel {
       'name': name,
       'image': image,
       'locale': locale.languageCode,
-      'themeMode': themeMode.name,
+      'themeMode': themeMode!.name,
     };
   }
 
   UserModel copyWith({
-    String id,
-    String name,
-    String image,
-    Locale locale,
-    ThemeMode themeMode,
-    DocumentReference reference,
+    String? id,
+    String? name,
+    String? image,
+    Locale? locale,
+    ThemeMode? themeMode,
+    DocumentReference? reference,
   }) {
     return UserModel(
       id: id ?? this.id,

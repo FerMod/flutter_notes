@@ -9,18 +9,18 @@ class MessageData with Diagnosticable {
     this.isVisible = false,
     this.message,
     this.actions = const [],
-  }) : assert(isVisible != null);
+  });
 
   const factory MessageData.empty() = MessageData;
 
   final bool isVisible;
-  final String message;
+  final String? message;
   final List<Widget> actions;
 
   MessageData copyWith({
-    bool isVisible,
-    String message,
-    List<Widget> actions,
+    bool? isVisible,
+    String? message,
+    List<Widget>? actions,
   }) {
     return MessageData(
       isVisible: isVisible ?? this.isVisible,
@@ -53,16 +53,14 @@ class MessageData with Diagnosticable {
 
 class Message extends StatefulWidget {
   const Message({
-    Key key,
+    Key? key,
     this.data = const MessageData.empty(),
     this.onChange,
-    @required this.child,
-  })  : assert(child != null),
-        assert(data != null),
-        super(key: key);
+    required this.child,
+  })  : super(key: key);
 
   final MessageData data;
-  final ValueChanged<MessageData> onChange;
+  final ValueChanged<MessageData>? onChange;
   final Widget child;
 
   // static Message _scopeOf(BuildContext context) {
@@ -93,28 +91,22 @@ class Message extends StatefulWidget {
   //   }
   // }
 
-  static MessageState of(BuildContext context) {
-    assert(
-      context != null,
-      'Tried to call a function on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
-      'StatefulWidget was disposed.',
-    );
+  static MessageState? of(BuildContext context) {
     final inheritedMessage = context.dependOnInheritedWidgetOfExactType<_InheritedMessage>();
     return inheritedMessage?.message;
   }
 
-  static MessageData dataOf(BuildContext context) {
+  static MessageData? dataOf(BuildContext context) {
     final inheritedMessage = Message.of(context);
     return inheritedMessage?.data;
   }
 
-  static void show(BuildContext context, {String message, List<Widget> actions}) {
-    Message.of(context).show(message: message, actions: actions);
+  static void show(BuildContext context, {String? message, List<Widget>? actions}) {
+    Message.of(context)!.show(message: message, actions: actions);
   }
 
   static void hide(BuildContext context) {
-    Message.of(context).hide();
+    Message.of(context)!.hide();
   }
 
   @override
@@ -123,7 +115,7 @@ class Message extends StatefulWidget {
 
 class MessageState extends State<Message> {
   /// The data contained in the message
-  MessageData data;
+  MessageData? data;
 
   @override
   void initState() {
@@ -139,8 +131,8 @@ class MessageState extends State<Message> {
     }
   }
 
-  void _update({bool isVisible, String message, List<Widget> actions}) {
-    final newData = data.copyWith(
+  void _update({bool? isVisible, String? message, List<Widget>? actions}) {
+    final newData = data!.copyWith(
       isVisible: isVisible,
       message: message,
       actions: actions,
@@ -157,7 +149,7 @@ class MessageState extends State<Message> {
     }
   }
 
-  void show({String message, List<Widget> actions}) {
+  void show({String? message, List<Widget>? actions}) {
     _update(isVisible: true, message: message, actions: actions);
   }
 
@@ -192,11 +184,10 @@ class MessageState extends State<Message> {
 
 class _InheritedMessage extends InheritedWidget {
   const _InheritedMessage({
-    Key key,
-    @required this.message,
-    @required Widget child,
-  })  : assert(message != null),
-        super(key: key, child: child);
+    Key? key,
+    required this.message,
+    required Widget child,
+  })  : super(key: key, child: child);
 
   final MessageState message;
 
@@ -206,23 +197,23 @@ class _InheritedMessage extends InheritedWidget {
 
 class FormMessageWidget extends StatelessWidget {
   const FormMessageWidget({
-    Key key,
+    Key? key,
     this.onChange,
   }) : super(key: key);
 
-  final ValueChanged<MessageData> onChange;
+  final ValueChanged<MessageData>? onChange;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final messageData = Message.of(context).data;
+    final messageData = Message.of(context)!.data!;
 
-    Widget titleWidget;
+    Widget? titleWidget;
     if (messageData.message != null) {
-      titleWidget = SelectableText(messageData.message);
+      titleWidget = SelectableText(messageData.message!);
     }
 
-    List<Widget> actionsList;
+    List<Widget>? actionsList;
     if (messageData.actions.isEmpty) {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
@@ -256,25 +247,25 @@ class FormMessageWidget extends StatelessWidget {
 @deprecated
 class FormMessage extends StatelessWidget {
   const FormMessage({
-    Key key,
+    Key? key,
     this.messageData,
     this.onChange,
   }) : super(key: key);
 
-  final MessageData messageData;
-  final ValueChanged<MessageData> onChange;
+  final MessageData? messageData;
+  final ValueChanged<MessageData>? onChange;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget titleWidget;
-    if (messageData.message != null) {
-      titleWidget = SelectableText(messageData.message);
+    Widget? titleWidget;
+    if (messageData!.message != null) {
+      titleWidget = SelectableText(messageData!.message!);
     }
 
-    List<Widget> actionsList;
-    if (messageData.actions.isEmpty) {
+    List<Widget>? actionsList;
+    if (messageData!.actions.isEmpty) {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
         TextButton(
@@ -292,10 +283,10 @@ class FormMessage extends StatelessWidget {
         width: 2.0,
         color: theme.colorScheme.error,
       )),
-      actions: actionsList ?? messageData.actions,
+      actions: actionsList ?? messageData!.actions,
     );
 
-    return messageData.isVisible
+    return messageData!.isVisible
         ? Card(
             clipBehavior: Clip.antiAlias,
             margin: EdgeInsets.all(8.0),

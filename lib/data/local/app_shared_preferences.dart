@@ -5,8 +5,8 @@ class AppSharedPreferences {
   static final AppSharedPreferences _instance = AppSharedPreferences._internal();
   factory AppSharedPreferences() => _instance;
 
-  static SharedPreferences _sharedPreferences;
-  static SharedPreferences get instance => _sharedPreferences;
+  static SharedPreferences? _sharedPreferences;
+  static SharedPreferences? get instance => _sharedPreferences;
 
   static Future<SharedPreferences> initialize() async {
     return _sharedPreferences ??= await SharedPreferences.getInstance();

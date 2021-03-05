@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
   // }
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     // StreamSubscription<UserModel> _streamSubscription;
     return Scaffold(
       appBar: AppBar(

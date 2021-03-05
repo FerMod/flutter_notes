@@ -13,18 +13,17 @@ class UserAvatar extends StatelessWidget {
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAvatar({
-    Key key,
-    this.imageUrl,
+    Key? key,
+    required this.imageUrl,
     this.nameText,
     this.onTap,
-  })  : assert(imageUrl != null),
-        super(key: key);
+  })  : super(key: key);
 
   final String imageUrl;
-  final String nameText;
-  final VoidCallback onTap;
+  final String? nameText;
+  final VoidCallback? onTap;
 
-  Color _iconColor(ThemeData theme) {
+  Color? _iconColor(ThemeData theme) {
     switch (theme.brightness) {
       case Brightness.light:
         return Colors.black45;
@@ -54,7 +53,7 @@ class UserAvatar extends StatelessWidget {
           return child;
         }
         return CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
+          value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
         );
       },
       errorBuilder: (context, error, stackTrace) {
@@ -69,7 +68,7 @@ class UserAvatar extends StatelessWidget {
     );
   }
 
-  Color _getRandomColor([int seed]) {
+  Color _getRandomColor([int? seed]) {
     return Color((math.Random(seed).nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
   }
 
@@ -77,17 +76,17 @@ class UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget leadingWidget;
+    Widget? leadingWidget;
 
-    ImageProvider imageProvider;
-    Color backgroundColor;
-    Color foregroundColor;
-    if (imageUrl?.isNotEmpty ?? false) {
+    ImageProvider? imageProvider;
+    Color? backgroundColor;
+    Color? foregroundColor;
+    if (imageUrl.isNotEmpty) {
       imageProvider = NetworkImage(imageUrl);
       backgroundColor = theme.colorScheme.onPrimary;
     } else {
       final regExp = RegExp(r'(?=\D)(\w)');
-      final match = regExp.firstMatch(nameText)?.group(1);
+      final match = regExp.firstMatch(nameText!)?.group(1);
 
       final cachedColor = CachedColor(_getRandomColor(match.hashCode)); //TODO: Implement better cache system
 
@@ -130,22 +129,21 @@ class UserAccountListTile extends StatelessWidget {
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAccountListTile({
-    Key key,
-    this.imageUrl,
+    Key? key,
+    required this.imageUrl,
     this.nameText,
     this.emailText,
     this.onTap,
     this.onTapImage,
-  })  : assert(imageUrl != null),
-        super(key: key);
+  })  : super(key: key);
 
   final String imageUrl;
-  final String nameText;
-  final String emailText;
-  final VoidCallback onTap;
-  final VoidCallback onTapImage;
+  final String? nameText;
+  final String? emailText;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapImage;
 
-  Color _iconColor(ThemeData theme) {
+  Color? _iconColor(ThemeData theme) {
     switch (theme.brightness) {
       case Brightness.light:
         return Colors.black45;
@@ -175,7 +173,7 @@ class UserAccountListTile extends StatelessWidget {
           return child;
         }
         return CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes : null,
+          value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
         );
       },
       errorBuilder: (context, error, stackTrace) {
@@ -192,14 +190,14 @@ class UserAccountListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget tittleWidget;
+    Widget? tittleWidget;
     if (nameText?.isNotEmpty ?? false) {
-      tittleWidget = Text(nameText);
+      tittleWidget = Text(nameText!);
     }
 
-    Text subtitleWidget;
+    Text? subtitleWidget;
     if (emailText?.isNotEmpty ?? false) {
-      subtitleWidget = Text(emailText);
+      subtitleWidget = Text(emailText!);
     }
 
     return ListTile(

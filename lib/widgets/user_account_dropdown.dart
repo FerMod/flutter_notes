@@ -12,31 +12,30 @@ class UserAccountDropdown extends StatefulWidget {
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAccountDropdown({
-    Key key,
+    Key? key,
     this.decoration,
     this.margin = const EdgeInsets.only(bottom: 8.0),
     this.accountPicture,
-    @required this.accountName,
-    @required this.accountEmail,
+    required this.accountName,
+    required this.accountEmail,
     this.onTap,
     this.showArrow = false,
     this.arrowColor = Colors.white,
-  })  : assert(showArrow != null),
-        super(key: key);
+  }) : super(key: key);
 
   /// The height value of the account details.
   static const double accountDetailsHeight = 56.0;
 
   /// The header's background. If decoration is null then a [BoxDecoration]
   /// with its background color set to the current theme's primaryColor is used.
-  final Decoration decoration;
+  final Decoration? decoration;
 
   /// The margin around the drawer header.
   final EdgeInsetsGeometry margin;
 
   /// A widget placed in the left that represents the current user's account
   /// picture. Normally a [CircleAvatar].
-  final Widget accountPicture;
+  final Widget? accountPicture;
 
   /// A widget that represents the user's current account name. It is displayed
   /// on the right of the [accountPicture], on top of the [accountEmail].
@@ -49,7 +48,7 @@ class UserAccountDropdown extends StatefulWidget {
 
   /// A callback that is called when the horizontal area which contains the
   /// [accountPicture], [accountName] and [accountEmail] is tapped.
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Show an arrow that responds to the user clicks.
   final bool showArrow;
@@ -103,33 +102,33 @@ class _UserAccountDropdownState extends State<UserAccountDropdown> {
 
 class _AccountDetails extends StatefulWidget {
   const _AccountDetails({
-    Key key,
+    Key? key,
     this.accountPicture,
-    @required this.accountName,
-    @required this.accountEmail,
+    this.accountName,
+    this.accountEmail,
     this.child,
     this.onTap,
-    @required this.isOpen,
+    required this.isOpen,
     this.showArrow = false,
     this.arrowColor,
   }) : super(key: key);
 
-  final Widget accountPicture;
-  final Widget accountName;
-  final Widget accountEmail;
-  final Widget child;
-  final VoidCallback onTap;
+  final Widget? accountPicture;
+  final Widget? accountName;
+  final Widget? accountEmail;
+  final Widget? child;
+  final VoidCallback? onTap;
   final bool isOpen;
   final bool showArrow;
-  final Color arrowColor;
+  final Color? arrowColor;
 
   @override
   _AccountDetailsState createState() => _AccountDetailsState();
 }
 
 class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProviderStateMixin {
-  Animation<double> _animation;
-  AnimationController _controller;
+  late Animation<double> _animation;
+  AnimationController? _controller;
 
   @override
   void initState() {
@@ -141,7 +140,7 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
         vsync: this,
       );
       _animation = CurvedAnimation(
-        parent: _controller,
+        parent: _controller!,
         curve: Curves.fastOutSlowIn,
         reverseCurve: Curves.fastOutSlowIn.flipped,
       );
@@ -164,7 +163,7 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
     // If the state of the arrow did not change, there is no need to trigger the
     // animation
     if (oldWidget.isOpen != widget.isOpen) {
-      widget.isOpen ? _controller.reverse() : _controller.forward();
+      widget.isOpen ? _controller!.reverse() : _controller!.forward();
     }
   }
 
@@ -198,9 +197,9 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: DefaultTextStyle(
-                style: theme.primaryTextTheme.bodyText1,
+                style: theme.primaryTextTheme.bodyText1!,
                 overflow: TextOverflow.ellipsis,
-                child: widget.accountName,
+                child: widget.accountName as Widget,
               ),
             ),
           ),
@@ -210,9 +209,9 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: DefaultTextStyle(
-                style: theme.primaryTextTheme.bodyText2,
+                style: theme.primaryTextTheme.bodyText2!,
                 overflow: TextOverflow.ellipsis,
-                child: widget.accountEmail,
+                child: widget.accountEmail as Widget,
               ),
             ),
           ),
@@ -249,7 +248,7 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
 }
 
 class _AccountDetailsLayout extends MultiChildLayoutDelegate {
-  _AccountDetailsLayout({@required this.textDirection});
+  _AccountDetailsLayout({required this.textDirection});
 
   static const String accountPicture = 'accountPicture';
   static const String accountName = 'accountName';
@@ -260,14 +259,14 @@ class _AccountDetailsLayout extends MultiChildLayoutDelegate {
 
   @override
   void performLayout(Size size) {
-    Size iconSize;
+    Size? iconSize;
     if (hasChild(dropdownIcon)) {
       // place the dropdown icon in bottom right (LTR) or bottom left (RTL)
       iconSize = layoutChild(dropdownIcon, BoxConstraints.loose(size));
       positionChild(dropdownIcon, _offsetForIcon(size, iconSize));
     }
 
-    Size pictureSize;
+    Size? pictureSize;
     if (hasChild(accountPicture)) {
       // place the picture in the right (LTR) or left (RTL)
       pictureSize = layoutChild(accountPicture, BoxConstraints.loose(size));
@@ -344,21 +343,21 @@ class _AccountDetailsLayout extends MultiChildLayoutDelegate {
 
 class _AnimatedArrow extends AnimatedWidget {
   _AnimatedArrow({
-    Key key,
+    Key? key,
     this.onTap,
     this.height,
     this.width,
     this.color,
-    Animation<double> animation,
+    required Animation<double> animation,
   }) : super(
           key: key,
           listenable: animation,
         );
 
-  final Color color;
-  final double height;
-  final double width;
-  final VoidCallback onTap;
+  final Color? color;
+  final double? height;
+  final double? width;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

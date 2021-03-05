@@ -18,21 +18,21 @@ class CachedColor {
   ///
   /// The value is looked up in the cached colors and if there isn't any, it is
   /// added to the the cache for future access.
-  factory CachedColor(Color value) {
+  factory CachedColor(Color? value) {
     return _cache.putIfAbsent(value, () => CachedColor._internal(value));
   }
 
   CachedColor._internal(this.value);
 
   /// The [Color] value stored in the cache.
-  final Color value;
+  final Color? value;
 
   /// The relative luminance of the color. A brightness value between
   /// 0 (darkest) and 1 (lightest).
   ///
   /// See <https://www.w3.org/TR/WCAG20/#relativeluminancedef>.
-  double get relativeLuminance => _relativeLuminance ??= value.computeLuminance();
-  double _relativeLuminance;
+  double get relativeLuminance => _relativeLuminance ??= value!.computeLuminance();
+  double? _relativeLuminance;
 
   /// The ratio of the luminance of the brightest color (white) to that of the
   /// darkest color (black).
@@ -45,8 +45,8 @@ class CachedColor {
   /// The cached map is wrapped around with an [UnmodifiableMapView], that
   /// forwards all members to the map, except for operations that modify the
   /// map. Modifying operations throw instead.
-  static UnmodifiableMapView<Color, CachedColor> get cache => UnmodifiableMapView(_cache);
-  static final Map<Color, CachedColor> _cache = {};
+  static UnmodifiableMapView<Color?, CachedColor> get cache => UnmodifiableMapView(_cache);
+  static final Map<Color?, CachedColor> _cache = {};
 
   /// Returns the color [Colors.black] or [Colors.white] that has more contrast
   /// with the color [value].

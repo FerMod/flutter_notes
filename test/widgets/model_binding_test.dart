@@ -14,7 +14,7 @@ class TestModel {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final TestModel otherModel = other;
+    final otherModel = other as TestModel;
     return otherModel.value == value;
   }
 
@@ -26,7 +26,7 @@ class TestModel {
 }
 
 void main() {
-  List log;
+  List? log;
 
   setUp(() {
     log = <dynamic>[];
@@ -36,7 +36,7 @@ void main() {
     testWidgets('returns the correct model', (tester) async {
       final builder = Builder(
         builder: (context) {
-          log.add(ModelBinding.of<TestModel>(context));
+          log!.add(ModelBinding.of<TestModel>(context));
           return Container();
         },
       );
@@ -73,7 +73,7 @@ void main() {
       final globalKey = GlobalKey(debugLabel: 'Test Key');
       await tester.pumpWidget(Container(key: globalKey));
 
-      expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext), isNull);
+      expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext!), isNull);
     });
 
     /*
@@ -114,7 +114,7 @@ void main() {
 
     testWidgets('throws when context is null', (tester) async {
       expect(
-        () => ModelBinding.of<TestModel>(null),
+        () => ModelBinding.of<TestModel>(null as BuildContext),
         throwsA(isAssertionError),
       );
     });
@@ -142,7 +142,7 @@ void main() {
       await tester.pumpWidget(widgetDynamic);
 
       expect(
-        () => ModelBinding.of(globalKey.currentContext),
+        () => ModelBinding.of(globalKey.currentContext!),
         throwsA(isAssertionError.having(
           (e) => e.message,
           'message',
@@ -168,7 +168,7 @@ void main() {
       final widgetObject = buildOfTypeObject();
       await tester.pumpWidget(widgetObject);
 
-      expect(model, equals(ModelBinding.of<Object>(globalKey.currentContext)));
+      expect(model, equals(ModelBinding.of<Object>(globalKey.currentContext!)));
     });
 
     testWidgets('throws when no model exist', (tester) async {
@@ -176,7 +176,7 @@ void main() {
       await tester.pumpWidget(Container(key: globalKey));
 
       expect(
-        () => ModelBinding.of<TestModel>(globalKey.currentContext),
+        () => ModelBinding.of<TestModel>(globalKey.currentContext!),
         throwsA(isAssertionError.having(
           (e) => e.message,
           'message',
@@ -201,7 +201,7 @@ void main() {
             child: Builder(
               key: globalKey,
               builder: (context) {
-                log.add(ModelBinding.of<TestModel>(context));
+                log!.add(ModelBinding.of<TestModel>(context));
                 return Container();
               },
             ),
@@ -215,14 +215,14 @@ void main() {
       // The first model is present
       expect(log, <TestModel>[firstModel]);
 
-      log.clear();
+      log!.clear();
       await tester.pump();
 
       // No new models added
       expect(log, equals(<TestModel>[]));
 
-      log.clear();
-      ModelBinding.update<TestModel>(globalKey.currentContext, secondModel);
+      log!.clear();
+      ModelBinding.update<TestModel>(globalKey.currentContext!, secondModel);
       await tester.pump();
 
       // The new model should be present
@@ -235,7 +235,7 @@ void main() {
       await tester.pumpWidget(Container(key: globalKey));
 
       expect(
-        () => ModelBinding.update<TestModel>(globalKey.currentContext, model),
+        () => ModelBinding.update<TestModel>(globalKey.currentContext!, model),
         throwsA(isAssertionError.having(
           (e) => e.message,
           'message',
@@ -270,7 +270,7 @@ void main() {
       await tester.pumpWidget(widgetDynamic);
 
       expect(
-        () => ModelBinding.update<dynamic>(globalKeyDynamic.currentContext, firstModel),
+        () => ModelBinding.update<dynamic>(globalKeyDynamic.currentContext!, firstModel),
         throwsA(isAssertionError.having(
           (e) => e.message,
           'message',
@@ -286,7 +286,7 @@ void main() {
             child: Builder(
               key: globalKeyObject,
               builder: (context) {
-                log.add(ModelBinding.of<Object>(context));
+                log!.add(ModelBinding.of<Object>(context));
                 return Container();
               },
             ),
@@ -299,7 +299,7 @@ void main() {
       // The first model should be present
       expect(log, equals(<Object>[firstModel]));
 
-      ModelBinding.update<Object>(globalKeyObject.currentContext, secondModel);
+      ModelBinding.update<Object>(globalKeyObject.currentContext!, secondModel);
       await tester.pump();
 
       // The new model should be present
@@ -356,7 +356,7 @@ void main() {
       final builder = Builder(
         key: globalKey,
         builder: (context) {
-          log.add(ModelBinding.of<TestModel>(context));
+          log!.add(ModelBinding.of<TestModel>(context));
           return Container();
         },
       );
@@ -367,7 +367,7 @@ void main() {
         child: builder,
       );
       await tester.pumpWidget(firstWidget);
-      ModelBinding.update<TestModel>(globalKey.currentContext, firstModel);
+      ModelBinding.update<TestModel>(globalKey.currentContext!, firstModel);
 
       expect(log, equals(<TestModel>[firstModel]));
 
@@ -377,7 +377,7 @@ void main() {
         child: builder,
       );
       await tester.pumpWidget(secondWidget);
-      ModelBinding.update<TestModel>(globalKey.currentContext, secondModel);
+      ModelBinding.update<TestModel>(globalKey.currentContext!, secondModel);
 
       expect(log, equals(<TestModel>[firstModel]));
 
@@ -387,7 +387,7 @@ void main() {
         child: builder,
       );
       await tester.pumpWidget(thirdWidget);
-      ModelBinding.update<TestModel>(globalKey.currentContext, thirdModel);
+      ModelBinding.update<TestModel>(globalKey.currentContext!, thirdModel);
 
       expect(log, equals(<TestModel>[firstModel, thirdModel]));
     });
@@ -396,7 +396,7 @@ void main() {
       final model = TestModel();
 
       expect(
-        () => ModelBinding.update<TestModel>(null, model),
+        () => ModelBinding.update<TestModel>(null as BuildContext, model),
         throwsA(isAssertionError),
       );
     });
@@ -413,7 +413,7 @@ void main() {
           key: globalKey,
           child: Builder(
             builder: (context) {
-              log.add(ModelBinding.of<TestModel>(context));
+              log!.add(ModelBinding.of<TestModel>(context));
               return Container();
             },
           ),
@@ -445,8 +445,8 @@ void main() {
                   initialModel: TestModel(value: 3),
                   child: Container(
                     child: Builder(builder: (context) {
-                      final testModel = ModelBinding.of<TestModel>(context);
-                      log.add('a: ${testModel.value}');
+                      final testModel = ModelBinding.of<TestModel>(context)!;
+                      log!.add('a: ${testModel.value}');
                       return Container();
                     }),
                   ),
@@ -460,8 +460,8 @@ void main() {
               child: Container(
                 child: Container(
                   child: Builder(builder: (context) {
-                    final testModel = ModelBinding.of<TestModel>(context);
-                    log.add('b: ${testModel.value}');
+                    final testModel = ModelBinding.of<TestModel>(context)!;
+                    log!.add('b: ${testModel.value}');
                     return Container();
                   }),
                 ),
@@ -475,23 +475,23 @@ void main() {
     await tester.pumpWidget(widget);
 
     expect(log, equals(<String>['a: 3']));
-    log.clear();
+    log!.clear();
 
     await tester.pump();
 
     expect(log, equals(<String>[]));
-    log.clear();
+    log!.clear();
 
     flipStatefulWidget(tester);
     await tester.pump();
 
     expect(log, equals(<String>['b: 2']));
-    log.clear();
+    log!.clear();
 
     flipStatefulWidget(tester);
     await tester.pump();
 
     expect(log, equals(<String>['a: 3']));
-    log.clear();
+    log!.clear();
   });
 }

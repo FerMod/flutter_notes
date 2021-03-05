@@ -3,11 +3,9 @@ import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-typedef QueryFunction = Query Function(Query query);
+typedef QueryFunction = Query Function(Query? query);
 typedef FromSnapshot<T> = T Function(DocumentSnapshot snapshot);
 // typedef FromMap<T> = T Function(Map<String, dynamic> data);
 // typedef ToMap<T> = Map<String, dynamic> Function(T entity);
@@ -26,7 +24,7 @@ abstract class FirebaseCollection<T> {
 
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot);
   Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot);
-  Future<DocumentReference> insert(Map<String, dynamic> data, {String id, bool merge});
+  Future<DocumentReference> insert(Map<String, dynamic> data, {String? id, bool merge = false});
   Future<void> update(String id, Map<String, dynamic> data);
   Future<void> delete(String id);
 }
@@ -46,20 +44,20 @@ class Document<T> extends FirebaseDocument<T> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String path;
 
-  DocumentReference reference;
+  late DocumentReference reference;
 
-  Document({@required this.path}) {
+  Document({required this.path}) {
     reference = _firestore.doc(path);
   }
 
   @override
   Future<T> data(FromSnapshot<T> entityFromSnapshot) {
-    return reference.get()?.then(entityFromSnapshot);
+    return reference.get().then(entityFromSnapshot);
   }
 
   @override
   Stream<T> stream(FromSnapshot<T> entityFromSnapshot) {
-    return reference.snapshots()?.map(entityFromSnapshot);
+    return reference.snapshots().map(entityFromSnapshot);
   }
 
   /// Updates data on the document. The data will be merged with any existing
@@ -89,24 +87,24 @@ class Collection<T> extends FirebaseCollection<T> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String path;
 
-  CollectionReference reference;
+  CollectionReference? reference;
 
-  Collection({@required this.path}) {
+  Collection({required this.path}) {
     reference = _firestore.collection(path);
   }
 
   @override
-  Future<List<T>> data(FromSnapshot<T> entityFromSnapshot, [QueryFunction query]) async {
+  Future<List<T>> data(FromSnapshot<T> entityFromSnapshot, [QueryFunction? query]) async {
     // final queryFunction = query(reference) ?? reference;
     // final queryFunction = query != null ? query(reference) : reference;
-    final queryFunction = query?.call(reference) ?? reference;
+    final queryFunction = query?.call(reference) ?? reference!;
     final snapshots = await queryFunction.get();
     return snapshots.docs.map(entityFromSnapshot).toList();
   }
 
   @override
-  Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot, [QueryFunction query]) {
-    final queryFunction = query?.call(reference) ?? reference;
+  Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot, [QueryFunction? query]) {
+    final queryFunction = query?.call(reference) ?? reference!;
     // final dataStream =
     // StreamController<List<T>> streamController;
     // streamController = StreamController(onListen: () {
@@ -128,10 +126,9 @@ class Collection<T> extends FirebaseCollection<T> {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  Future<DocumentReference> insert(Map<String, dynamic> data, {String id, bool merge = false}) async {
-    assert(data != null);
+  Future<DocumentReference> insert(Map<String, dynamic> data, {String? id, bool merge = false}) async {
     // reference.add(data);
-    final newDocument = reference.doc(id);
+    final newDocument = reference!.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
     return newDocument;
   }
@@ -143,9 +140,8 @@ class Collection<T> extends FirebaseCollection<T> {
   /// `not-found` will be thrown.
   @override
   Future<void> update(String id, Map<String, dynamic> data) async {
-    assert(id != null);
     try {
-      reference.doc(id).update(data);
+      reference!.doc(id).update(data);
     } on FirebaseException catch (e) {
       if (e.code == 'not-found') {
         developer.log('Error updating document: ${e.message}');
@@ -156,25 +152,24 @@ class Collection<T> extends FirebaseCollection<T> {
 
   @override
   Future<void> delete(String id) async {
-    assert(id != null);
-    reference.doc(id).delete();
+    reference!.doc(id).delete();
   }
 }
 
-class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication {
+class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String collection;
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out).
-  Stream<User> get authStateChange => _auth.authStateChanges().distinct();
+  Stream<User?> get authStateChange => _auth.authStateChanges().distinct();
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out) and also token refresh events.
   ///
   /// It notifies the same state changes as [authStateChange] in addition to
   /// notifications about token refresh events.
-  Stream<User> get idTokenChanges => _auth.userChanges().distinct();
+  Stream<User?> get idTokenChanges => _auth.userChanges().distinct();
 
   /// Notifies about changes to any user updates.
   ///
@@ -184,7 +179,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   ///
   /// The purpose of this Stream is to for listening to realtime updates to the
   /// user without manually having to call [reload].
-  Stream<User> get userChanges => _auth.userChanges().distinct();
+  Stream<User?> get userChanges => _auth.userChanges().distinct();
 
   /// Returns the current [User] if they are currently signed-in, or `null` if
   /// not.
@@ -192,33 +187,33 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   /// You should not use this getter to listen to users state changes, instead
   /// use [authStateChanges], [idTokenChanges] or [userChanges] to subscribe to
   /// updates.
-  User get currentUser => _auth.currentUser;
+  User? get currentUser => _auth.currentUser;
 
-  UserData({@required this.collection});
+  UserData({required this.collection});
 
   @override
-  Future<T> data(FromSnapshot<T> entityFromSnapshot) async {
+  Future<T?> data(FromSnapshot<T?> entityFromSnapshot) async {
     final user = _auth.currentUser;
     if (user == null) return null;
 
-    final doc = Document<T>(path: '$collection/${user.uid}');
+    final doc = Document<T?>(path: '$collection/${user.uid}');
     return doc.data(entityFromSnapshot);
   }
 
   @override
-  Stream<T> stream(FromSnapshot<T> entityFromSnapshot) {
+  Stream<T?> stream(FromSnapshot<T?> entityFromSnapshot) {
     final dataStream = userChanges.switchMap((user) {
       if (user == null) {
         print('User is currently signed out!');
-        return Stream<T>.value(null);
+        return Stream<T?>.value(null);
       }
 
       print('User is signed in!');
-      final doc = Document<T>(path: '$collection/${user.uid}');
+      final doc = Document<T?>(path: '$collection/${user.uid}');
       return doc.stream(entityFromSnapshot);
     });
 
-    StreamController<T> streamController;
+    late StreamController<T> streamController;
     streamController = StreamController<T>(onListen: () {
       dataStream.pipe(streamController);
     });
@@ -251,7 +246,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
   @override
   Future<UserCredential> signInAnonymously() async {
     final userCredential = await _auth.signInAnonymously();
-    final user = userCredential.user;
+    final user = userCredential.user!;
     final col = Collection<T>(path: collection);
     col.insert({
       'name': user.displayName ?? '',
@@ -302,7 +297,7 @@ class UserData<T> extends FirebaseDocument<T> implements FirebaseAuthentication 
         email: email,
         password: password,
       );
-      final user = userCredential.user;
+      final user = userCredential.user!;
       final col = Collection<T>(path: collection);
       col.insert({
         'name': user.displayName ?? '',

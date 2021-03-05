@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class TitleDrawerHeader extends StatelessWidget {
   const TitleDrawerHeader({
-    Key key,
+    Key? key,
     this.margin = const EdgeInsets.only(bottom: 8.0),
     this.padding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
     this.duration = const Duration(milliseconds: 250),
     this.curve = Curves.fastOutSlowIn,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   final EdgeInsets margin;
@@ -45,12 +45,12 @@ class TitleDrawerHeader extends StatelessWidget {
 @deprecated
 class AccountDrawerHeader extends StatelessWidget {
   const AccountDrawerHeader({
-    Key key,
+    Key? key,
     this.margin = const EdgeInsets.only(bottom: 8.0),
     this.padding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
     this.duration = const Duration(milliseconds: 250),
     this.curve = Curves.fastOutSlowIn,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   final EdgeInsets margin;

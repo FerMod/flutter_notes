@@ -9,14 +9,13 @@ import 'package:flutter/material.dart';
 
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
-    Key key,
+    Key? key,
     this.model,
-    @required this.modelBindingState,
-    @required Widget child,
-  })  : assert(modelBindingState != null),
-        super(key: key, child: child);
+    required this.modelBindingState,
+    required Widget child,
+  })   : super(key: key, child: child);
 
-  final T model;
+  final T? model;
   final _ModelBindingState<T> modelBindingState;
 
   @override
@@ -29,8 +28,8 @@ class _ModelBindingScope<T> extends InheritedWidget {
 /// ModelBinding returned by [ModelBinding.of].
 class ModelBinding<T> extends StatefulWidget {
   const ModelBinding({
-    Key key,
-    @required this.initialModel,
+    Key? key,
+    required this.initialModel,
     this.child,
   })  : assert(initialModel != null),
         super(key: key);
@@ -40,7 +39,7 @@ class ModelBinding<T> extends StatefulWidget {
   final T initialModel;
 
   /// The widget below this widget in the tree.
-  final Widget child;
+  final Widget? child;
 
   @override
   _ModelBindingState<T> createState() => _ModelBindingState<T>();
@@ -50,13 +49,7 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// If there is no [ModelBinding] in scope, then this will assert in
   /// debug mode, and throw an exception in release mode.
-  static T of<T>(BuildContext context) {
-    assert(
-      context != null,
-      'Tried to call ModelBinding.of<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
-      'StatefulWidget was disposed.',
-    );
+  static T? of<T>(BuildContext context) {
     assert(
       T != dynamic,
       'Tried to call ModelBinding.of<dynamic>.\n'
@@ -65,7 +58,7 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
     return scope.modelBindingState.currentModel;
   }
 
@@ -79,13 +72,7 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// * [of], which is a similar function, except that it will throw an
   ///   exception if a [ModelBinding] is not found in the given context.
-  static T maybeOf<T>(BuildContext context) {
-    assert(
-      context != null,
-      'Tried to call ModelBinding.maybeOf<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
-      'StatefulWidget was disposed.',
-    );
+  static T? maybeOf<T>(BuildContext context) {
     assert(
       T != dynamic,
       'Tried to call ModelBinding.of<dynamic>.\n'
@@ -94,19 +81,13 @@ class ModelBinding<T> extends StatefulWidget {
     );
 
     final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
-    return scope?.modelBindingState?.currentModel;
+    return scope?.modelBindingState.currentModel;
   }
 
   /// Updates the model that corresponds to the given [context] with the new
   /// given one and notifies the framework that the internal state of this
   /// object has changed.
   static bool update<T>(BuildContext context, T newModel) {
-    assert(
-      context != null,
-      'Tried to call ModelBinding.update<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
-      'StatefulWidget was disposed.',
-    );
     // assert(newModel != null); // Should we allow null?
     assert(
       T != dynamic,
@@ -116,7 +97,7 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
     //assert(scope != null, 'a ModelBinding<T> ancestor was not found');
     return scope.modelBindingState.updateModel(newModel);
   }
@@ -131,8 +112,8 @@ class ModelBinding<T> extends StatefulWidget {
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
   final GlobalKey _modelBindingScopeKey = GlobalKey();
 
-  T _currentModel;
-  T get currentModel => _currentModel;
+  T? _currentModel;
+  T? get currentModel => _currentModel;
 
   @override
   void initState() {
@@ -172,7 +153,7 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
       key: _modelBindingScopeKey,
       model: _currentModel,
       modelBindingState: this,
-      child: widget.child,
+      child: widget.child!,
     );
   }
 }

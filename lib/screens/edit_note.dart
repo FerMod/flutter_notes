@@ -22,8 +22,8 @@ enum ChangesAction {
 
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
-    Key key,
-    @required this.note,
+    Key? key,
+    required this.note,
   }) : super(key: key);
 
   final NoteModel note;
@@ -35,10 +35,10 @@ class EditNoteScreen extends StatefulWidget {
 class _EditNoteScreenState extends State<EditNoteScreen> {
   final _scrollController = ScrollController();
 
-  TextEditingController _titleEditingController;
-  TextEditingController _contentEditingController;
-  Color _color;
-  DateTime _lastEdit;
+  TextEditingController? _titleEditingController;
+  TextEditingController? _contentEditingController;
+  Color? _color;
+  DateTime? _lastEdit;
 
   @override
   void initState() {
@@ -48,14 +48,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _color = widget.note.color;
     _lastEdit = widget.note.lastEdit;
 
-    _titleEditingController.addListener(_updateLastEdit);
-    _contentEditingController.addListener(_updateLastEdit);
+    _titleEditingController!.addListener(_updateLastEdit);
+    _contentEditingController!.addListener(_updateLastEdit);
   }
 
   @override
   void dispose() {
-    _titleEditingController.dispose();
-    _contentEditingController.dispose();
+    _titleEditingController!.dispose();
+    _contentEditingController!.dispose();
     super.dispose();
   }
 
@@ -65,14 +65,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   void _saveChanges() {
     widget.note
-      ..title = _titleEditingController.text
-      ..content = _contentEditingController.text
+      ..title = _titleEditingController!.text
+      ..content = _contentEditingController!.text
       ..color = _color
       ..lastEdit = _lastEdit;
   }
 
   bool _valuesChanged(NoteModel note) {
-    return note.title != _titleEditingController.text || note.content != _contentEditingController.text || note.color != _color || note.lastEdit != _lastEdit;
+    return note.title != _titleEditingController!.text || note.content != _contentEditingController!.text || note.color != _color || note.lastEdit != _lastEdit;
   }
 
   Future<void> _handleClose() async {
@@ -91,7 +91,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   Widget _createSaveButton() {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return TextButton(
       onPressed: _saveChanges,
       child: Text(localizations.save),
@@ -99,7 +99,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   Widget _createMenuButton() {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return PopupMenuButton<Commands>(
       tooltip: localizations.changeColor,
       onSelected: (result) {
@@ -131,7 +131,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -167,7 +167,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 onPressed: (index) {
                   setState(() {
                     _color = PredefinedColor.values[index].color;
-                    developer.log('Color: ${widget.note.color}, Value: ${widget.note.color.value}');
+                    developer.log('Color: ${widget.note.color}, Value: ${widget.note.color!.value}');
                   });
                   _updateLastEdit();
                 },
@@ -182,15 +182,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
 class _ScrollableContent extends StatelessWidget {
   const _ScrollableContent({
-    Key key,
-    @required this.scrollController,
-    @required this.titleEditingController,
-    @required this.contentEditingController,
+    Key? key,
+    required this.scrollController,
+    required this.titleEditingController,
+    required this.contentEditingController,
   }) : super(key: key);
 
   final ScrollController scrollController;
-  final TextEditingController titleEditingController;
-  final TextEditingController contentEditingController;
+  final TextEditingController? titleEditingController;
+  final TextEditingController? contentEditingController;
 
   @override
   Widget build(BuildContext context) {
@@ -216,15 +216,15 @@ class _ScrollableContent extends StatelessWidget {
 
 class _NoteTitleInput extends StatelessWidget {
   const _NoteTitleInput({
-    Key key,
-    @required this.titleEditingController,
+    Key? key,
+    required this.titleEditingController,
   }) : super(key: key);
 
-  final TextEditingController titleEditingController;
+  final TextEditingController? titleEditingController;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
@@ -241,16 +241,15 @@ class _NoteTitleInput extends StatelessWidget {
 
 class _NoteContentInput extends StatelessWidget {
   const _NoteContentInput({
-    Key key,
-    @required this.contentEditingController,
+    Key? key,
+    required this.contentEditingController,
   }) : super(key: key);
 
-  final TextEditingController contentEditingController;
+  final TextEditingController? contentEditingController;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: TextFormField(
@@ -269,12 +268,12 @@ class _NoteContentInput extends StatelessWidget {
 
 class _ColorButtons extends StatelessWidget {
   const _ColorButtons({
-    Key key,
-    @required this.initialValue,
-    @required this.onPressed,
+    Key? key,
+    required this.initialValue,
+    required this.onPressed,
   }) : super(key: key);
 
-  final Color initialValue;
+  final Color? initialValue;
   final void Function(int index) onPressed;
 
   @override
@@ -313,7 +312,7 @@ class _SectionDivider extends StatelessWidget {
 }
 
 class _SaveChangesAlertDialog extends StatelessWidget {
-  const _SaveChangesAlertDialog({Key key}) : super(key: key);
+  const _SaveChangesAlertDialog({Key? key}) : super(key: key);
 
   TextButton _createButton(BuildContext context, String text, ChangesAction action) {
     return TextButton(
@@ -324,7 +323,7 @@ class _SaveChangesAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
       content: SingleChildScrollView(
         child: ListBody(
@@ -354,9 +353,9 @@ enum PredefinedColor {
 
 extension PredefinedColorExtension on PredefinedColor {
   String get name => describeEnum(this);
-  int get value => color.value;
+  int get value => color!.value;
 
-  Color get color {
+  Color? get color {
     switch (this) {
       case PredefinedColor.yellow:
         return Color(0xFFE6B904);
@@ -375,6 +374,5 @@ extension PredefinedColorExtension on PredefinedColor {
       case PredefinedColor.custom:
         return Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     }
-    return null;
   }
 }
