@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 import '../model_binding.dart';
+import '../src/utils/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
 
 Locale? _deviceLocale;
@@ -32,7 +33,7 @@ class AppOptions {
         (e) => describeEnum(e) == map['themeMode'],
         orElse: () => ThemeMode.system,
       ),
-      locale: localeFromLanguageTag(map['locale']),
+      locale: LocaleUtils.localeFromLanguageTag(map['locale']),
       platform: TargetPlatform.values.firstWhere(
         (e) => describeEnum(e) == map['platform'],
         orElse: () => defaultTargetPlatform,

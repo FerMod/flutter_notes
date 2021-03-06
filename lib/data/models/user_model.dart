@@ -28,7 +28,7 @@ class UserModel {
       id: snapshot.id,
       name: data['name'],
       image: data['image'],
-      locale: Locale(data['locale']),
+      locale: LocaleUtils.localeFromLanguageTag(data['locale']),
       themeMode: ThemeMode.values.firstWhereOrNull(
         (e) => e.name == data['themeMode'],
       ),
