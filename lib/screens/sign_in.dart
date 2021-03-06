@@ -139,7 +139,7 @@ class _BodyWidget extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
-  Validation<String> _validateNotEmpty(BuildContext context, String labelText) {
+  Validation<String?> _validateNotEmpty(BuildContext context, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationEmpty(labelText),

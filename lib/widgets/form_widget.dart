@@ -59,7 +59,7 @@ class TextFormInput extends FormField<String> {
           },
         );
 
-  final List<Validation<String>> validations;
+  final List<Validation<String?>> validations;
 }
 
 class DividerText extends StatelessWidget {
@@ -93,11 +93,11 @@ class FieldValidator<T> {
     this.validations = const [],
   });
 
-  final List<Validation<T>> validations;
+  final List<Validation<T?>> validations;
 
   String? validate(T? value) {
     final validation = validations.firstWhereOrNull(
-      (e) => e.test.call(value),
+      (e) => e.test(value),
     );
     return validation?.errorMessage;
   }

@@ -148,7 +148,7 @@ class _BodyWidget extends StatelessWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
 
-  Validation<String> _validateNotEmpty(BuildContext context, String labelText) {
+  Validation<String?> _validateNotEmpty(BuildContext context, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationEmpty(labelText),
@@ -156,7 +156,7 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  Validation<String> _validateEqual(BuildContext context, String otherValue, String labelText) {
+  Validation<String?> _validateEqual(BuildContext context, String otherValue, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationNotMatching(labelText),
