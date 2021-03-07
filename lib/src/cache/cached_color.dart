@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 ///
 /// * <https://en.wikipedia.org/wiki/Relative_luminance>
 class CachedColor {
+  CachedColor._internal(this.value);
+
   /// Creates a [CachedColor] instance that caches the color [value].
   ///
   /// The value is looked up in the cached colors and if there isn't any, it is
@@ -21,8 +23,6 @@ class CachedColor {
   factory CachedColor(Color? value) {
     return _cache.putIfAbsent(value, () => CachedColor._internal(value));
   }
-
-  CachedColor._internal(this.value);
 
   /// The [Color] value stored in the cache.
   final Color? value;
@@ -77,5 +77,5 @@ class CachedColor {
   }
 
   @override
-  String toString() => "$CachedColor(value: $value, relativeLuminance: $_relativeLuminance, contrastRatio: $contrastRatio)";
+  String toString() => '$CachedColor(value: $value, relativeLuminance: $_relativeLuminance, contrastRatio: $contrastRatio)';
 }

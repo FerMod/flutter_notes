@@ -68,7 +68,7 @@ class Document<T> extends FirebaseDocument<T> {
   @override
   Future<void> update(Map<String, dynamic> data) async {
     try {
-      reference.update(data);
+      return reference.update(data);
     } on FirebaseException catch (e) {
       if (e.code == 'not-found') {
         developer.log('Error updating document: ${e.message}');
@@ -79,7 +79,7 @@ class Document<T> extends FirebaseDocument<T> {
 
   @override
   Future<void> delete() async {
-    reference.delete();
+    return reference.delete();
   }
 }
 
@@ -141,7 +141,7 @@ class Collection<T> extends FirebaseCollection<T> {
   @override
   Future<void> update(String id, Map<String, dynamic> data) async {
     try {
-      reference!.doc(id).update(data);
+      return reference.doc(id).update(data);
     } on FirebaseException catch (e) {
       if (e.code == 'not-found') {
         developer.log('Error updating document: ${e.message}');
@@ -152,7 +152,7 @@ class Collection<T> extends FirebaseCollection<T> {
 
   @override
   Future<void> delete(String id) async {
-    reference!.doc(id).delete();
+    return reference.doc(id).delete();
   }
 }
 
@@ -248,7 +248,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final userCredential = await _auth.signInAnonymously();
     final user = userCredential.user!;
     final col = Collection<T>(path: collection);
-    col.insert({
+    await col.insert({
       'name': user.displayName ?? '',
       'image': user.photoURL ?? '',
     }, id: user.uid);
@@ -256,6 +256,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     return userCredential;
   }
 
+  @override
   Future<UserCredential> signIn(String email, String password) async {
     UserCredential userCredential;
     try {
@@ -289,20 +290,20 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     return userCredential;
   }
 
+  @override
   Future<UserCredential> signUp(String email, String password) async {
-    UserCredential userCredential;
-
     try {
-      userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       final user = userCredential.user!;
       final col = Collection<T>(path: collection);
-      col.insert({
+      await col.insert({
         'name': user.displayName ?? '',
         'image': user.photoURL ?? '',
       }, id: user.uid);
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       developer.log('${e.code}: ${e.message}');
       // switch (e.code) {
@@ -324,8 +325,6 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       print('Exception thrown when signing up.\n$e');
       rethrow;
     }
-
-    return userCredential;
   }
 
   @override
@@ -334,9 +333,9 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     if (user == null) return;
 
     try {
-      user.delete();
+      await user.delete();
       final col = Collection<T>(path: collection);
-      col.delete(user.uid);
+      return col.delete(user.uid);
     } on FirebaseAuthException catch (e) {
       developer.log('${e.code}: ${e.message}');
       // if (e.code == 'requires-recent-login') {

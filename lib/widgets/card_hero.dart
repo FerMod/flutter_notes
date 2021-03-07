@@ -84,6 +84,7 @@ class CardHero extends StatelessWidget {
   /// same location for a long period of time.
   final GestureLongPressCallback? onLongPress;
 
+  @override
   Widget build(BuildContext context) {
     return Hero(
       tag: tag!,

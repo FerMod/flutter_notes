@@ -39,7 +39,6 @@ class NotesListScreen extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) {
         return AnimatedBuilder(
           animation: animation,
-          child: widget,
           builder: (context, child) {
             return FadeTransition(
               opacity: animation.drive(
@@ -48,6 +47,7 @@ class NotesListScreen extends StatelessWidget {
               child: child,
             );
           },
+          child: widget,
         );
       },
       transitionDuration: Duration(milliseconds: 400),
@@ -76,7 +76,7 @@ class NotesListScreen extends StatelessWidget {
   void _newNote(BuildContext context) async {
     //final user = Provider.of<User>(context, listen: false);
     //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
-    final user = await notesListModel.userData.currentUser;
+    final user = notesListModel.userData.currentUser;
     final note = NoteModel(userId: user?.uid);
 
     final resultNote = await _navigateEditNote(context, note);
@@ -160,13 +160,13 @@ class NotesListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: Visibility(
+        visible: notesListModel.userData.currentUser != null,
         child: FloatingActionButton(
           onPressed: () => _newNote(context),
           tooltip: localizations.addNote,
-          child: const Icon(Icons.add),
           heroTag: 'note-new',
+          child: const Icon(Icons.add),
         ),
-        visible: notesListModel.userData.currentUser != null,
       ),
     );
   }
@@ -236,8 +236,8 @@ class _DeleteAlertDialog extends StatelessWidget {
 
   TextButton _createButton(BuildContext context, String text, bool result) {
     return TextButton(
-      child: Text(text),
       onPressed: () => Navigator.of(context, rootNavigator: true).pop(result),
+      child: Text(text),
     );
   }
 
@@ -319,7 +319,7 @@ class NoteListWidget extends StatelessWidget {
               tag: 'note-${note.id}',
               color: note.color,
               onTap: () => onTap!(note),
-              onLongPress: () => developer.log("Long press"),
+              onLongPress: () => developer.log('Long press'),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

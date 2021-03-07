@@ -42,10 +42,10 @@ class UserAvatar extends StatelessWidget {
           return child;
         }
         return AnimatedOpacity(
-          child: child,
           opacity: frame == null ? 0 : 1,
           duration: const Duration(seconds: 1),
           curve: Curves.easeOut,
+          child: child,
         );
       },
       loadingBuilder: (context, child, loadingProgress) {
@@ -108,14 +108,14 @@ class UserAvatar extends StatelessWidget {
     }
 
     return InkWell(
+      onTap: onTap,
+      mouseCursor: MouseCursor.defer,
       child: CircleAvatar(
-        child: leadingWidget,
         backgroundImage: imageProvider,
         foregroundColor: foregroundColor,
         backgroundColor: backgroundColor,
+        child: leadingWidget,
       ),
-      onTap: onTap,
-      mouseCursor: MouseCursor.defer,
     );
   }
 }
@@ -162,10 +162,10 @@ class UserAccountListTile extends StatelessWidget {
           return child;
         }
         return AnimatedOpacity(
-          child: child,
           opacity: frame == null ? 0 : 1,
           duration: const Duration(seconds: 1),
           curve: Curves.easeOut,
+          child: child,
         );
       },
       loadingBuilder: (context, child, loadingProgress) {

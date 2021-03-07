@@ -218,8 +218,8 @@ class FormMessageWidget extends StatelessWidget {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
         TextButton(
-          child: Text(materialLocalizations.closeButtonLabel),
           onPressed: () => Message.hide(context),
+          child: Text(materialLocalizations.closeButtonLabel),
         ),
       ];
     }
@@ -269,8 +269,8 @@ class FormMessage extends StatelessWidget {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
         TextButton(
-          child: Text(materialLocalizations.closeButtonLabel),
           onPressed: () => Message.hide(context),
+          child: Text(materialLocalizations.closeButtonLabel),
         ),
       ];
     }

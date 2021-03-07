@@ -283,16 +283,16 @@ class _ColorButtons extends StatelessWidget {
       // margin: const EdgeInsets.all(0),
       // padding: const EdgeInsets.all(0),
       alignment: Alignment.center,
-      child: ColorToggleButtons(
-        initialValue: initialValue,
-        colors: PredefinedColor.values.map((e) => e.color).toList(),
-        onPressed: onPressed,
-      ),
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
         ),
         //borderRadius: BorderRadius.all(Radius.zero),
+      ),
+      child: ColorToggleButtons(
+        initialValue: initialValue,
+        colors: PredefinedColor.values.map((e) => e.color).toList(),
+        onPressed: onPressed,
       ),
     );
   }
@@ -316,8 +316,8 @@ class _SaveChangesAlertDialog extends StatelessWidget {
 
   TextButton _createButton(BuildContext context, String text, ChangesAction action) {
     return TextButton(
-      child: Text(text),
       onPressed: () => Navigator.of(context, rootNavigator: true).pop(action),
+      child: Text(text),
     );
   }
 

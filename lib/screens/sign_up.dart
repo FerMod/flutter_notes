@@ -73,7 +73,7 @@ class _SignUpFormState extends State<_SignUpForm> {
     try {
       final credential = await _userData.signUp(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      Navigator.of(context).pushAndRemoveUntil(
+      return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
@@ -266,8 +266,8 @@ class _SignInButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: OutlinedButton(
-        child: Text(localizations.signIn),
         onPressed: onPressed,
+        child: Text(localizations.signIn),
       ),
     );
   }
@@ -287,8 +287,8 @@ class _SignUpButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ElevatedButton(
-        child: Text(localizations.signUp),
         onPressed: onPressed,
+        child: Text(localizations.signUp),
       ),
     );
   }

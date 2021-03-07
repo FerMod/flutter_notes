@@ -70,7 +70,6 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
   Widget build(BuildContext context) {
     print('build');
     return ToggleButtons(
-      children: _children,
       isSelected: _isSelected,
       onPressed: _handleOnPressed,
       color: Colors.transparent,
@@ -82,6 +81,7 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
       // highlightColor: null,
       // splashColor: null,
       renderBorder: false,
+      children: _children,
       // borderWidth: 1,
       // borderColor: Colors.transparent,
       // selectedBorderColor: Colors.transparent,
@@ -103,12 +103,12 @@ class ColorButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      child: Icon(Icons.check),
       decoration: BoxDecoration(
         border: Border.all(color: theme.iconTheme.color!, width: 1.0),
         borderRadius: BorderRadius.all(Radius.circular(2.0)),
         color: color,
       ),
+      child: Icon(Icons.check),
     );
   }
 }

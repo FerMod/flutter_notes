@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
+import '../screens/home_page.dart';
 import '../screens/notes_list.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';

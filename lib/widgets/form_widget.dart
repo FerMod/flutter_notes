@@ -80,8 +80,8 @@ class DividerText extends StatelessWidget {
         Divider(thickness: 2.0),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: text,
           color: color,
+          child: text,
         ),
       ],
     );

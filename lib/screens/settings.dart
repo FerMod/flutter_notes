@@ -173,14 +173,13 @@ class LocalizationSettingScreen extends StatelessWidget {
     final systemLocale = supportedLocales.firstWhere((locale) => deviceLocale!.languageCode == locale.languageCode);
     supportedLocales.sort((a, b) => a.languageCode.compareTo(b.languageCode));
 
-    final localesMap = Map<String?, DisplayOption>.fromIterable(
-      supportedLocales,
-      key: (locale) => locale.languageCode,
-      value: (locale) => DisplayOption(
-        title: _createLocalizedText(context, locale),
-        subtitle: Text(localizations.nameOf(locale.languageCode)!),
-      ),
-    );
+    final localesMap = {
+      for (var locale in supportedLocales)
+        locale.languageCode: DisplayOption(
+          title: _createLocalizedText(context, locale),
+          subtitle: Text(localizations.nameOf(locale.languageCode)!),
+        )
+    };
     localesMap.remove(systemLocale.languageCode);
     return {
       systemLocale.languageCode: DisplayOption(

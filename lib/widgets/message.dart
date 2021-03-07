@@ -149,17 +149,7 @@ class MessageWidget extends StatelessWidget {
   }
 
   Color? _backgroundColor(ThemeData theme, MaterialBannerThemeData bannerTheme) {
-    if (color != null) {
-      return color;
-    }
-    if (bannerTheme.backgroundColor != null) {
-      return bannerTheme.backgroundColor;
-    }
-    if (theme.colorScheme.surface != null) {
-      return theme.colorScheme.surface;
-    }
-
-    return Colors.transparent;
+    return color ?? bannerTheme.backgroundColor ?? theme.colorScheme.surface;
   }
 
   @override

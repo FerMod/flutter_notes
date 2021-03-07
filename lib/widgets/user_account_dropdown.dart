@@ -234,8 +234,8 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
         type: MaterialType.transparency,
         child: InkWell(
           onTap: widget.onTap,
-          child: accountDetails,
           excludeFromSemantics: true,
+          child: accountDetails,
         ),
       );
     }
