@@ -11,7 +11,7 @@ class _ModelBindingScope<T> extends InheritedWidget {
     this.model,
     required this.modelBindingState,
     required Widget child,
-  })   : super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   final T? model;
   final _ModelBindingState<T> modelBindingState;
@@ -49,6 +49,13 @@ class ModelBinding<T> extends StatefulWidget {
   /// debug mode, and throw an exception in release mode.
   static T? of<T>(BuildContext context) {
     assert(
+      // ignore: unnecessary_null_comparison
+      context != null,
+      'Tried to call ModelBinding.of<$T> on a `context` that is `null`.\n'
+      'This can happen if context of a StatefulWidget is used and that '
+      'StatefulWidget was disposed.',
+    );
+    assert(
       T != dynamic,
       'Tried to call ModelBinding.of<dynamic>.\n'
       'If you want to expose a variable that can be anything, consider '
@@ -72,6 +79,13 @@ class ModelBinding<T> extends StatefulWidget {
   ///   exception if a [ModelBinding] is not found in the given context.
   static T? maybeOf<T>(BuildContext context) {
     assert(
+      // ignore: unnecessary_null_comparison
+      context != null,
+      'Tried to call ModelBinding.maybeOf<$T> on a `context` that is `null`.\n'
+      'This can happen if context of a StatefulWidget is used and that '
+      'StatefulWidget was disposed.',
+    );
+    assert(
       T != dynamic,
       'Tried to call ModelBinding.of<dynamic>.\n'
       'If you want to expose a variable that can be anything, consider '
@@ -86,6 +100,13 @@ class ModelBinding<T> extends StatefulWidget {
   /// given one and notifies the framework that the internal state of this
   /// object has changed.
   static bool update<T>(BuildContext context, T newModel) {
+    assert(
+      // ignore: unnecessary_null_comparison
+      context != null,
+      'Tried to call ModelBinding.update<$T> on a `context` that is `null`.\n'
+      'This can happen if context of a StatefulWidget is used and that '
+      'StatefulWidget was disposed.',
+    );
     // assert(newModel != null); // Should we allow null?
     assert(
       T != dynamic,

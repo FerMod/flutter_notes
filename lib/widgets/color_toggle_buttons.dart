@@ -37,18 +37,20 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
     final index = colorsList.indexOf(widget.initialValue);
     _currentIndex = index != -1 ? index : 0;
     _isSelected[_currentIndex!] = true;
-    print(_isSelected.toString());
 
     // Init list of cached colors
     _cachedColors = List.generate(
       colorsList.length,
-      (index) => CachedColor(colorsList[index]),
+      (index) => CachedColor(colorsList[index]!),
     );
 
     // Init the list of the color buttons that will be used.
     _children = List.generate(
       colorsList.length,
-      (index) => ColorButton(color: _cachedColors[index].value),
+      (index) => ColorButton(
+        color: _cachedColors[index].value,
+        icon: const Icon(Icons.check),
+      ),
     );
   }
 
@@ -68,7 +70,6 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     return ToggleButtons(
       isSelected: _isSelected,
       onPressed: _handleOnPressed,
@@ -95,9 +96,11 @@ class ColorButton extends StatelessWidget {
   const ColorButton({
     Key? key,
     required this.color,
+    this.icon,
   }) : super(key: key);
 
   final Color? color;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +111,7 @@ class ColorButton extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(2.0)),
         color: color,
       ),
-      child: Icon(Icons.check),
+      child: icon ?? const Icon(null),
     );
   }
 }

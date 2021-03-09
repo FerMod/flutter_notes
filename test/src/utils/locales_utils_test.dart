@@ -21,7 +21,7 @@ void main() {
       return sb.toString();
     }
 
- test('returns a undefined locale if cannot parse language tag', () {
+    test('returns a undefined locale if cannot parse language tag', () {
       final languageCode = 'thisShouldBeWrong';
       String? scriptCode;
       String? countryCode = 'EE';

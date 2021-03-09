@@ -14,6 +14,9 @@ class Global {
   /// A constant that represents if should use the firebase emulator.
   static const bool useFirebaseEmulator = true;
 
+  /// A constant that represents if should persist the made changes.
+  static const bool persistChanges = false;
+
   /// A constant that represents if should use local storage.
   static const bool localStorage = true;
 }

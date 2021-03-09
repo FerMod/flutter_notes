@@ -88,16 +88,6 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   Stream<List<NoteModel>> streamData({bool notifyIsLoading = false}) {
-    // final userStream = userData.authStateChange;
-    // final dataStream = userStream.switchMap((user) {
-    //   if (user == null) {
-    //     return Stream<List<NoteModel>>.value([]); // TODO: What if user is null?
-    //   }
-    //   return collection.stream(
-    //     (snapshot) => NoteModel.fromSnapshot(snapshot),
-    //     (query) => query.where('userId', isEqualTo: user.uid),
-    //   );
-    // });
     final user = userData.currentUser;
     if (user == null) {
       return Stream<List<NoteModel>>.value([]); // TODO: what if user is null?
@@ -108,30 +98,16 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
         (query) => query!.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
       ),
       notifyIsLoading: notifyIsLoading,
-    ) as Stream<List<NoteModel>>;
+    );
   }
 
-  Stream stream(Stream<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
-    // final dataStream = operation();
-    // dataStream.listen(_controller.add);
-
+  Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _controller ??= StreamController<List<NoteModel>>.broadcast(onListen: () {
-        // Listen for events of this stream and update the list content
-        _controller!.stream.listen((notes) => _notes = notes);
-        // Pipe events of the data stream into this stream
-        operation().pipe(_controller!);
-      });
-
-    // _controller.addStream(dataStream);
-    // final streamController = StreamController<List<NoteModel>>.broadcast()
-    //   ..addStream(dataStream)
-    //   ..stream.listen((event) {
-    //     _notes = event;
-    //     _isLoading = false;
-    //     print('listen');
-    //     // notifyListeners();
-    //   });
-
+      // Listen for events of this stream and update the list content
+      _controller!.stream.listen((notes) => _notes = notes);
+      // Pipe events of the data stream into this stream
+      operation().pipe(_controller!);
+    });
     return _controller!.stream;
   }
 

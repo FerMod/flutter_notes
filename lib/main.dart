@@ -22,23 +22,22 @@ void main() async {
   runApp(const NotesApp());
 }
 
-Future<void> _initFirebase() async {
+void _initFirebase() {
   if (Global.useFirebaseEmulator) {
     final isAndroid = defaultTargetPlatform == TargetPlatform.android;
     // Switch host based on platform.
     final firestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
 
-    final settings = Settings(
+    FirebaseFirestore.instance.settings = Settings(
       host: firestoreHost,
       sslEnabled: false,
-      persistenceEnabled: false,
+      persistenceEnabled: Global.persistChanges,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
-    FirebaseFirestore.instance.settings = settings;
 
     // Only for web platforms
-    if (kIsWeb && settings.persistenceEnabled!) {
-      await FirebaseFirestore.instance.enablePersistence();
+    if (Global.persistChanges && kIsWeb) {
+      FirebaseFirestore.instance.enablePersistence();
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 import '../../extensions/theme_mode_extension.dart';
+import '../../src/utils/locale_utils.dart';
 
 class UserModel {
   String? id;
@@ -15,18 +16,22 @@ class UserModel {
 
   UserModel({
     this.id,
-    this.name = '',
-    this.image = '',
-    this.locale = const Locale('und'),
-    this.themeMode = ThemeMode.system,
+    String? name,
+    String? image,
+    Locale? locale,
+    ThemeMode? themeMode,
     this.reference,
-  });
+  })  : name = name ?? '',
+        image = image ?? '',
+        locale = locale ?? const Locale('und'),
+        themeMode = themeMode ?? ThemeMode.system;
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data()!;
+    final data = snapshot.data();
+    if (data == null) return UserModel();
     return UserModel(
       id: snapshot.id,
-      name: data['name'],
+      name: snapshot.get('name'),
       image: data['image'],
       locale: LocaleUtils.localeFromLanguageTag(data['locale']),
       themeMode: ThemeMode.values.firstWhereOrNull(

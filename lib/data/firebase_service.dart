@@ -41,14 +41,12 @@ abstract class FirebaseAuthentication {
 }
 
 class Document<T> extends FirebaseDocument<T> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String path;
+  final DocumentReference reference;
 
-  late DocumentReference reference;
-
-  Document({required this.path}) {
-    reference = _firestore.doc(path);
-  }
+  Document({
+    required this.path,
+  }) : reference = FirebaseFirestore.instance.doc(path);
 
   @override
   Future<T> data(FromSnapshot<T> entityFromSnapshot) {
@@ -84,33 +82,23 @@ class Document<T> extends FirebaseDocument<T> {
 }
 
 class Collection<T> extends FirebaseCollection<T> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String path;
+  final CollectionReference reference;
 
-  CollectionReference? reference;
-
-  Collection({required this.path}) {
-    reference = _firestore.collection(path);
-  }
+  Collection({
+    required this.path,
+  }) : reference = FirebaseFirestore.instance.collection(path);
 
   @override
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot, [QueryFunction? query]) async {
-    // final queryFunction = query(reference) ?? reference;
-    // final queryFunction = query != null ? query(reference) : reference;
-    final queryFunction = query?.call(reference) ?? reference!;
+    final queryFunction = query?.call(reference) ?? reference;
     final snapshots = await queryFunction.get();
     return snapshots.docs.map(entityFromSnapshot).toList();
   }
 
   @override
   Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot, [QueryFunction? query]) {
-    final queryFunction = query?.call(reference) ?? reference!;
-    // final dataStream =
-    // StreamController<List<T>> streamController;
-    // streamController = StreamController(onListen: () {
-    //   streamController.addStream(dataStream);
-    // });
-    // return streamController.stream;
+    final queryFunction = query?.call(reference) ?? reference;
     return queryFunction.snapshots().map((snapshot) => snapshot.docs.map(entityFromSnapshot).toList());
   }
 
@@ -127,8 +115,7 @@ class Collection<T> extends FirebaseCollection<T> {
   /// so that the resulting list will be chronologically-sorted.
   @override
   Future<DocumentReference> insert(Map<String, dynamic> data, {String? id, bool merge = false}) async {
-    // reference.add(data);
-    final newDocument = reference!.doc(id);
+    final newDocument = reference.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
     return newDocument;
   }

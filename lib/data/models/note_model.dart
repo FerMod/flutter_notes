@@ -15,12 +15,15 @@ class NoteModel {
   NoteModel({
     this.id,
     this.userId,
-    this.title = '',
-    this.content = '',
-    this.color = const Color(0xFFFFFF8D),
+    String? title,
+    String? content,
+    Color? color,
     DateTime? lastEdit,
     this.reference,
-  }) : lastEdit = lastEdit ?? DateTime.now();
+  })  : title = title ?? '',
+        content = content ?? '',
+        color = color ?? const Color(0xFFFFFF8D),
+        lastEdit = lastEdit ?? DateTime.now();
 
   factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data()!;
