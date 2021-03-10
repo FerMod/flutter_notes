@@ -1,59 +1,63 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 import '../../extensions/theme_mode_extension.dart';
+import '../../src/utils/locale_utils.dart';
 
 class UserModel {
-  String id;
-  String name;
-  String image;
+  String? id;
+  String? name;
+  String? image;
   Locale locale;
-  ThemeMode themeMode;
+  ThemeMode? themeMode;
 
-  DocumentReference reference;
+  DocumentReference? reference;
 
   UserModel({
     this.id,
-    this.name = '',
-    this.image = '',
-    this.locale = const Locale('und'),
-    this.themeMode = ThemeMode.system,
+    String? name,
+    String? image,
+    Locale? locale,
+    ThemeMode? themeMode,
     this.reference,
-  });
+  })  : name = name ?? '',
+        image = image ?? '',
+        locale = locale ?? const Locale('und'),
+        themeMode = themeMode ?? ThemeMode.system;
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data();
+    if (data == null) return UserModel();
     return UserModel(
       id: snapshot.id,
-      name: data['name'],
+      name: snapshot.get('name'),
       image: data['image'],
-      locale: Locale(data['locale']),
-      themeMode: ThemeMode.values.firstWhere(
+      locale: LocaleUtils.localeFromLanguageTag(data['locale']),
+      themeMode: ThemeMode.values.firstWhereOrNull(
         (e) => e.name == data['themeMode'],
-        orElse: () => null,
       ),
       reference: snapshot.reference,
     );
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return {
       // 'id': id,
       'name': name,
       'image': image,
       'locale': locale.languageCode,
-      'themeMode': themeMode.name,
+      'themeMode': themeMode!.name,
     };
   }
 
   UserModel copyWith({
-    String id,
-    String name,
-    String image,
-    Locale locale,
-    ThemeMode themeMode,
-    DocumentReference reference,
+    String? id,
+    String? name,
+    String? image,
+    Locale? locale,
+    ThemeMode? themeMode,
+    DocumentReference? reference,
   }) {
     return UserModel(
       id: id ?? this.id,

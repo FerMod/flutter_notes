@@ -1,8 +1,9 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
 class FormFields extends StatelessWidget {
   const FormFields({
-    Key key,
+    Key? key,
     this.fields = const <Widget>[],
   }) : super(key: key);
 
@@ -29,19 +30,23 @@ class FormFields extends StatelessWidget {
 
 class TextFormInput extends FormField<String> {
   TextFormInput({
-    Key key,
-    Icon icon,
-    String labelText,
-    TextEditingController controller,
+    Key? key,
+    Icon? icon,
+    String? labelText,
+    TextInputAction? textInputAction,
+    TextEditingController? controller,
     bool obscureText = false,
     this.validations = const [],
+    AutovalidateMode? autovalidateMode,
   }) : super(
           key: key,
           builder: (state) {
-            final validator = FieldValidator<String>(validations: validations);
+            final validator = FieldValidator<String?>(validations: validations);
             return TextFormField(
               controller: controller,
+              textInputAction: textInputAction,
               validator: validator.validate,
+              autovalidateMode: autovalidateMode,
               obscureText: obscureText,
               decoration: InputDecoration(
                 // enabledBorder: InputBorder.none,
@@ -58,14 +63,14 @@ class TextFormInput extends FormField<String> {
           },
         );
 
-  final List<Validation<String>> validations;
+  final List<Validation<String?>> validations;
 }
 
 class DividerText extends StatelessWidget {
   const DividerText({
-    Key key,
-    @required this.text,
-    @required this.color,
+    Key? key,
+    required this.text,
+    required this.color,
   }) : super(key: key);
 
   final Widget text;
@@ -79,8 +84,8 @@ class DividerText extends StatelessWidget {
         Divider(thickness: 2.0),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: text,
           color: color,
+          child: text,
         ),
       ],
     );
@@ -90,24 +95,24 @@ class DividerText extends StatelessWidget {
 class FieldValidator<T> {
   const FieldValidator({
     this.validations = const [],
-  }) : assert(validations != null);
+  });
 
-  final List<Validation<T>> validations;
+  final List<Validation<T?>> validations;
 
-  String validate(T value) {
-    ;
-
-    final validation = validations.firstWhere(
-      (e) => e.test?.call(value),
-      orElse: () => null,
+  String? validate(T? value) {
+    final validation = validations.firstWhereOrNull(
+      (e) => e.test(value),
     );
     return validation?.errorMessage;
   }
 }
 
 class Validation<T> {
-  const Validation({this.errorMessage, this.test});
+  const Validation({
+    required this.errorMessage,
+    required this.test,
+  });
 
   final String errorMessage;
-  final bool Function(T value) test;
+  final bool Function(T? value) test;
 }

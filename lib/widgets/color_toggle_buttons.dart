@@ -4,25 +4,25 @@ import '../src/cache/cached_color.dart';
 
 class ColorToggleButtons extends StatefulWidget {
   const ColorToggleButtons({
-    Key key,
+    Key? key,
     this.initialValue,
     this.colors = const <Color>[],
     this.onPressed,
   }) : super(key: key);
 
-  final List<Color> colors;
-  final Color initialValue;
-  final void Function(int index) onPressed;
+  final List<Color?> colors;
+  final Color? initialValue;
+  final void Function(int index)? onPressed;
 
   @override
   _ColorToggleButtonsState createState() => _ColorToggleButtonsState();
 }
 
 class _ColorToggleButtonsState extends State<ColorToggleButtons> {
-  List<CachedColor> _cachedColors;
-  List<Widget> _children;
-  List<bool> _isSelected;
-  int _currentIndex;
+  late List<CachedColor> _cachedColors;
+  late List<Widget> _children;
+  late List<bool> _isSelected;
+  int? _currentIndex;
 
   @override
   void initState() {
@@ -36,28 +36,30 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
     // If none is found, set the first index as default.
     final index = colorsList.indexOf(widget.initialValue);
     _currentIndex = index != -1 ? index : 0;
-    _isSelected[_currentIndex] = true;
-    print(_isSelected.toString());
+    _isSelected[_currentIndex!] = true;
 
     // Init list of cached colors
     _cachedColors = List.generate(
       colorsList.length,
-      (index) => CachedColor(colorsList[index]),
+      (index) => CachedColor(colorsList[index]!),
     );
 
     // Init the list of the color buttons that will be used.
     _children = List.generate(
       colorsList.length,
-      (index) => ColorButton(color: _cachedColors[index].value),
+      (index) => ColorButton(
+        color: _cachedColors[index].value,
+        icon: const Icon(Icons.check),
+      ),
     );
   }
 
   void _handleOnPressed(int index) {
-    assert(_isSelected[_currentIndex] == true);
+    assert(_isSelected[_currentIndex!] == true);
     if (index == _currentIndex) return;
 
     setState(() {
-      _isSelected[_currentIndex] = false;
+      _isSelected[_currentIndex!] = false;
       _isSelected[index] = true;
     });
     _currentIndex = index;
@@ -68,21 +70,19 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
-    final theme = Theme.of(context);
     return ToggleButtons(
-      children: _children,
       isSelected: _isSelected,
       onPressed: _handleOnPressed,
       color: Colors.transparent,
       //selectedColor: _contrastColor(widget.colors[_currentIndex]), //theme.colorScheme.primary,
-      selectedColor: _cachedColors[_currentIndex].contrastingColor(),
+      selectedColor: _cachedColors[_currentIndex!].contrastingColor(),
       fillColor: Colors.transparent,
       // focusColor: null,
       // hoverColor: null,
       // highlightColor: null,
       // splashColor: null,
       renderBorder: false,
+      children: _children,
       // borderWidth: 1,
       // borderColor: Colors.transparent,
       // selectedBorderColor: Colors.transparent,
@@ -94,22 +94,24 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
 
 class ColorButton extends StatelessWidget {
   const ColorButton({
-    Key key,
-    @required this.color,
+    Key? key,
+    required this.color,
+    this.icon,
   }) : super(key: key);
 
-  final Color color;
+  final Color? color;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      child: Icon(Icons.check),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.iconTheme.color, width: 1.0),
+        border: Border.all(color: theme.iconTheme.color!, width: 1.0),
         borderRadius: BorderRadius.all(Radius.circular(2.0)),
         color: color,
       ),
+      child: icon ?? const Icon(null),
     );
   }
 }

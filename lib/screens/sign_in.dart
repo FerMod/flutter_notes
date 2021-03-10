@@ -17,11 +17,11 @@ import 'sign_form.dart';
 import 'sign_up.dart';
 
 class SignInScreen extends StatelessWidget {
-  const SignInScreen({Key key}) : super(key: key);
+  const SignInScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return SignFormScreen(
       title: Text(localizations.signIn),
       builder: (context) => _SignInForm(),
@@ -30,7 +30,7 @@ class SignInScreen extends StatelessWidget {
 }
 
 class _SignInForm extends StatefulWidget {
-  const _SignInForm({Key key}) : super(key: key);
+  const _SignInForm({Key? key}) : super(key: key);
 
   @override
   _SignInFormState createState() => _SignInFormState();
@@ -62,13 +62,13 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   Future _handleOnSignIn() async {
-    final formState = _formKey.currentState;
+    final formState = _formKey.currentState!;
     if (!formState.validate()) return;
 
     try {
       final credential = await _userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      Navigator.of(context).pushAndRemoveUntil(
+      return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
@@ -86,7 +86,7 @@ class _SignInFormState extends State<_SignInForm> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Form(
@@ -128,28 +128,28 @@ class _SignInFormState extends State<_SignInForm> {
 
 class _BodyWidget extends StatelessWidget {
   const _BodyWidget({
-    Key key,
-    @required this.emailController,
-    @required this.passwordController,
+    Key? key,
+    required this.emailController,
+    required this.passwordController,
     this.onSignIn,
   }) : super(key: key);
 
-  final Function() onSignIn;
+  final Function()? onSignIn;
 
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
-  Validation<String> _validateNotEmpty(BuildContext context, String labelText) {
-    final localizations = AppLocalizations.of(context);
+  Validation<String?> _validateNotEmpty(BuildContext context, String labelText) {
+    final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationEmpty(labelText),
-      test: (value) => value.isEmpty,
+      test: (value) => value?.isEmpty ?? true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final usernameInput = TextFormInput(
@@ -191,15 +191,15 @@ class _BodyWidget extends StatelessWidget {
 
 class _NoAccount extends StatelessWidget {
   const _NoAccount({
-    Key key,
-    @required this.onPressed,
+    Key? key,
+    required this.onPressed,
   }) : super(key: key);
 
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -214,20 +214,20 @@ class _NoAccount extends StatelessWidget {
 
 class _SignInButton extends StatelessWidget {
   const _SignInButton({
-    Key key,
-    @required this.onPressed,
+    Key? key,
+    required this.onPressed,
   }) : super(key: key);
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ElevatedButton(
-        child: Text(localizations.signIn),
         onPressed: onPressed,
+        child: Text(localizations.signIn),
       ),
     );
   }
@@ -235,20 +235,20 @@ class _SignInButton extends StatelessWidget {
 
 class _SignUpButton extends StatelessWidget {
   const _SignUpButton({
-    Key key,
-    @required this.onPressed,
+    Key? key,
+    required this.onPressed,
   }) : super(key: key);
 
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: OutlineButton(
-        child: Text(localizations.signUp),
+      child: OutlinedButton(
         onPressed: onPressed,
+        child: Text(localizations.signUp),
       ),
     );
   }
@@ -256,15 +256,15 @@ class _SignUpButton extends StatelessWidget {
 
 class _RememberMeCheckbox extends StatelessWidget {
   const _RememberMeCheckbox({
-    Key key,
-    @required this.onChanged,
+    Key? key,
+    required this.onChanged,
   }) : super(key: key);
 
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool?> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return CheckboxFormField(
       title: Text(localizations.signInRememberMe),
       onChanged: onChanged,
@@ -285,7 +285,7 @@ class _RememberMeCheckbox extends StatelessWidget {
 }
 
 List<Widget> signInMethods(BuildContext context) {
-  final localizations = AppLocalizations.of(context);
+  final localizations = AppLocalizations.of(context)!;
   return [
     SignInButton(
       Buttons.Google,
