@@ -138,6 +138,9 @@ jobs:
         if: matrix.target == 'macos'
         run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code/${{ matrix.path }}
+      - name: Rename build for Android
+        if: matrix.target == 'apk' || matrix.target == 'appbundle'
+        run: for file in *${{ matrix.asset_extension }}; do mv "$file" "flutter_gallery_$file"; done;
       
       # Upload the release build.
       - name: Upload release asset
