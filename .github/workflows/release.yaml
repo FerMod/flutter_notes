@@ -131,7 +131,7 @@ jobs:
         run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Linux
-        if: matrix.target == 'ubuntu' || matrix.target == 'web'
+        if: matrix.target == 'linux' || matrix.target == 'web'
         run: tar czf $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }} *
         working-directory: code/${{ matrix.path }}
       - name: Compress build for macOS
