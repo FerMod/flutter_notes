@@ -1,10 +1,10 @@
-import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/src/cache/cached_color.dart';
 
 import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';
@@ -14,10 +14,16 @@ enum Commands {
   delete,
 }
 
+enum ChangesAction {
+  none,
+  save,
+  discard,
+}
+
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
-    Key key,
-    @required this.note,
+    Key? key,
+    required this.note,
   }) : super(key: key);
 
   final NoteModel note;
@@ -29,20 +35,27 @@ class EditNoteScreen extends StatefulWidget {
 class _EditNoteScreenState extends State<EditNoteScreen> {
   final _scrollController = ScrollController();
 
-  TextEditingController _titleEditingController;
-  TextEditingController _contentEditingController;
-  Color _color;
-  DateTime _lastEdit;
+  late TextEditingController _titleEditingController;
+  late TextEditingController _contentEditingController;
+  late Color _color;
+  late DateTime _lastEdit;
+
+  int _currentIndex = 0;
+  late List<BottomNavigationBarItem> _bottomNavBarItems;
 
   @override
   void initState() {
     super.initState();
+
     _titleEditingController = TextEditingController(text: widget.note.title);
     _contentEditingController = TextEditingController(text: widget.note.content);
-    _color = widget.note.color;
-    _lastEdit = widget.note.lastEdit;
+    _color = widget.note.color!;
+    _lastEdit = widget.note.lastEdit!;
 
     _titleEditingController.addListener(_updateLastEdit);
+    _contentEditingController.addListener(_updateLastEdit);
+
+    _bottomNavBarItems = _buildNavBarItems();
   }
 
   @override
@@ -52,23 +65,67 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     super.dispose();
   }
 
+  List<BottomNavigationBarItem> _buildNavBarItems() {
+    return List.generate(
+      PredefinedColor.values.length,
+      (index) {
+        final cachedColor = CachedColor(PredefinedColor.values[index].color);
+        if (widget.note.color == cachedColor.value) {
+          _currentIndex = index;
+        }
+        return BottomNavigationBarItem(
+          icon: ColorButton(color: cachedColor.value),
+          activeIcon: ColorButton(
+            color: cachedColor.value,
+            icon: Icon(Icons.check, color: cachedColor.contrastingColor()),
+          ),
+          label: PredefinedColor.values[index].name,
+        );
+      },
+    );
+  }
+
   void _updateLastEdit() {
     _lastEdit = DateTime.now();
   }
 
-  void _handleSubmit() {
+  void _saveChanges() {
     widget.note
       ..title = _titleEditingController.text
       ..content = _contentEditingController.text
       ..color = _color
       ..lastEdit = _lastEdit;
+  }
+
+  bool _valuesChanged(NoteModel note) {
+    return note.title != _titleEditingController.text || note.content != _contentEditingController.text || note.color != _color;
+  }
+
+  Future<void> _handleClose() async {
+    if (_valuesChanged(widget.note)) {
+      FocusScope.of(context).unfocus(); // Hide the keyboard
+      final saveChangesAction = await _showSaveChangesDialog();
+      if (saveChangesAction == ChangesAction.none) return;
+
+      if (saveChangesAction == ChangesAction.save) {
+        _saveChanges();
+      }
+    }
 
     Navigator.of(context).pop(widget.note);
     //widget.onEdit(_titleEditingController.text, _contentEditingController.text, widget.note.color);
   }
 
+  Widget _createSaveButton() {
+    final localizations = AppLocalizations.of(context)!;
+    return TextButton(
+      onPressed: _saveChanges,
+      child: Text(localizations.save),
+    );
+  }
+
   Widget _createMenuButton() {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return PopupMenuButton<Commands>(
       tooltip: localizations.changeColor,
       onSelected: (result) {
@@ -86,21 +143,63 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           value: Commands.delete,
           child: ListTile(leading: Icon(Icons.delete), title: Text(localizations.delete)),
         ),
+        PopupMenuDivider(),
       ],
     );
   }
 
+  Future<ChangesAction> _showSaveChangesDialog() async {
+    final dialogResult = await showDialog<ChangesAction>(
+      context: context,
+      builder: (context) => _SaveChangesAlertDialog(),
+    );
+    return dialogResult ?? ChangesAction.none;
+  }
+
+  Widget _buildBottomNavigationBar() {
+    final theme = Theme.of(context);
+
+    Widget bottomNavigationBar = BottomNavigationBar(
+      backgroundColor: theme.colorScheme.surface,
+      type: BottomNavigationBarType.fixed,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        if (_currentIndex == index) return;
+        setState(() {
+          _currentIndex = index;
+          _color = PredefinedColor.values[index].color;
+        });
+        _updateLastEdit();
+      },
+      items: _bottomNavBarItems,
+    );
+
+    bottomNavigationBar = Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.3),
+        ),
+      ),
+      child: bottomNavigationBar,
+    );
+
+    return bottomNavigationBar;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       //backgroundColor: Colors.transparent,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: _handleSubmit,
-        ),
+        leading: CloseButton(
+          onPressed: _handleClose,
+        ), //BackButton(onPressed: _handleSubmit),
         title: Text(localizations.edit),
         actions: [
+          _createSaveButton(),
           _createMenuButton(),
         ],
         elevation: 0.0, // Prevents the shadow from darkening other colors
@@ -114,6 +213,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           ),
           margin: EdgeInsets.zero,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: _ScrollableContent(
@@ -122,16 +222,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   contentEditingController: _contentEditingController,
                 ),
               ),
-              _ColorButtons(
-                initialValue: _color,
-                onPressed: (index) {
-                  setState(() {
-                    _color = PredefinedColor.values[index].color;
-                    developer.log('Color: ${widget.note.color}, Value: ${widget.note.color.value}');
-                  });
-                  _updateLastEdit();
-                },
-              ),
+              _buildBottomNavigationBar(),
             ],
           ),
         ),
@@ -142,49 +233,55 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
 class _ScrollableContent extends StatelessWidget {
   const _ScrollableContent({
-    Key key,
-    @required this.scrollController,
-    @required this.titleEditingController,
-    @required this.contentEditingController,
+    Key? key,
+    required this.scrollController,
+    required this.titleEditingController,
+    required this.contentEditingController,
   }) : super(key: key);
 
   final ScrollController scrollController;
-  final TextEditingController titleEditingController;
-  final TextEditingController contentEditingController;
+  final TextEditingController? titleEditingController;
+  final TextEditingController? contentEditingController;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _NoteTitleInput(
-          titleEditingController: titleEditingController,
-        ),
-        const _SectionDivider(),
-        Expanded(
-          child: Scrollbar(
-            controller: scrollController,
+    return Scrollbar(
+      controller: scrollController,
+      showTrackOnHover: true,
+      child: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate.fixed([
+              _NoteTitleInput(
+                titleEditingController: titleEditingController,
+              ),
+              const _SectionDivider(),
+            ]),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
             child: _NoteContentInput(
               contentEditingController: contentEditingController,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class _NoteTitleInput extends StatelessWidget {
   const _NoteTitleInput({
-    Key key,
-    @required this.titleEditingController,
+    Key? key,
+    required this.titleEditingController,
   }) : super(key: key);
 
-  final TextEditingController titleEditingController;
+  final TextEditingController? titleEditingController;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
@@ -201,18 +298,17 @@ class _NoteTitleInput extends StatelessWidget {
 
 class _NoteContentInput extends StatelessWidget {
   const _NoteContentInput({
-    Key key,
-    @required this.contentEditingController,
+    Key? key,
+    required this.contentEditingController,
   }) : super(key: key);
 
-  final TextEditingController contentEditingController;
+  final TextEditingController? contentEditingController;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
       child: TextFormField(
         controller: contentEditingController,
         decoration: InputDecoration.collapsed(
@@ -227,40 +323,8 @@ class _NoteContentInput extends StatelessWidget {
   }
 }
 
-class _ColorButtons extends StatelessWidget {
-  const _ColorButtons({
-    Key key,
-    @required this.initialValue,
-    @required this.onPressed,
-  }) : super(key: key);
-
-  final Color initialValue;
-  final void Function(int index) onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      // margin: const EdgeInsets.all(0),
-      // padding: const EdgeInsets.all(0),
-      alignment: Alignment.center,
-      child: ColorToggleButtons(
-        initialValue: initialValue,
-        colors: PredefinedColor.values.map((e) => e.color).toList(),
-        onPressed: onPressed,
-      ),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
-        ),
-        //borderRadius: BorderRadius.all(Radius.zero),
-      ),
-    );
-  }
-}
-
 class _SectionDivider extends StatelessWidget {
-  const _SectionDivider();
+  const _SectionDivider({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -268,6 +332,35 @@ class _SectionDivider extends StatelessWidget {
       thickness: 1.1,
       indent: 10,
       endIndent: 10,
+    );
+  }
+}
+
+class _SaveChangesAlertDialog extends StatelessWidget {
+  const _SaveChangesAlertDialog({Key? key}) : super(key: key);
+
+  TextButton _createButton(BuildContext context, String text, ChangesAction action) {
+    return TextButton(
+      onPressed: () => Navigator.of(context, rootNavigator: true).pop(action),
+      child: Text(text),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return AlertDialog(
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            Text(localizations.saveChangesDialogContent),
+          ],
+        ),
+      ),
+      actions: [
+        _createButton(context, localizations.discard, ChangesAction.discard),
+        _createButton(context, localizations.save, ChangesAction.save),
+      ],
     );
   }
 }
@@ -306,6 +399,5 @@ extension PredefinedColorExtension on PredefinedColor {
       case PredefinedColor.custom:
         return Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     }
-    return null;
   }
 }

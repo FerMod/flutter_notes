@@ -73,6 +73,10 @@
   "@save": {
     "description": "Save menu text."
   },
+  "discard": "Discard",
+  "@discard": {
+    "description": "Discard menu text."
+  },
   "edit": "Edit",
   "@edit": {
     "description": "Edit menu text."
@@ -124,6 +128,10 @@
   "changeColor": "Change color",
   "@changeColor": {
     "description": "Change color of the note."
+  },
+  "saveChangesDialogContent": "Your changes have not been saved",
+  "@saveChangesDialogContent": {
+    "description": "Dialog text to show when the changes have been not saved."
   },
   "email": "Email",
   "@email": {

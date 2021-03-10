@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
   // }
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     // StreamSubscription<UserModel> _streamSubscription;
     return Scaffold(
       appBar: AppBar(
@@ -40,50 +40,50 @@ class HomePage extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.0),
             child: ElevatedButton(
-              child: const Text('Sign In Anonymously'),
               onPressed: () {
                 debugPrint('(Sign In Anonymously)');
                 userData.signInAnonymously();
               },
+              child: const Text('Sign In Anonymously'),
             ),
           ),
           Container(
             padding: EdgeInsets.all(8.0),
             child: ElevatedButton(
-              child: const Text('Sign In'),
               onPressed: () {
                 debugPrint('(Sign In)');
                 userData.signIn('test@email.com', 'password123');
               },
+              child: const Text('Sign In'),
             ),
           ),
           Container(
             padding: EdgeInsets.all(8.0),
             child: ElevatedButton(
-              child: const Text('Sign Up'),
               onPressed: () {
                 debugPrint('(Sign Up)');
                 userData.signUp('test@email.com', 'password123');
               },
+              child: const Text('Sign Up'),
             ),
           ),
           Container(
             padding: EdgeInsets.all(8.0),
             child: ElevatedButton(
-              child: const Text('Sign Out'),
               onPressed: () {
                 debugPrint('(Sign Out)');
                 userData.signOut();
               },
+              child: const Text('Sign Out'),
             ),
           ),
           Container(
             padding: EdgeInsets.all(8.0),
             child: ElevatedButton(
-              child: const Text('Current User'),
               onPressed: () {
                 developer.log('Current user: ${userData.currentUser}');
               },
+              child: const Text('Current User'),
             ),
           ),
           // Container(

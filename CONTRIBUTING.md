@@ -24,7 +24,7 @@ Use your best judgment, and feel free to propose changes to this document in a p
 
 ### Unsure where to begin contributing?
 
-You can start by looking through [help wanted](https://github.com/FerMod/flutter_notes/labels/help%20wanted) issues.
+You can start by looking through [help wanted](../../labels/help%20wanted) issues.
 
 ### Working on your first Pull Request?
 
@@ -43,7 +43,7 @@ This project requires to have **JDK 1.8**, and **Maven** which will manage all t
 
 To start contributing to this project you need first to clone the project or fork the project. To clone the project, the command is the following:
 
-```
+```bash
 git clone https://github.com/FerMod/flutter_notes.git
 ```
 
@@ -90,19 +90,19 @@ When refering to issues and pull requests you should reference them in the commi
 
 Any commit that is related to an existing issue should reference the issue. For example, if a commit in a pull request addresses issue #123, it should contain the following at the bottom of the commit message.
 
-```
+```diff
 Issue #123
 ```
 
 Or if the commit references more than one issue:
 
-```
+```diff
 Issue #123, #124
 ```
 
 If the commit closes the issue it should be referenced using one of the available keyworkds that automates the issue closing once the branch merges with the default branch.
 
-```
+```diff
 Add feature
 
 Description in more detail of the commit if needed.
@@ -116,4 +116,4 @@ For more info about wich words close issues read [Closing Issues Using Keywords]
 ### Use of labels in issues and pull request
 
 The use of labels in issues and pull request is not a requeriment but a suggestion that certainly helps the filtering and sorting.
-These are the [current project labels](https://github.com/FerMod/flutter_notes/labels).
+These are the [current project labels](../../labels).

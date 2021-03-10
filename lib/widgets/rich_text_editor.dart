@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RichTextEditor extends StatefulWidget {
-  RichTextEditor({Key key, this.onSubmitted}) : super(key: key);
+  RichTextEditor({Key? key, this.onSubmitted}) : super(key: key);
 
-  final ValueChanged onSubmitted;
+  final ValueChanged? onSubmitted;
 
   @override
   State<StatefulWidget> createState() => _RichTextEditorState();

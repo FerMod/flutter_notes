@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'data/app_options.dart';
+import 'data/local/app_shared_preferences.dart';
 import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
@@ -17,46 +18,46 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   _initFirebase();
+  await AppSharedPreferences.initialize();
   runApp(const NotesApp());
 }
 
-Future<void> _initFirebase() async {
+void _initFirebase() {
   if (Global.useFirebaseEmulator) {
     final isAndroid = defaultTargetPlatform == TargetPlatform.android;
     // Switch host based on platform.
     final firestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
 
-    final settings = Settings(
+    FirebaseFirestore.instance.settings = Settings(
       host: firestoreHost,
       sslEnabled: false,
-      persistenceEnabled: false,
+      persistenceEnabled: Global.persistChanges,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
-    FirebaseFirestore.instance.settings = settings;
 
     // Only for web platforms
-    if (kIsWeb && settings.persistenceEnabled) {
-      await FirebaseFirestore.instance.enablePersistence();
+    if (Global.persistChanges && kIsWeb) {
+      FirebaseFirestore.instance.enablePersistence();
     }
   }
 }
 
 class NotesApp extends StatelessWidget {
   const NotesApp({
-    Key key,
+    Key? key,
     this.initialRoute,
   }) : super(key: key);
 
-  final String initialRoute;
+  final String? initialRoute;
 
-  Locale _localeListResolution(List<Locale> locales, Iterable<Locale> supportedLocales) {
-    final supportedLocalesMap = Map<String, Locale>.fromIterable(
+  Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
+    final supportedLocalesMap = Map<String?, Locale>.fromIterable(
       supportedLocales,
       key: (e) => e.languageCode,
     );
-    final locale = locales.firstWhere(
+    final locale = locales!.firstWhere(
       (e) => supportedLocalesMap[e.languageCode] != null,
-      orElse: () => supportedLocales?.first,
+      orElse: () => supportedLocales.first,
     );
     developer.log('Desired locales: $locales\n'
         'Supported locales: $supportedLocales\n'
@@ -64,34 +65,42 @@ class NotesApp extends StatelessWidget {
     return _localeResolution(locale, supportedLocales);
   }
 
-  Locale _localeResolution(Locale locale, Iterable<Locale> supportedLocales) {
+  Locale? _localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
     deviceLocale = locale;
-    FirebaseAuth.instance.setLanguageCode(locale?.languageCode);
+    FirebaseAuth.instance.setLanguageCode(locale?.languageCode as String);
     return locale;
   }
 
   @override
   Widget build(BuildContext context) {
     return ModelBinding(
-      initialModel: AppOptions(
-        themeMode: ThemeMode.system,
-        locale: null,
-        platform: defaultTargetPlatform,
+      initialModel: AppOptions.load(
+        defaultSettings: AppOptions(
+          themeMode: ThemeMode.system,
+          locale: null,
+          platform: defaultTargetPlatform,
+        ),
       ),
       child: Builder(
         builder: (context) {
           return MaterialApp(
-            onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: AppOptions.of(context).locale,
+            locale: AppOptions.of(context)!.locale,
             localeListResolutionCallback: _localeListResolution,
             localeResolutionCallback: _localeResolution,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
-            themeMode: AppOptions.of(context).themeMode,
+            themeMode: AppOptions.of(context)!.themeMode,
             home: SignInScreen(), // TODO: Only for testing, change to real home
             routes: AppRoute.routes,
+            // home: Scaffold(
+            //   appBar: AppBar(title: Text('Test')),
+            //   body: RichTextEditor(onSubmitted: (value) => developer.log(value)),
+            // ),
+            //initialRoute: AppRoute.home.location,
+            //onGenerateRoute: AppRoute.onGenerateRoute,
           );
         },
       ),

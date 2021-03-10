@@ -14,13 +14,13 @@ Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, 
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/FerMod/flutter_notes/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](../../tags).
 
 ## Authors
 
 - [FerMod](https://github.com/FerMod) **(Ferran Tudela)** - *Initial work*
 
-See also the list of [contributors](https://github.com/FerMod/flutter_notes/contributors) who participated in this project.
+See also the list of [contributors](../../contributors) who participated in this project.
 
 ## License
 
