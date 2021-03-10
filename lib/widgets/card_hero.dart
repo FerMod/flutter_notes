@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 class CardHero extends StatelessWidget {
   const CardHero({
     Key? key,
-    this.tag,
+    required this.tag,
     this.shape,
     this.elevation = 8.0,
     this.margin,
@@ -19,7 +19,7 @@ class CardHero extends StatelessWidget {
   /// The identifier for this particular hero. If the tag of this hero matches
   /// the tag of a hero on a [PageRoute] that we're navigating to or from, then
   /// a hero animation will be triggered.
-  final String? tag;
+  final Object tag;
 
   /// The shape of the card's [Material].
   ///
@@ -78,7 +78,8 @@ class CardHero extends StatelessWidget {
   /// A tap with a primary button has occurred.
   final GestureTapCallback? onTap;
 
-  /// Called when a long press gesture with a primary button has been recognized.
+  /// Called when a long press gesture with a primary button has been
+  /// recognized.
   ///
   /// Triggered when a pointer has remained in contact with the screen at the
   /// same location for a long period of time.
@@ -87,28 +88,24 @@ class CardHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: tag!,
+      tag: tag,
       child: Card(
         elevation: elevation,
         shape: shape,
         margin: margin,
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: Container(
-            decoration: decoration ??
-                BoxDecoration(
-                  border: Border(
-                    top: Divider.createBorderSide(
-                      context,
-                      color: color,
-                      width: width,
-                    ),
+        child: DecoratedBox(
+          decoration: decoration ??
+              BoxDecoration(
+                border: Border(
+                  top: Divider.createBorderSide(
+                    context,
+                    color: color,
+                    width: width,
                   ),
                 ),
-            child: child,
-          ),
+              ),
+          child: child,
         ),
       ),
     );

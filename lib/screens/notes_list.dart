@@ -178,7 +178,7 @@ class _AccountWidget extends StatelessWidget {
     required this.userData,
     this.onTap,
     this.onTapImage,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final UserData userData;
   final VoidCallback? onTap;
@@ -318,31 +318,33 @@ class NoteListWidget extends StatelessWidget {
             return CardHero(
               tag: 'note-${note.id}',
               color: note.color,
-              onTap: () => onTap!(note),
-              onLongPress: () => developer.log('Long press'),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListTile(
-                      // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                      title: Text(note.title!),
-                      subtitle: Text(
-                        note.content!,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
+              child: InkWell(
+                onTap: () => onTap?.call(note),
+                onLongPress: () => developer.log('Long press'),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                        mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                        title: Text(note.title!),
+                        subtitle: Text(
+                          note.content!,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                  ),
-                  PopupMenuButton<MenuAction>(
-                    itemBuilder: (context) => [
-                      _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
-                    ],
-                    onSelected: (value) => onMenuTap!(note),
-                    padding: EdgeInsets.zero,
-                  ),
-                ],
+                    PopupMenuButton<MenuAction>(
+                      itemBuilder: (context) => [
+                        _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                      ],
+                      onSelected: (value) => onMenuTap!(note),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
               ),
             );
           },
