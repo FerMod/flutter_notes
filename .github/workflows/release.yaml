@@ -141,7 +141,7 @@ jobs:
       - name: Rename build for Android
         if: matrix.target == 'apk' || matrix.target == 'appbundle'
         working-directory: code/${{ matrix.path }}
-        run: for file in ./*${{ matrix.asset_extension }}; do mv "$file" "flutter_gallery_$file"; done;
+        run: for file in *${{ matrix.asset_extension }}; do mv "$file" "flutter_notes_$file"; done;
       
       # Upload the release build.
       - name: Upload release asset
