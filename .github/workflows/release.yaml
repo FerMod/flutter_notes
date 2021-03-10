@@ -97,9 +97,7 @@ jobs:
         run: flutter config --enable-web
       - name: Enable ${{ matrix.target }} desktop support
         if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
-        run: |
-          flutter config --enable-${{ matrix.target }}-desktop
-          flutter create --platforms=${{ matrix.target }} .
+        run: flutter config --enable-${{ matrix.target }}-desktop
       - name: Run Flutter doctor
         run: flutter doctor -v
       
@@ -109,9 +107,11 @@ jobs:
         with:
           path: 'code'
       - name: Get packages for the Flutter project
-        run: flutter pub get
+        run: |
+          flutter create .
+          flutter pub get
         working-directory: code
-      
+    
       # Build the application.
       - name: Build project
         run: flutter build -v ${{ matrix.target }} --release
@@ -147,6 +147,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ${{ GITHUB_WORKSPACE }}/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_path: $GITHUB_WORKSPACE/code/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_name: flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
