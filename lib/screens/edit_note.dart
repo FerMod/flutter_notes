@@ -213,6 +213,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           ),
           margin: EdgeInsets.zero,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: _ScrollableContent(
@@ -222,15 +223,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 ),
               ),
               _buildBottomNavigationBar(),
-              // _ColorButtons(
-              //   initialValue: _color,
-              //   onPressed: (index) {
-              //     setState(() {
-              //       _color = PredefinedColor.values[index].color;
-              //     });
-              //     _updateLastEdit();
-              //   },
-              // ),
             ],
           ),
         ),
@@ -253,23 +245,28 @@ class _ScrollableContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _NoteTitleInput(
-          titleEditingController: titleEditingController,
-        ),
-        const _SectionDivider(),
-        Expanded(
-          child: Scrollbar(
-            controller: scrollController,
-            showTrackOnHover: true,
+    return Scrollbar(
+      controller: scrollController,
+      showTrackOnHover: true,
+      child: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate.fixed([
+              _NoteTitleInput(
+                titleEditingController: titleEditingController,
+              ),
+              const _SectionDivider(),
+            ]),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
             child: _NoteContentInput(
               contentEditingController: contentEditingController,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -311,7 +308,7 @@ class _NoteContentInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
       child: TextFormField(
         controller: contentEditingController,
         decoration: InputDecoration.collapsed(
@@ -326,41 +323,8 @@ class _NoteContentInput extends StatelessWidget {
   }
 }
 
-@Deprecated('Will be replaced with BottomNavigationBar')
-class _ColorButtons extends StatelessWidget {
-  const _ColorButtons({
-    Key? key,
-    required this.initialValue,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final Color? initialValue;
-  final void Function(int index) onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      // margin: const EdgeInsets.all(0),
-      // padding: const EdgeInsets.all(0),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
-        ),
-        //borderRadius: BorderRadius.all(Radius.zero),
-      ),
-      child: ColorToggleButtons(
-        initialValue: initialValue,
-        colors: PredefinedColor.values.map((e) => e.color).toList(),
-        onPressed: onPressed,
-      ),
-    );
-  }
-}
-
 class _SectionDivider extends StatelessWidget {
-  const _SectionDivider();
+  const _SectionDivider({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
