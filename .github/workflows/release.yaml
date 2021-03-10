@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [apk, appbundle, linux, macos, windows, web] # [apk, web]
+        target: [apk, appbundle, linux, macos, windows, web] # [apk, web] # [ios, android, windows, linux, macos, web]
         include:
           - os: ubuntu-20.04
             target: apk
@@ -97,10 +97,12 @@ jobs:
         run: flutter config --enable-web
       - name: Enable ${{ matrix.target }} desktop support
         if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
-        run: flutter config --enable-${{ matrix.target }}-desktop
+        run: |
+          flutter config --enable-${{ matrix.target }}-desktop
+          flutter create --platforms=${{ matrix.target }} .
       - name: Run Flutter doctor
         run: flutter doctor -v
-        
+      
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
       - name: Clone the repository
         uses: actions/checkout@v2
@@ -109,12 +111,12 @@ jobs:
       - name: Get packages for the Flutter project
         run: flutter pub get
         working-directory: code
-        
+      
       # Build the application.
       - name: Build project
         run: flutter build -v ${{ matrix.target }} --release
         working-directory: code
-
+      
       # Prepare release build package.
       - name: Copy VC redistributables to release directory
         if: matrix.target == 'windows'
@@ -123,6 +125,7 @@ jobs:
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
         working-directory: code\${{ matrix.path }}
+      
       - name: Compress build for Windows
         if: matrix.target == 'windows'
         run: compress-archive -Path * -DestinationPath \flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
@@ -144,6 +147,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_path: ${{ GITHUB_WORKSPACE }}/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_name: flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
