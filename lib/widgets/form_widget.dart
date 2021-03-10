@@ -33,16 +33,20 @@ class TextFormInput extends FormField<String> {
     Key? key,
     Icon? icon,
     String? labelText,
+    TextInputAction? textInputAction,
     TextEditingController? controller,
     bool obscureText = false,
     this.validations = const [],
+    AutovalidateMode? autovalidateMode,
   }) : super(
           key: key,
           builder: (state) {
             final validator = FieldValidator<String?>(validations: validations);
             return TextFormField(
               controller: controller,
+              textInputAction: textInputAction,
               validator: validator.validate,
+              autovalidateMode: autovalidateMode,
               obscureText: obscureText,
               decoration: InputDecoration(
                 // enabledBorder: InputBorder.none,
