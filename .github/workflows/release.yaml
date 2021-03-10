@@ -30,6 +30,7 @@ jobs:
         include:
           - os: ubuntu-20.04
             target: android
+            build_target: apk
             channel: stable
             path: build/app/outputs/apk/release
             asset_extension: .apk
@@ -108,7 +109,7 @@ jobs:
     
       # Build the application.
       - name: Build project
-        run: flutter build -v ${{ matrix.target }} --release
+        run: flutter build -v ${{ matrix.build_target || matrix.target }} --release
         working-directory: code
       
       # Prepare release build package.
