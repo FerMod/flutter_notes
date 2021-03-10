@@ -127,15 +127,15 @@ jobs:
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Windows
-        if: startsWith(matrix.os, 'windows')
+        if: matrix.target == 'windows'
         run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Linux
-        if: startsWith(matrix.os, 'ubuntu')
+        if: matrix.target == 'ubuntu' || matrix.target == 'web'
         run: tar czf $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }} *
         working-directory: code/${{ matrix.path }}
       - name: Compress build for macOS
-        if: startsWith(matrix.os, 'macos')
+        if: matrix.target == 'macos'
         run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code/${{ matrix.path }}
 
