@@ -112,7 +112,10 @@ jobs:
         
       # Build the application.
       - name: Build project
-        run: flutter build -v ${{ matrix.target }} --release
+        run: |
+          flutter create .
+          flutter pub get
+          flutter build -v ${{ matrix.target }} --release
         working-directory: code
 
       # Prepare release build package.
@@ -125,15 +128,15 @@ jobs:
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Windows
         if: startsWith(matrix.os, 'windows')
-        run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_gallery_${{ matrix.target }}.zip
+        run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_notes_${{ matrix.target }}.zip
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Linux
         if: startsWith(matrix.os, 'ubuntu')
-        run: tar czf $GITHUB_WORKSPACE/flutter_gallery_${{ matrix.target }}.tar.gz *
+        run: tar czf $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}.tar.gz *
         working-directory: code/${{ matrix.path }}
       - name: Compress build for macOS
         if: startsWith(matrix.os, 'macos')
-        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Gallery.app $GITHUB_WORKSPACE/flutter_gallery_${{ matrix.target }}.zip
+        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Gallery.app $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}.zip
         working-directory: code/${{ matrix.path }}
 
       # Upload the release build.
