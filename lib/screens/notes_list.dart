@@ -24,7 +24,7 @@ enum MenuAction {
 }
 
 class NotesListScreen extends StatelessWidget {
-  NotesListScreen({Key key}) : super(key: key);
+  NotesListScreen({Key? key}) : super(key: key);
 
   final notesListModel = NotesListModel();
   final scrollController = ScrollController();
@@ -35,10 +35,10 @@ class NotesListScreen extends StatelessWidget {
     //   pageBuilder: (context, animation, secondaryAnimation) => widget,
     // );
     return PageRouteBuilder(
+      fullscreenDialog: true,
       pageBuilder: (context, animation, secondaryAnimation) {
         return AnimatedBuilder(
           animation: animation,
-          child: widget,
           builder: (context, child) {
             return FadeTransition(
               opacity: animation.drive(
@@ -47,6 +47,7 @@ class NotesListScreen extends StatelessWidget {
               child: child,
             );
           },
+          child: widget,
         );
       },
       transitionDuration: Duration(milliseconds: 400),
@@ -54,7 +55,7 @@ class NotesListScreen extends StatelessWidget {
     );
   }
 
-  Future<NoteModel> _navigateEditNote(BuildContext context, NoteModel note) async {
+  Future<NoteModel?> _navigateEditNote(BuildContext context, NoteModel note) async {
     final result = await Navigator.push(
       context,
       _pageRouteBuilder(EditNoteScreen(note: note)),
@@ -75,13 +76,13 @@ class NotesListScreen extends StatelessWidget {
   void _newNote(BuildContext context) async {
     //final user = Provider.of<User>(context, listen: false);
     //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
-    final user = await notesListModel.userData.currentUser;
+    final user = notesListModel.userData.currentUser;
     final note = NoteModel(userId: user?.uid);
 
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    if (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty) {
+    if (resultNote.title!.isNotEmpty || resultNote.content!.isNotEmpty) {
       notesListModel.addNote(resultNote);
     }
   }
@@ -92,7 +93,7 @@ class NotesListScreen extends StatelessWidget {
     if (resultNote == null) return;
 
     //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
-    if (lastEdit.isBefore(resultNote.lastEdit)) {
+    if (lastEdit!.isBefore(resultNote.lastEdit!)) {
       notesListModel.updateNote(resultNote);
     }
   }
@@ -113,7 +114,7 @@ class NotesListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -130,6 +131,7 @@ class NotesListScreen extends StatelessWidget {
         ],
       ),
       drawer: DrawerMenu(),
+      // endDrawer: DrawerRight(), // TODO: Decide to use Drawer or Screen
       body: StreamBuilder<List<NoteModel>>(
         initialData: notesListModel.notes,
         stream: notesListModel.streamData(),
@@ -158,13 +160,13 @@ class NotesListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: Visibility(
+        visible: notesListModel.userData.currentUser != null,
         child: FloatingActionButton(
           onPressed: () => _newNote(context),
           tooltip: localizations.addNote,
-          child: const Icon(Icons.add),
           heroTag: 'note-new',
+          child: const Icon(Icons.add),
         ),
-        visible: notesListModel.userData.currentUser != null,
       ),
     );
   }
@@ -172,16 +174,15 @@ class NotesListScreen extends StatelessWidget {
 
 class _AccountWidget extends StatelessWidget {
   const _AccountWidget({
-    Key key,
-    this.userData,
+    Key? key,
+    required this.userData,
     this.onTap,
     this.onTapImage,
-  })  : assert(userData != null),
-        super(key: key);
+  }) : super(key: key);
 
   final UserData userData;
-  final VoidCallback onTap;
-  final VoidCallback onTapImage;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapImage;
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +193,7 @@ class _AccountWidget extends StatelessWidget {
     Widget accountWidget;
     if (user != null) {
       accountWidget = UserAccountListTile(
-        imageUrl: user.photoURL,
+        imageUrl: user.photoURL!,
         nameText: user.displayName,
         emailText: user.email,
       );
@@ -202,7 +203,7 @@ class _AccountWidget extends StatelessWidget {
           Icons.account_circle,
           size: UserAvatar.alternativeImageIconSize,
         ),
-        title: Text(localizations.signIn),
+        title: Text(localizations!.signIn),
         onTap: onTap,
       );
     }
@@ -213,36 +214,36 @@ class _AccountWidget extends StatelessWidget {
 
 class _SettingsButton extends StatelessWidget {
   const _SettingsButton({
-    Key key,
+    Key? key,
     this.onPressed,
   }) : super(key: key);
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return IconButton(
       icon: const Icon(Icons.settings),
       tooltip: localizations.settingsButtonLabel,
-      onPressed: onPressed,
+      onPressed: onPressed, //() => Scaffold.of(context).openEndDrawer(),
     );
   }
 }
 
 class _DeleteAlertDialog extends StatelessWidget {
-  const _DeleteAlertDialog({Key key}) : super(key: key);
+  const _DeleteAlertDialog({Key? key}) : super(key: key);
 
   TextButton _createButton(BuildContext context, String text, bool result) {
     return TextButton(
-      child: Text(text),
       onPressed: () => Navigator.of(context, rootNavigator: true).pop(result),
+      child: Text(text),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(localizations.deleteDialogTitle),
       content: SingleChildScrollView(
@@ -262,7 +263,7 @@ class _DeleteAlertDialog extends StatelessWidget {
 
 class NoteListWidget extends StatelessWidget {
   const NoteListWidget({
-    Key key,
+    Key? key,
     this.notes,
     this.onTap,
     this.onMenuTap,
@@ -270,12 +271,12 @@ class NoteListWidget extends StatelessWidget {
     this.controller,
   }) : super(key: key);
 
-  final List<NoteModel> notes;
-  final void Function(NoteModel) onTap;
-  final void Function(NoteModel) onMenuTap;
-  final Future<void> Function() onRefresh;
+  final List<NoteModel>? notes;
+  final void Function(NoteModel)? onTap;
+  final void Function(NoteModel)? onMenuTap;
+  final Future<void> Function()? onRefresh;
 
-  final ScrollController controller;
+  final ScrollController? controller;
 
   /// Padding that prevents the FloatingActionButton from blocking ListTiles
   static const double listBottomPadding = kFloatingActionButtonMargin * 2.0 + 48.0;
@@ -302,7 +303,7 @@ class NoteListWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context);
 
     return RefreshIndicator(
-      onRefresh: onRefresh,
+      onRefresh: onRefresh!,
       child: Scrollbar(
         controller: controller,
         // thickness: 2.0,
@@ -311,37 +312,39 @@ class NoteListWidget extends StatelessWidget {
           dragStartBehavior: DragStartBehavior.down,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
-          itemCount: notes.length,
+          itemCount: notes!.length,
           itemBuilder: (context, index) {
-            final note = notes[index];
+            final note = notes![index];
             return CardHero(
               tag: 'note-${note.id}',
               color: note.color,
-              onTap: () => onTap(note),
-              onLongPress: () => developer.log("Long press"),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListTile(
-                      // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                      title: Text(note.title),
-                      subtitle: Text(
-                        note.content,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
+              child: InkWell(
+                onTap: () => onTap?.call(note),
+                onLongPress: () => developer.log('Long press'),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                        mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                        title: Text(note.title!),
+                        subtitle: Text(
+                          note.content!,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                  ),
-                  PopupMenuButton<MenuAction>(
-                    itemBuilder: (context) => [
-                      _buildPopMenuItem(MenuAction.delete, localizations.delete, const Icon(Icons.delete)),
-                    ],
-                    onSelected: (value) => onMenuTap(note),
-                    padding: EdgeInsets.zero,
-                  ),
-                ],
+                    PopupMenuButton<MenuAction>(
+                      itemBuilder: (context) => [
+                        _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                      ],
+                      onSelected: (value) => onMenuTap!(note),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
+                ),
               ),
             );
           },

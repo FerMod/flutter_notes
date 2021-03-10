@@ -7,7 +7,7 @@ class MessageWidget extends StatelessWidget {
   /// color. To supply a decoration with a color, use
   /// `decoration: BoxDecoration(color: color)`.
   const MessageWidget({
-    Key key,
+    Key? key,
     this.leading,
     this.title,
     this.contentTextStyle,
@@ -20,9 +20,7 @@ class MessageWidget extends StatelessWidget {
     this.margin,
     this.minActionsHeight = 52.0,
     this.forceActionsBelow = false,
-  })  : assert(actions != null),
-        assert(forceActionsBelow != null),
-        assert(
+  })  : assert(
           color == null || decoration == null,
           'Cannot provide both a color and a decoration\n'
           'To provide both, use "decoration: BoxDecoration(color: color)".',
@@ -32,18 +30,18 @@ class MessageWidget extends StatelessWidget {
   /// A widget to display before the title.
   ///
   /// Typically an [Icon] or a [CircleAvatar] widget.
-  final Widget leading;
+  final Widget? leading;
 
   /// The primary content of the [MessageWidget].
   ///
   /// Typically a [Text] widget.
-  final Widget title;
+  final Widget? title;
 
   /// Style for the text in the [title] of the [MessageWidget].
   ///
   /// If `null`, [MaterialBannerThemeData.contentTextStyle] is used. If that is
   /// also `null`, [TextTheme.bodyText2] of [ThemeData.textTheme] is used.
-  final TextStyle contentTextStyle;
+  final TextStyle? contentTextStyle;
 
   /// The set of actions that are displayed at the bottom or trailing side of
   /// the [MessageWidget].
@@ -64,12 +62,12 @@ class MessageWidget extends StatelessWidget {
   /// If `null`, [MaterialBannerThemeData.backgroundColor] is used. If that is
   /// also `null`, [ColorScheme.surface] of [ThemeData.colorScheme] is used. In
   /// case of all the last colors to be `null`, [Colors.transparent] is used.
-  final Color color;
+  final Color? color;
 
   /// The decoration to paint behind.
   ///
   /// Use the [color] property to specify a simple solid color.
-  final Decoration decoration;
+  final Decoration? decoration;
 
   /// The [MessageWidget]'s internal padding, the empty space to inscribe inside
   /// the [decoration]. The [leading], [title] and [actions] widgets, are placed
@@ -83,21 +81,21 @@ class MessageWidget extends StatelessWidget {
   ///
   /// This padding is in addition to any padding inherent in the [decoration];
   /// see [Decoration.padding].
-  final EdgeInsetsGeometry contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
 
   /// Empty space to surround the [decoration] and the [leading], [title] and
   /// [actions] widgets.
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   /// The amount of space by which to inset the [leading] widget.
   ///
   /// This defaults to `EdgeInsetsDirectional.only(end: 16.0)`.
-  final EdgeInsetsGeometry leadingPadding;
+  final EdgeInsetsGeometry? leadingPadding;
 
   /// The amount of space by which to inset the [actions] widgets.
   ///
   /// This defaults to `EdgeInsets.symmetric(horizontal: 8.0)`.
-  final EdgeInsetsGeometry actionsPadding;
+  final EdgeInsetsGeometry? actionsPadding;
 
   /// The minimum height allocated for the [actions] widgets.
   ///
@@ -131,12 +129,12 @@ class MessageWidget extends StatelessWidget {
   }
 
   TextStyle _textStyle(ThemeData theme, MaterialBannerThemeData bannerTheme) {
-    final style = contentTextStyle ?? bannerTheme?.contentTextStyle ?? theme.textTheme.bodyText2;
+    final style = contentTextStyle ?? bannerTheme.contentTextStyle ?? theme.textTheme.bodyText2!;
     final color = _textColor(theme, bannerTheme, style.color);
     return _isSingleRow ? style.copyWith(fontSize: 15.0, color: color) : style.copyWith(color: color);
   }
 
-  Color _iconColor(ThemeData theme) {
+  Color? _iconColor(ThemeData theme) {
     switch (theme.brightness) {
       case Brightness.light:
         return Colors.black45;
@@ -146,22 +144,12 @@ class MessageWidget extends StatelessWidget {
     }
   }
 
-  Color _textColor(ThemeData theme, MaterialBannerThemeData bannerTheme, Color defaultColor) {
-    return bannerTheme?.contentTextStyle?.color ?? defaultColor;
+  Color? _textColor(ThemeData theme, MaterialBannerThemeData bannerTheme, Color? defaultColor) {
+    return bannerTheme.contentTextStyle?.color ?? defaultColor;
   }
 
-  Color _backgroundColor(ThemeData theme, MaterialBannerThemeData bannerTheme) {
-    if (color != null) {
-      return color;
-    }
-    if (bannerTheme?.backgroundColor != null) {
-      return bannerTheme.backgroundColor;
-    }
-    if (theme?.colorScheme?.surface != null) {
-      return theme.colorScheme.surface;
-    }
-
-    return Colors.transparent;
+  Color? _backgroundColor(ThemeData theme, MaterialBannerThemeData bannerTheme) {
+    return color ?? bannerTheme.backgroundColor ?? theme.colorScheme.surface;
   }
 
   @override
@@ -169,26 +157,26 @@ class MessageWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final bannerTheme = MaterialBannerTheme.of(context);
 
-    Widget leadingIcon;
+    Widget? leadingIcon;
     if (leading != null) {
       final iconThemeData = IconThemeData(color: _iconColor(theme));
-      final resolvedLeadingPadding = leadingPadding ?? bannerTheme?.leadingPadding ?? _defaultLeadingPadding;
+      final resolvedLeadingPadding = leadingPadding ?? bannerTheme.leadingPadding ?? _defaultLeadingPadding;
       leadingIcon = Padding(
         padding: resolvedLeadingPadding,
         child: IconTheme.merge(
           data: iconThemeData,
-          child: leading,
+          child: leading!,
         ),
       );
     }
 
-    Widget titleText;
+    Widget? titleText;
     if (title != null) {
       titleText = Expanded(
         child: AnimatedDefaultTextStyle(
           style: _textStyle(theme, bannerTheme),
           duration: kThemeChangeDuration,
-          child: title,
+          child: title!,
         ),
       );
     }
@@ -197,7 +185,7 @@ class MessageWidget extends StatelessWidget {
       layoutBehavior: ButtonBarLayoutBehavior.constrained,
       buttonPadding: actionsPadding ?? _defaultActionsPadding,
       buttonHeight: minActionsHeight,
-      children: actions ?? const [],
+      children: actions,
     );
 
     final resolvedContentPadding = contentPadding ?? bannerTheme.padding ?? _defaultContentPadding;

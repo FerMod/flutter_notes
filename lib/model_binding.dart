@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -9,14 +7,13 @@ import 'package:flutter/material.dart';
 
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
-    Key key,
+    Key? key,
     this.model,
-    @required this.modelBindingState,
-    @required Widget child,
-  })  : assert(modelBindingState != null),
-        super(key: key, child: child);
+    required this.modelBindingState,
+    required Widget child,
+  }) : super(key: key, child: child);
 
-  final T model;
+  final T? model;
   final _ModelBindingState<T> modelBindingState;
 
   @override
@@ -29,8 +26,8 @@ class _ModelBindingScope<T> extends InheritedWidget {
 /// ModelBinding returned by [ModelBinding.of].
 class ModelBinding<T> extends StatefulWidget {
   const ModelBinding({
-    Key key,
-    @required this.initialModel,
+    Key? key,
+    required this.initialModel,
     this.child,
   })  : assert(initialModel != null),
         super(key: key);
@@ -40,7 +37,7 @@ class ModelBinding<T> extends StatefulWidget {
   final T initialModel;
 
   /// The widget below this widget in the tree.
-  final Widget child;
+  final Widget? child;
 
   @override
   _ModelBindingState<T> createState() => _ModelBindingState<T>();
@@ -50,11 +47,12 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// If there is no [ModelBinding] in scope, then this will assert in
   /// debug mode, and throw an exception in release mode.
-  static T of<T>(BuildContext context) {
+  static T? of<T>(BuildContext context) {
     assert(
+      // ignore: unnecessary_null_comparison
       context != null,
       'Tried to call ModelBinding.of<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
+      'This can happen if context of a StatefulWidget is used and that '
       'StatefulWidget was disposed.',
     );
     assert(
@@ -65,7 +63,7 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
     return scope.modelBindingState.currentModel;
   }
 
@@ -79,11 +77,12 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// * [of], which is a similar function, except that it will throw an
   ///   exception if a [ModelBinding] is not found in the given context.
-  static T maybeOf<T>(BuildContext context) {
+  static T? maybeOf<T>(BuildContext context) {
     assert(
+      // ignore: unnecessary_null_comparison
       context != null,
       'Tried to call ModelBinding.maybeOf<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
+      'This can happen if context of a StatefulWidget is used and that '
       'StatefulWidget was disposed.',
     );
     assert(
@@ -94,17 +93,18 @@ class ModelBinding<T> extends StatefulWidget {
     );
 
     final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
-    return scope?.modelBindingState?.currentModel;
+    return scope?.modelBindingState.currentModel;
   }
 
   /// Updates the model that corresponds to the given [context] with the new
   /// given one and notifies the framework that the internal state of this
   /// object has changed.
-  static void update<T>(BuildContext context, T newModel) {
+  static bool update<T>(BuildContext context, T newModel) {
     assert(
+      // ignore: unnecessary_null_comparison
       context != null,
       'Tried to call ModelBinding.update<$T> on a `context` that is `null`.\n'
-      'This can happen if context of a StatefulWidget is used and that'
+      'This can happen if context of a StatefulWidget is used and that '
       'StatefulWidget was disposed.',
     );
     // assert(newModel != null); // Should we allow null?
@@ -116,9 +116,9 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
     //assert(scope != null, 'a ModelBinding<T> ancestor was not found');
-    scope.modelBindingState.updateModel(newModel);
+    return scope.modelBindingState.updateModel(newModel);
   }
 
   @override
@@ -131,8 +131,8 @@ class ModelBinding<T> extends StatefulWidget {
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
   final GlobalKey _modelBindingScopeKey = GlobalKey();
 
-  T _currentModel;
-  T get currentModel => _currentModel;
+  T? _currentModel;
+  T? get currentModel => _currentModel;
 
   @override
   void initState() {
@@ -154,12 +154,16 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   /// If the [newModel] is different from the current model, [setState] will be
   /// called, which causes the framework to schedule a [build] for this [State]
   /// object.
-  void updateModel(T newModel) {
-    if (_currentModel != newModel) {
+  ///
+  /// Returns true if the model will rebuild to reflect the changes.
+  bool updateModel(T newModel) {
+    final shouldUpdate = _currentModel != newModel;
+    if (shouldUpdate) {
       setState(() {
         _currentModel = newModel;
       });
     }
+    return shouldUpdate;
   }
 
   @override
@@ -168,7 +172,7 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
       key: _modelBindingScopeKey,
       model: _currentModel,
       modelBindingState: this,
-      child: widget.child,
+      child: widget.child!,
     );
   }
 }

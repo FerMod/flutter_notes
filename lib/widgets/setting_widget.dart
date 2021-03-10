@@ -2,27 +2,23 @@ import 'package:flutter/material.dart';
 
 class DisplayOption {
   const DisplayOption({
-    @required this.title,
+    required this.title,
     this.subtitle,
   });
 
   final Widget title;
-  final Widget subtitle;
-
-  bool get hasTitle => title != null;
-  bool get hasSubtitle => subtitle != null;
+  final Widget? subtitle;
 }
 
 class SettingsHeader extends StatelessWidget {
   const SettingsHeader({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.subtitle,
-  })  : assert(title != null),
-        super(key: key);
+  })  : super(key: key);
 
   final Widget title;
-  final Widget subtitle;
+  final Widget? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +34,19 @@ class SettingsHeader extends StatelessWidget {
 
 class SettingListTile extends StatelessWidget {
   const SettingListTile({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.icon,
     this.subtitle,
     this.trailing,
     this.onTap,
   }) : super(key: key);
 
-  final Widget icon;
+  final Widget? icon;
   final Widget title;
-  final Widget subtitle;
-  final Widget trailing;
-  final GestureTapCallback onTap;
+  final Widget? subtitle;
+  final Widget? trailing;
+  final GestureTapCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +62,7 @@ class SettingListTile extends StatelessWidget {
           trailing ??
               Icon(
                 Icons.chevron_right,
-                color: theme.textTheme.caption.color,
+                color: theme.textTheme.caption!.color,
               ),
         ],
       ),
@@ -77,10 +73,10 @@ class SettingListTile extends StatelessWidget {
 
 class SettingRadioListItems<T> extends StatelessWidget {
   SettingRadioListItems({
-    Key key,
-    @required this.selectedOption,
-    @required this.optionsMap,
-    @required this.onChanged,
+    Key? key,
+    required this.selectedOption,
+    required this.optionsMap,
+    required this.onChanged,
   }) : super(key: key);
 
   /// The currently selected value.
@@ -120,7 +116,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
   ///   },
   /// )
   /// ```
-  final ValueChanged<T> onChanged;
+  final ValueChanged<T?> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -147,14 +143,11 @@ class SettingRadioListItems<T> extends StatelessWidget {
 
 class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
   SettingsRouteBuilder({
-    @required this.builder,
-    RouteSettings settings,
+    required this.builder,
+    RouteSettings? settings,
     bool maintainState = true,
     bool fullscreenDialog = false,
-  })  : assert(builder != null),
-        assert(maintainState != null),
-        assert(fullscreenDialog != null),
-        super(
+  })  : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             return builder(context);
           },

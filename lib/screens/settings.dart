@@ -11,7 +11,7 @@ import '../widgets/user_account.dart';
 import 'sign_in.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key key}) : super(key: key);
+  const SettingsScreen({Key? key}) : super(key: key);
 
   void _navigate(BuildContext context, Widget widget) {
     Navigator.of(context).push(
@@ -33,16 +33,16 @@ class SettingsScreen extends StatelessWidget {
 
     Widget iconWidget;
     Widget titleWidget;
-    Widget subtitleWidget;
+    Widget? subtitleWidget;
     if (isSignedIn) {
       iconWidget = UserAvatar(
-        imageUrl: user.photoURL,
+        imageUrl: user!.photoURL!,
         nameText: user.displayName,
       );
-      titleWidget = Text(user.displayName);
-      subtitleWidget = Text(user.email);
+      titleWidget = Text(user.displayName!);
+      subtitleWidget = Text(user.email!);
     } else {
-      final localizations = AppLocalizations.of(context);
+      final localizations = AppLocalizations.of(context)!;
       iconWidget = const Icon(
         Icons.account_circle,
         size: UserAvatar.alternativeImageIconSize,
@@ -66,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -108,28 +108,28 @@ class SettingsScreen extends StatelessWidget {
 
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({
-    Key key,
+    Key? key,
     this.userData,
     this.onTap,
     this.onTapImage,
   }) : super(key: key);
 
-  final UserData<UserModel> userData;
+  final UserData<UserModel>? userData;
 
-  final VoidCallback onTap;
-  final VoidCallback onTapImage;
+  final VoidCallback? onTap;
+  final VoidCallback? onTapImage;
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final user = userData.currentUser;
+    final localizations = AppLocalizations.of(context)!;
+    final user = userData!.currentUser!;
 
     Widget picture = UserAvatar(
-      imageUrl: user.photoURL,
+      imageUrl: user.photoURL!,
       nameText: user.displayName,
     );
-    Widget name = Text(user.displayName);
-    Widget email = Text(user.email);
+    Widget name = Text(user.displayName!);
+    Widget email = Text(user.email!);
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
@@ -146,7 +146,7 @@ class AccountSettingScreen extends StatelessWidget {
               leading: const Icon(Icons.login),
               title: Text(localizations.signOut),
               onTap: () {
-                userData.signOut();
+                userData!.signOut();
                 // TODO: Improve route navigation
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoute.notes,
@@ -163,24 +163,23 @@ class AccountSettingScreen extends StatelessWidget {
 
 class LocalizationSettingScreen extends StatelessWidget {
   const LocalizationSettingScreen({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
-  Map<String, DisplayOption> _buildOptionsMap(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+  Map<String?, DisplayOption> _buildOptionsMap(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
 
     final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
-    final systemLocale = supportedLocales.firstWhere((locale) => deviceLocale.languageCode == locale.languageCode);
+    final systemLocale = supportedLocales.firstWhere((locale) => deviceLocale!.languageCode == locale.languageCode);
     supportedLocales.sort((a, b) => a.languageCode.compareTo(b.languageCode));
 
-    final localesMap = Map<String, DisplayOption>.fromIterable(
-      supportedLocales,
-      key: (locale) => locale.languageCode,
-      value: (locale) => DisplayOption(
-        title: _createLocalizedText(context, locale),
-        subtitle: Text(localizations.nameOf(locale.languageCode)),
-      ),
-    );
+    final localesMap = {
+      for (var locale in supportedLocales)
+        locale.languageCode: DisplayOption(
+          title: _createLocalizedText(context, locale),
+          subtitle: Text(localizations.nameOf(locale.languageCode)!),
+        )
+    };
     localesMap.remove(systemLocale.languageCode);
     return {
       systemLocale.languageCode: DisplayOption(
@@ -191,7 +190,7 @@ class LocalizationSettingScreen extends StatelessWidget {
     };
   }
 
-  Localizations _createLocalizedText(BuildContext context, Locale locale) {
+  Localizations _createLocalizedText(BuildContext context, Locale? locale) {
     final languageCode = locale?.languageCode ?? 'und';
     return Localizations.override(
       context: context,
@@ -200,7 +199,7 @@ class LocalizationSettingScreen extends StatelessWidget {
         // We need the parent build context
         builder: (context) {
           final localizations = AppLocalizations.of(context);
-          return Text(localizations.nameOf(languageCode));
+          return Text(localizations.nameOf(languageCode)!);
         },
       ),
     );
@@ -208,18 +207,18 @@ class LocalizationSettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final appSettings = AppOptions.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final appSettings = AppOptions.of(context)!;
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsLanguage)),
-      body: SettingRadioListItems<String>(
-        selectedOption: appSettings.locale.languageCode,
+      body: SettingRadioListItems<String?>(
+        selectedOption: appSettings.locale!.languageCode,
         optionsMap: _buildOptionsMap(context),
         onChanged: (value) {
           AppOptions.update(
             context,
-            appSettings.copyWith(locale: Locale(value)),
+            appSettings.copyWith(locale: Locale(value!)),
           );
         },
       ),
@@ -228,10 +227,10 @@ class LocalizationSettingScreen extends StatelessWidget {
 }
 
 class ThemeModeSettingScreen extends StatelessWidget {
-  const ThemeModeSettingScreen({Key key}) : super(key: key);
+  const ThemeModeSettingScreen({Key? key}) : super(key: key);
 
   Map<ThemeMode, DisplayOption> _buildOptionsMap(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return {
       ThemeMode.system: DisplayOption(title: Text(localizations.settingsSystemDefault)),
       ThemeMode.dark: DisplayOption(title: Text(localizations.settingsDarkTheme)),
@@ -241,8 +240,8 @@ class ThemeModeSettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final appSettings = AppOptions.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final appSettings = AppOptions.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTheme)),
       body: SettingRadioListItems<ThemeMode>(
@@ -261,11 +260,11 @@ class ThemeModeSettingScreen extends StatelessWidget {
 
 @deprecated
 class ApplicationSettings extends StatelessWidget {
-  const ApplicationSettings({Key key}) : super(key: key);
+  const ApplicationSettings({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return SettingListTile(
       icon: const Icon(Icons.person),
       title: Text(localizations.settingsAccount),
@@ -276,11 +275,11 @@ class ApplicationSettings extends StatelessWidget {
 
 @deprecated
 class LocalizationSettings extends StatelessWidget {
-  const LocalizationSettings({Key key}) : super(key: key);
+  const LocalizationSettings({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return SettingListTile(
       icon: const Icon(Icons.language),
