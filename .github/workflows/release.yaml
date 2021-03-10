@@ -62,8 +62,8 @@ jobs:
             target: web
             channel: stable
             path: build/web
-            asset_extension: .zip
-            asset_content_type: application/zip
+            asset_extension: .tar.gz
+            asset_content_type: application/gzip
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
     needs: create-release
@@ -147,6 +147,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: $GITHUB_WORKSPACE/code/${{ matrix.path }}/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_path: ${{ env.GITHUB_WORKSPACE }}/code/${{ matrix.path }}/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_name: flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
