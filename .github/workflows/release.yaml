@@ -112,10 +112,7 @@ jobs:
         
       # Build the application.
       - name: Build project
-        run: |
-          flutter create .
-          flutter pub get
-          flutter build -v ${{ matrix.target }} --release
+        run: flutter build -v ${{ matrix.target }} --release
         working-directory: code
 
       # Prepare release build package.
