@@ -136,7 +136,7 @@ jobs:
         working-directory: code/${{ matrix.path }}
       - name: Compress build for macOS
         if: startsWith(matrix.os, 'macos')
-        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Gallery.app $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}.zip
+        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}.zip
         working-directory: code/${{ matrix.path }}
 
       # Upload the release build.
