@@ -125,17 +125,17 @@ jobs:
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Windows
         if: matrix.target == 'windows'
-        run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+        run: compress-archive -Path * -DestinationPath \flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code\${{ matrix.path }}
       - name: Compress build for Linux
         if: matrix.target == 'linux' || matrix.target == 'web'
-        run: tar czf $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }} *
+        run: tar czf ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }} *
         working-directory: code/${{ matrix.path }}
       - name: Compress build for macOS
         if: matrix.target == 'macos'
-        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code/${{ matrix.path }}
-
+      
       # Upload the release build.
       - name: Upload release asset
         id: upload_release_asset
@@ -144,6 +144,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_path: $GITHUB_WORKSPACE/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_name: flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
