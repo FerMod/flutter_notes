@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [android, linux, macos, windows, web] # [android, ios, windows, linux, macos, web]
+        target: [android, web] # [android, linux, macos, windows, web]
         include:
           - os: ubuntu-20.04
             target: android
@@ -35,12 +35,6 @@ jobs:
             path: build/app/outputs/apk/release
             asset_extension: .apk
             asset_content_type: application/vnd.android.package-archive
-          - os: ubuntu-20.04
-            target: web
-            channel: stable
-            path: build/web
-            asset_extension: .tar.gz
-            asset_content_type: application/gzip
           # - os: ubuntu-20.04
           #   target: linux
           #   channel: stable
@@ -59,6 +53,12 @@ jobs:
           #   path: build/windows/runner/Release
           #   asset_extension: .zip
           #   asset_content_type: application/zip
+          - os: ubuntu-20.04
+            target: web
+            channel: stable
+            path: build/web
+            asset_extension: .tar.gz
+            asset_content_type: application/gzip
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
     needs: create-release
