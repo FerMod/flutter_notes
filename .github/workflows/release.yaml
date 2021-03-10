@@ -106,7 +106,7 @@ jobs:
           flutter create .
           flutter pub get
         working-directory: code
-    
+      
       # Build the application.
       - name: Build project
         run: flutter build -v ${{ matrix.build_target || matrix.target }} --release
