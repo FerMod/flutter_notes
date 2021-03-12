@@ -22,10 +22,8 @@ class SignFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWeb = kIsWeb;
-
     BoxConstraints? constraints;
-    if (isWeb) {
+    if (kIsWeb) {
       final textScaleFactor = MediaQuery.textScaleFactorOf(context);
       final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
       constraints = BoxConstraints(maxWidth: desktopMaxWidth);
