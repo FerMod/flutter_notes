@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -87,6 +88,28 @@ class CardHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget content = Container(
+      decoration: decoration ??
+          BoxDecoration(
+            border: Border(
+              top: Divider.createBorderSide(
+                context,
+                color: color,
+                width: width,
+              ),
+            ),
+          ),
+      child: child,
+    );
+
+    if (onTap != null || onLongPress != null) {
+      content = InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: content,
+      );
+    }
+    
     return Hero(
       tag: tag,
       child: Card(
@@ -94,19 +117,7 @@ class CardHero extends StatelessWidget {
         shape: shape,
         margin: margin,
         clipBehavior: Clip.antiAlias,
-        child: DecoratedBox(
-          decoration: decoration ??
-              BoxDecoration(
-                border: Border(
-                  top: Divider.createBorderSide(
-                    context,
-                    color: color,
-                    width: width,
-                  ),
-                ),
-              ),
-          child: child,
-        ),
+        child: content,
       ),
     );
   }

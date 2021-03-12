@@ -304,6 +304,7 @@ class NoteListWidget extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: onRefresh!,
+      displacement: 50.0,
       child: Scrollbar(
         controller: controller,
         // thickness: 2.0,
@@ -318,33 +319,31 @@ class NoteListWidget extends StatelessWidget {
             return CardHero(
               tag: 'note-${note.id}',
               color: note.color,
-              child: InkWell(
-                onTap: () => onTap?.call(note),
-                onLongPress: () => developer.log('Long press'),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ListTile(
-                        // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                        mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                        title: Text(note.title!),
-                        subtitle: Text(
-                          note.content!,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+              onTap: () => onTap?.call(note),
+              onLongPress: () => developer.log('Long press'),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                      mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                      title: Text(note.title!),
+                      subtitle: Text(
+                        note.content!,
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    PopupMenuButton<MenuAction>(
-                      itemBuilder: (context) => [
-                        _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
-                      ],
-                      onSelected: (value) => onMenuTap!(note),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ],
-                ),
+                  ),
+                  PopupMenuButton<MenuAction>(
+                    itemBuilder: (context) => [
+                      _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                    ],
+                    onSelected: (value) => onMenuTap!(note),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
               ),
             );
           },
