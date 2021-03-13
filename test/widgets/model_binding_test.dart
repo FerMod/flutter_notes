@@ -70,6 +70,42 @@ void main() {
         expect(log, equals(<TestModel>[firstModel, thirdModel]));
       });
 
+      testWidgets('returns the correct nullable model', (tester) async {
+        final builder = Builder(
+          builder: (context) {
+            log.add(ModelBinding.of<TestModel?>(context));
+            return Container();
+          },
+        );
+
+        TestModel? firstModel = TestModel(value: 1);
+        final firstWidget = ModelBinding<TestModel?>(
+          initialModel: firstModel,
+          child: builder,
+        );
+        await tester.pumpWidget(firstWidget);
+
+        expect(log, equals(<TestModel?>[firstModel]));
+
+        TestModel? secondModel = TestModel(value: 1);
+        final secondWidget = ModelBinding<TestModel?>(
+          initialModel: secondModel,
+          child: builder,
+        );
+        await tester.pumpWidget(secondWidget);
+
+        expect(log, equals(<TestModel?>[firstModel]));
+
+        TestModel? thirdModel = TestModel(value: 3);
+        final thirdWidget = ModelBinding<TestModel?>(
+          initialModel: thirdModel,
+          child: builder,
+        );
+        await tester.pumpWidget(thirdWidget);
+
+        expect(log, equals(<TestModel?>[firstModel, thirdModel]));
+      });
+
       testWidgets('returns null when no model exist', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
         await tester.pumpWidget(Container(key: globalKey));
@@ -105,13 +141,6 @@ void main() {
         expect(log, [model]);
       });
       */
-
-      testWidgets('throws when initialModel is null', (tester) async {
-        expect(
-          () => ModelBinding(initialModel: null),
-          throwsA(isAssertionError),
-        );
-      });
 
       testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
@@ -181,7 +210,7 @@ void main() {
     });
 
     group('ModelBinding.update', () {
-      testWidgets('updates correctly the model', (tester) async {
+      testWidgets('updates correctly a model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
         final firstModel = TestModel(value: 1);
@@ -221,6 +250,48 @@ void main() {
 
         // The new model should be present
         expect(log, equals(<TestModel>[secondModel]));
+      });
+
+      testWidgets('updates correctly a nullable model', (tester) async {
+        final globalKey = GlobalKey(debugLabel: 'Test Key');
+
+        TestModel? firstModel = TestModel(value: 1);
+        TestModel? secondModel;
+
+        ModelBinding<TestModel?> build() {
+          return ModelBinding<TestModel?>(
+            key: UniqueKey(),
+            initialModel: firstModel,
+            child: Container(
+              child: Builder(
+                key: globalKey,
+                builder: (context) {
+                  log.add(ModelBinding.of<TestModel?>(context));
+                  return Container();
+                },
+              ),
+            ),
+          );
+        }
+
+        final widget = build();
+        await tester.pumpWidget(widget);
+
+        // The first model is present
+        expect(log, <TestModel?>[firstModel]);
+
+        log.clear();
+        await tester.pump();
+
+        // No new models added
+        expect(log, equals(<TestModel?>[]));
+
+        log.clear();
+        ModelBinding.update<TestModel?>(globalKey.currentContext!, secondModel);
+        await tester.pump();
+
+        // The new model should be present
+        expect(log, equals(<TestModel?>[secondModel]));
       });
 
       testWidgets('throws when no ancestor is found', (tester) async {
@@ -430,7 +501,7 @@ void main() {
                     initialModel: TestModel(value: 3),
                     child: Container(
                       child: Builder(builder: (context) {
-                        final testModel = ModelBinding.of<TestModel>(context)!;
+                        final testModel = ModelBinding.of<TestModel>(context);
                         log.add('a: ${testModel.value}');
                         return Container();
                       }),
@@ -445,7 +516,7 @@ void main() {
                 child: Container(
                   child: Container(
                     child: Builder(builder: (context) {
-                      final testModel = ModelBinding.of<TestModel>(context)!;
+                      final testModel = ModelBinding.of<TestModel>(context);
                       log.add('b: ${testModel.value}');
                       return Container();
                     }),

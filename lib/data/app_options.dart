@@ -106,7 +106,7 @@ class AppOptions {
   /// the given `context`.
   ///
   /// Returns null if no object exists within the given `context`.
-  static AppOptions? of(BuildContext context) {
+  static AppOptions of(BuildContext context) {
     return ModelBinding.of<AppOptions>(context);
   }
 
@@ -125,7 +125,7 @@ class AppOptions {
     Locale? locale,
     TargetPlatform? platform,
   }) {
-    final objectCopy = AppOptions.of(context)!.copyWith(
+    final objectCopy = AppOptions.of(context).copyWith(
       themeMode: themeMode,
       locale: locale,
       platform: platform,

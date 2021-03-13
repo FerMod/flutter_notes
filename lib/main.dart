@@ -87,12 +87,12 @@ class NotesApp extends StatelessWidget {
             onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: AppOptions.of(context)!.locale,
+            locale: AppOptions.of(context).locale,
             localeListResolutionCallback: _localeListResolution,
             localeResolutionCallback: _localeResolution,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
-            themeMode: AppOptions.of(context)!.themeMode,
+            themeMode: AppOptions.of(context).themeMode,
             home: SignInScreen(), // TODO: Only for testing, change to real home
             routes: AppRoute.routes,
             // home: Scaffold(

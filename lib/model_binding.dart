@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
     Key? key,
-    this.model,
+    required this.model,
     required this.modelBindingState,
     required Widget child,
   }) : super(key: key, child: child);
 
-  final T? model;
+  final T model;
   final _ModelBindingState<T> modelBindingState;
 
   @override
@@ -23,31 +23,47 @@ class _ModelBindingScope<T> extends InheritedWidget {
 /// A generic implementation of an [InheritedWidget].
 ///
 /// Any descendant of this widget can obtain [initialModel] with an instance of
-/// ModelBinding returned by [ModelBinding.of].
+/// [ModelBinding] returned by [ModelBinding.of].
 class ModelBinding<T> extends StatefulWidget {
+  /// Creates a widget that provides the [ModelBinding] model data to its
+  /// descendants.
   const ModelBinding({
     Key? key,
     required this.initialModel,
-    this.child,
-  })  : assert(initialModel != null),
-        super(key: key);
+    required this.child,
+  }) : super(key: key);
 
-  /// The model returned by [ModelBinding.of] will be specific to this initial
-  /// model.
+  /// Contains the model data.
   final T initialModel;
 
   /// The widget below this widget in the tree.
-  final Widget? child;
+  final Widget child;
 
   @override
   _ModelBindingState<T> createState() => _ModelBindingState<T>();
 
-  /// Returns the nearest [ModelBinding] widget up its widget tree that
-  /// corresponds to the given [context] and returns its value.
+  /// Returns the [ModelBinding] widgets [initialModel] from the closest
+  /// instance of this class that encloses the given context.
   ///
-  /// If there is no [ModelBinding] in scope, then this will assert in
-  /// debug mode, and throw an exception in release mode.
-  static T? of<T>(BuildContext context) {
+  /// You can use this function to obtain the [initialModel]. When that information
+  /// changes, your widget will be scheduled to be rebuilt, keeping your widget
+  /// up-to-date.
+  ///
+  /// Typical usage is as follows:
+  ///
+  /// ```dart
+  /// T model = ModelBinding.of<T>(context);
+  /// ```
+  ///
+  /// If there is no [ModelBinding] in scope, this will throw a [TypeError]
+  /// exception in release builds, and throw a descriptive [FlutterError] in
+  /// debug builds.
+  ///
+  /// See also:
+  ///
+  ///  * [maybeOf], which doesn't throw or assert if it doesn't find a
+  ///    [ModelBinding] ancestor, it returns null instead.
+  static T of<T>(BuildContext context) {
     assert(
       // ignore: unnecessary_null_comparison
       context != null,
@@ -67,16 +83,33 @@ class ModelBinding<T> extends StatefulWidget {
     return scope.modelBindingState.currentModel;
   }
 
-  /// Returns the nearest [ModelBinding] widget up its widget tree that
-  /// corresponds to the given [context] and returns its value.
+  /// Returns the [ModelBinding] widgets [initialModel] from the closest
+  /// instance of this class that encloses the given context, if any.
   ///
-  /// If no [ModelBinding] widget is in scope then the [ModelBinding.of]
-  /// method will return null.
+  /// Use this function if you want to allow situations where no [ModelBinding]
+  /// is in scope. Prefer using [ModelBinding.of] in situations where a
+  /// [ModelBinding] is always expected to exist.
+  ///
+  /// If there is no [ModelBinding] in scope, then this function will return
+  /// null.
+  ///
+  /// You can use this function to obtain the [initialModel]. When that information
+  /// changes, your widget will be scheduled to be rebuilt, keeping your widget
+  /// up-to-date.
+  ///
+  /// Typical usage is as follows:
+  ///
+  /// ```dart
+  /// T? model = ModelBinding.maybeOf<T>(context);
+  /// if (model == null) {
+  ///   // Do something else instead.
+  /// }
+  /// ```
   ///
   /// See also:
   ///
-  /// * [of], which is a similar function, except that it will throw an
-  ///   exception if a [ModelBinding] is not found in the given context.
+  ///  * [of], which will throw if it doesn't find a [ModelBinding] ancestor,
+  ///    instead of returning null.
   static T? maybeOf<T>(BuildContext context) {
     assert(
       // ignore: unnecessary_null_comparison
@@ -107,7 +140,6 @@ class ModelBinding<T> extends StatefulWidget {
       'This can happen if context of a StatefulWidget is used and that '
       'StatefulWidget was disposed.',
     );
-    // assert(newModel != null); // Should we allow null?
     assert(
       T != dynamic,
       'Tried to call ModelBinding.update<dynamic>.\n'
@@ -131,8 +163,8 @@ class ModelBinding<T> extends StatefulWidget {
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
   final GlobalKey _modelBindingScopeKey = GlobalKey();
 
-  T? _currentModel;
-  T? get currentModel => _currentModel;
+  late T _currentModel;
+  T get currentModel => _currentModel;
 
   @override
   void initState() {
@@ -172,7 +204,7 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
       key: _modelBindingScopeKey,
       model: _currentModel,
       modelBindingState: this,
-      child: widget.child!,
+      child: widget.child,
     );
   }
 }
@@ -193,17 +225,18 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
 /// Does nothing if asserts are disabled. Always returns true.
 bool debugCheckHasModelBinding<T>(BuildContext context) {
   assert(() {
-    if (context.findAncestorWidgetOfExactType<_ModelBindingScope<T>>() == null) {
+    if (context.widget is! _ModelBindingScope<T> && context.findAncestorWidgetOfExactType<_ModelBindingScope<T>>() == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
         ErrorSummary('No ModelBinding<$T> widget found.'),
         ErrorDescription('${context.widget.runtimeType} widgets require a ModelBinding<$T> widget ancestor.'),
-        ...context.describeMissingAncestor(expectedAncestorType: ModelBinding),
+        context.describeWidget('The specific widget that could not find a ModelBinding<$T> ancestor was'),
+        context.describeOwnershipChain('The ownership chain for the affected widget is'),
         ErrorHint(
-          'Typically, the $T widget should have a ModelBinding<$T> as a parent widget.\n'
-          'Try to wrap the ',
+          'No ModelBinding<$T> ancestor could be found starting from the context '
+          'that was passed to ModelBinding<$T>.of(). This can happen because you '
+          'have not added a ModelBinding<$T> widget, or it can happen if the '
+          'context you use comes from a widget above that widgets.',
         ),
-        ErrorHint('The used `BuildContext` is of an ancestor of the ModelBinding<$T> you are trying to access.'),
-        ErrorHint('The used `BuildContext` is in another route.'),
       ]);
     }
     return true;

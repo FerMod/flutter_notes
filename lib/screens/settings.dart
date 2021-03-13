@@ -208,7 +208,7 @@ class LocalizationSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final appSettings = AppOptions.of(context)!;
+    final appSettings = AppOptions.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsLanguage)),
@@ -241,7 +241,7 @@ class ThemeModeSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final appSettings = AppOptions.of(context)!;
+    final appSettings = AppOptions.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTheme)),
       body: SettingRadioListItems<ThemeMode>(
