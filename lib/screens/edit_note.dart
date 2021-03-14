@@ -339,7 +339,7 @@ class _SectionDivider extends StatelessWidget {
 class _SaveChangesAlertDialog extends StatelessWidget {
   const _SaveChangesAlertDialog({Key? key}) : super(key: key);
 
-  TextButton _createButton(BuildContext context, String text, ChangesAction action) {
+  Widget _createButton(BuildContext context, String text, ChangesAction action) {
     return TextButton(
       onPressed: () => Navigator.of(context, rootNavigator: true).pop(action),
       child: Text(text),
