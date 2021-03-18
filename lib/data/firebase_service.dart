@@ -156,7 +156,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   ///
   /// It notifies the same state changes as [authStateChange] in addition to
   /// notifications about token refresh events.
-  Stream<User?> get idTokenChanges => _auth.userChanges().distinct();
+  Stream<User?> get idTokenChanges => _auth.idTokenChanges().distinct();
 
   /// Notifies about changes to any user updates.
   ///
