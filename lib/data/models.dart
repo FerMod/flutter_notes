@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:collection';
+// ignore: unused_import
+import 'dart:developer' as developer;
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'firebase_service.dart';
 import 'models/note_model.dart';
@@ -19,11 +22,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   final Collection<NoteModel> collection = Collection<NoteModel>(path: 'notes');
   final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
 
-  StreamController<List<NoteModel>>? _controller; // = StreamController<List<NoteModel>>.broadcast();
+  StreamController<List<NoteModel>>? _controller;
 
-  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [] {
-    //_controller.stream.pipe(streamConsumer)
-  }
+  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
 
   List<NoteModel> _notes = [];
   UnmodifiableListView<NoteModel> get notes => UnmodifiableListView(_notes);
@@ -35,31 +36,23 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  @deprecated
-  Future loadDelayed({bool notifyIsLoading = true}) async {
-    final user = userData.currentUser;
-    if (user == null) {
-      return Future<List<NoteModel>>.value(null);
-    }
+  @Deprecated('It\'s only used for debugging')
+  Future<List<NoteModel>> loadDelayed({
+    Duration duration = const Duration(seconds: 2),
+    bool notifyIsLoading = true,
+  }) async {
+    developer.log('loadDelayed(duration: $duration, notifyIsLoading: $notifyIsLoading)');
 
-    return load(
-      () => Future.delayed(Duration(seconds: 2), () async {
-        return load(
-          () => collection.data(
-            (snapshot) => NoteModel.fromSnapshot(snapshot),
-            (query) => query!.where('userId', isEqualTo: user.uid),
-          ),
-          notifyIsLoading: notifyIsLoading,
-        ) as FutureOr<List<NoteModel>>;
-      }),
-      notifyIsLoading: notifyIsLoading,
+    return Future.delayed(
+      duration,
+      () => loadData(notifyIsLoading: notifyIsLoading),
     );
   }
 
-  Future loadData({bool notifyIsLoading = true}) {
+  Future<List<NoteModel>> loadData({bool notifyIsLoading = true}) {
     final user = userData.currentUser;
     if (user == null) {
-      return Future<List<NoteModel>>.value(null);
+      return Future.value([]);
     }
 
     return load(
@@ -71,15 +64,14 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     );
   }
 
-  Future refresh() => loadData(notifyIsLoading: false);
+  Future<List<NoteModel>> refresh() => loadData(notifyIsLoading: false);
 
-  Future load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) async {
+  Future<List<NoteModel>> load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) async {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
 
     try {
-      final loadedNotes = await operation();
-      _notes = loadedNotes;
+      return operation().then((value) => _notes = value);
     } finally {
       // Whetever if it does complete with an error or not
       _isLoading = false;
@@ -87,21 +79,27 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     }
   }
 
-  Stream<List<NoteModel>> streamData({bool notifyIsLoading = false}) {
+  @Deprecated('It\'s only used for debugging')
+  Stream<List<NoteModel>> streamDelayed({Duration duration = const Duration(seconds: 2)}) {
+    developer.log('loadDelayed(duration: $duration)');
+    return streamData().delay(duration);
+  }
+
+  Stream<List<NoteModel>> streamData() {
     final user = userData.currentUser;
     if (user == null) {
-      return Stream<List<NoteModel>>.value([]); // TODO: what if user is null?
+      return Stream.value([]); // TODO: what if user is null?
     }
+
     return stream(
       () => collection.stream(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
         (query) => query!.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
       ),
-      notifyIsLoading: notifyIsLoading,
     );
   }
 
-  Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
+  Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation) {
     _controller ??= StreamController<List<NoteModel>>.broadcast(onListen: () {
       // Listen for events of this stream and update the list content
       _controller!.stream.listen((notes) => _notes = notes);
