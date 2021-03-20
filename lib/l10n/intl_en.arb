@@ -301,6 +301,20 @@
   "@errorUnknown": {
     "description": "Message text to show when an unknown error happens."
   },
+  "aboutApp": "About",
+  "@aboutApp": {
+    "description": "Text for the widget that shows information obout the application. To provide the application name use [aboutNamedApp]."
+  },
+  "aboutNamedApp": "About {applicationName}",
+  "@aboutNamedApp": {
+    "description": "Text for the widget that shows information obout the application, with the given {applicationName} name.",
+    "placeholders": {
+      "applicationName": {
+        "type": "String",
+        "example": "My Cool App"
+      }
+    }
+  },
   "und": "Undefined",
   "@und": {
     "description": "Name of the 'und' locale. The undefined locale."

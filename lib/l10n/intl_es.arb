@@ -67,6 +67,8 @@
   "errorInvalidEmail": "Por favor, introduzca una dirección de correo válida.",
   "errorEmailAlreadyInUse": "La dirección de correo ya está asociada a otra cuenta.",
   "errorUnknown": "Acaba de ocurrir un error desconocido.",
+  "aboutApp": "Acerca de",
+  "aboutNamedApp": "Acerca de {applicationName}",
   "und": "No definido",
   "en": "Inglés",
   "es": "Español",
