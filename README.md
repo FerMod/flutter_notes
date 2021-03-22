@@ -1,5 +1,7 @@
 # Flutter Notes
 
+[![GitHub release](https://img.shields.io/github/v/release/FerMod/flutter_notes?include_prereleases)](https://github.com/FerMod/flutter_notes/releases)
+
 ## Getting Started
 
 ### Prerequisites
