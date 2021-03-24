@@ -191,6 +191,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     return Scaffold(
       //backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -216,10 +218,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
-                child: _ScrollableContent(
-                  scrollController: _scrollController,
-                  titleEditingController: _titleEditingController,
-                  contentEditingController: _contentEditingController,
+                child: Theme(
+                  // Set overscroll color same as the note border
+                  data: theme.copyWith(accentColor: _color),
+                  child: _ScrollableContent(
+                    scrollController: _scrollController,
+                    titleEditingController: _titleEditingController,
+                    contentEditingController: _contentEditingController,
+                  ),
                 ),
               ),
               _buildBottomNavigationBar(),
