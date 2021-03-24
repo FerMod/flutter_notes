@@ -7,97 +7,16 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
-import '../screens/home_page.dart';
 import '../screens/notes_list.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
 import 'drawer_header.dart';
 import 'user_account.dart';
-import 'user_account_dropdown.dart';
 
 class DrawerMenu extends StatelessWidget {
   DrawerMenu({Key? key}) : super(key: key);
 
   final userData = UserData<UserModel>(collection: 'users');
-
-  Widget _buildHeader() {
-    final user = userData.currentUser;
-
-    Widget headerWidget;
-
-    if (user != null) {
-      Widget? currentAccountPicture;
-      if (user.photoURL != null) {
-        currentAccountPicture = Image.network(user.photoURL!);
-      }
-
-      Widget accountName;
-      if (user.displayName != null) {
-        accountName = Text(user.displayName!);
-      }
-
-      Widget accountEmail;
-      if (user.email != null) {
-        accountEmail = Text(user.email!);
-      }
-
-      final otherAccountsPictures = <Widget?>[
-        currentAccountPicture,
-        currentAccountPicture,
-      ];
-      // headerWidget = UserAccountsDrawerHeader(
-      //   currentAccountPicture: currentAccountPicture,
-      //   accountName: accountName,
-      //   accountEmail: accountEmail,
-      //   onDetailsPressed: () {},
-      //   //otherAccountsPictures: otherAccountsPictures,
-      // );
-
-      // headerWidget = UserAccountDropdown(
-      //   accountPicture: CircleAvatar(
-      //     child: const Icon(Icons.account_circle),
-      //   ),
-      //   accountName: accountName,
-      //   accountEmail: accountEmail,
-      //   showArrow: true,
-      //   onTap: () {},
-      // );
-
-      // headerWidget = ListTile(
-      //   leading: CircleAvatar(
-      //     child: Image.network(user.email) ,
-      //   ),
-      //   title: accountName,
-      //   subtitle: accountEmail,
-      //   onTap: () {},
-      // );
-      headerWidget = UserAccountListTile(
-        imageUrl: user.photoURL!,
-        nameText: user.displayName,
-        emailText: user.email,
-      );
-
-      headerWidget = UserAccountDropdown(
-        accountPicture: CircleAvatar(
-          child: const Icon(Icons.account_circle),
-        ),
-        accountName: Text('Test'),
-        accountEmail: Text('Email'),
-        showArrow: true,
-        onTap: () {},
-      );
-    } else {
-      headerWidget = TitleDrawerHeader(
-        child: ListTile(
-          leading: Icon(Icons.account_circle),
-          title: Text('Sign in'),
-          onTap: () {},
-        ),
-      );
-    }
-
-    return headerWidget;
-  }
 
   Future _navigate(BuildContext context, Widget widget) {
     return Navigator.of(context).push(
@@ -112,7 +31,7 @@ class DrawerMenu extends StatelessWidget {
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final user = userData.currentUser;
 
     Widget headerWidget;
@@ -127,10 +46,13 @@ class DrawerMenu extends StatelessWidget {
       );
     } else {
       headerWidget = TitleDrawerHeader(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: ListTile(
-          leading: Icon(Icons.account_circle),
-          title: Text(localizations!.signIn),
-          onTap: () => _navigate(context, SignInScreen()),
+          leading: const Icon(
+            Icons.account_circle,
+            size: UserAvatar.alternativeImageIconSize,
+          ),
+          title: Text(localizations.signIn),
         ),
       );
     }
@@ -138,7 +60,81 @@ class DrawerMenu extends StatelessWidget {
     return headerWidget;
   }
 
-  Widget _buildAboutAppWidget(BuildContext context) {
+  List<Widget> _buildDrawerChildren(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final user = userData.currentUser;
+
+    if (user != null) {
+      return [
+        ListTile(
+          leading: const Icon(Icons.sticky_note_2),
+          title: Text(localizations.note(2)),
+          onTap: () => _navigateReplace(context, NotesListScreen()),
+        ),
+      ];
+    } else {
+      return [
+        ListTile(
+          leading: const Icon(Icons.login),
+          title: Text(localizations.signIn),
+          onTap: () => _navigate(context, SignInScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.account_circle),
+          title: Text(localizations.signUp),
+          onTap: () => _navigate(context, SignUpScreen()),
+        ),
+      ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _buildDrawerHeader(context),
+          ..._buildDrawerChildren(context),
+          const Divider(),
+          const AboutAppWidget(),
+          VersionWidget(),
+        ],
+      ),
+    );
+  }
+}
+
+class VersionWidget extends StatelessWidget {
+  const VersionWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder<PackageInfo>(
+        future: PackageInfo.fromPlatform(),
+        builder: (context, snapshot) {
+          final data = snapshot.data;
+          final version = data != null ? 'v${data.version}' : '';
+          return Text(
+            version,
+            style: theme.textTheme.caption,
+            textAlign: TextAlign.center,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class AboutAppWidget extends StatelessWidget {
+  const AboutAppWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final defaultPackageInfo = PackageInfo(
       appName: 'Unknown',
@@ -146,8 +142,6 @@ class DrawerMenu extends StatelessWidget {
       version: 'Unknown',
       buildNumber: 'Unknown',
     );
-
-    developer.log('$defaultPackageInfo');
 
     return FutureBuilder<PackageInfo>(
       future: PackageInfo.fromPlatform(),
@@ -184,84 +178,5 @@ class DrawerMenu extends StatelessWidget {
         );
       },
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          // TitleDrawerHeader(
-          //   child: Text(
-          //     localizations.drawerTitle,
-          //     style: theme.textTheme.headline5,
-          //   ),
-          // ),
-          _buildDrawerHeader(context),
-          // ListTile(
-          //   leading: Icon(Icons.home),
-          //   title: Text(localizations.homepage),
-          //   onTap: () => _navigateReplace(context, HomePage()),
-          // ),
-          ListTile(
-            leading: Icon(Icons.sticky_note_2),
-            title: Text(localizations.note(2)),
-            onTap: () => _navigateReplace(context, NotesListScreen()),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.login),
-            title: Text(localizations.signIn),
-            onTap: () => _navigate(context, SignInScreen()),
-          ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text(localizations.signUp),
-            onTap: () => _navigate(context, SignUpScreen()),
-          ),
-          _buildAboutAppWidget(context),
-        ],
-      ),
-    );
-    
-    /*
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // TitleDrawerHeader(
-          //   child: Text(
-          //     localizations.drawerTitle,
-          //     style: theme.textTheme.headline5,
-          //   ),
-          // ),
-          _buildDrawerHeader(context),
-          ListTile(
-            leading: Icon(Icons.sticky_note_2),
-            title: Text(localizations.note(2)),
-            onTap: () => _navigateReplace(context, NotesListScreen()),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.login),
-            title: Text(localizations.signOut),
-            onTap: () {
-              userData.signOut();
-              // TODO: Improve route navigation
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRoute.notes,
-                ModalRoute.withName('/'),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-    */
   }
 }
