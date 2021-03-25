@@ -1,4 +1,5 @@
 > **WIP document**
+
 # Contributing
 
 First off, thank you for considering contributing to this project!
@@ -15,7 +16,7 @@ Use your best judgment, and feel free to propose changes to this document in a p
 
 ### Responsibilities
 
-- Ensure cross-platform compatibility for every change that's accepted. Windows, Mac, Debian & Ubuntu Linux.
+- Ensure for every change that's accepted, cross-platform compatibility of the project supported platforms.
 - Ensure that code that goes into core meets a minimum requirements.
 - Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 - Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -37,7 +38,7 @@ If a maintainer asks you to "rebase" your PR, they're saying that a lot of code 
 
 ### Prerequisites
 
-This project requires to have **JDK 1.8**, and **Maven** which will manage all the remaining dependencies. **Doxygen** is required when generating documentation from the annotated sources.
+This project requires to have **Flutter** installed.
 
 ### Cloning/Forking the repository
 

@@ -4,9 +4,26 @@
 
 ## Getting Started
 
-### Prerequisites
+First of all, you will need to have to setup the flutter environment to build and run this project.
+You can follow the official [Install](https://flutter.dev/docs/get-started/install) guide to set up all properly.
 
 ### Installing
+
+Clone the project with the following command:
+
+```bash
+git clone https://github.com/FerMod/flutter_notes.git
+```
+
+Next is to install the required packages and auto generated files.
+In the project root folder, run:
+
+```bash
+flutter pub get
+```
+
+Without running the last command, the first time that is loaded the project in an editor, there will be showing errors.
+Most of them are because the project is missing auto generated files.
 
 ## Running the tests
 
