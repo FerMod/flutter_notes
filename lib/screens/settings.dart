@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/widgets/about_app_widget.dart';
+import 'package:flutter_notes/widgets/version_widget.dart';
 
 import '../data/app_options.dart';
 import '../data/firebase_service.dart';
@@ -80,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
               title: Text(localizations.settingsAccountHeader),
             ),
             _buildAccountSettings(context),
-            Divider(),
+            const Divider(),
             SettingsHeader(
               title: Text(localizations.settingsAplicationHeader),
             ),
@@ -98,7 +100,10 @@ class SettingsScreen extends StatelessWidget {
                 _navigateSetting(context, ThemeModeSettingScreen());
               },
             ),
-            Placeholder(fallbackHeight: 900),
+            const Divider(),
+            const AboutAppWidget(),
+            const VersionWidget(),
+            const Placeholder(fallbackHeight: 900),
           ],
         ),
       ),
@@ -169,24 +174,26 @@ class LocalizationSettingScreen extends StatelessWidget {
   Map<String?, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
-    final systemLocale = supportedLocales.firstWhere((locale) => deviceLocale!.languageCode == locale.languageCode);
-    supportedLocales.sort((a, b) => a.languageCode.compareTo(b.languageCode));
+    final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
+      ..sort((a, b) {
+        // Make the system locale be the first of all
+        if (deviceLocale!.languageCode == a.languageCode || deviceLocale!.languageCode == b.languageCode) {
+          return -1;
+        }
+        return a.languageCode.compareTo(b.languageCode);
+      });
 
-    final localesMap = {
-      for (var locale in supportedLocales)
-        locale.languageCode: DisplayOption(
-          title: _createLocalizedText(context, locale),
-          subtitle: Text(localizations.nameOf(locale.languageCode)!),
-        )
-    };
-    localesMap.remove(systemLocale.languageCode);
+    // We assume there is at least one supported locale
     return {
-      systemLocale.languageCode: DisplayOption(
+      supportedLocales.first.languageCode: DisplayOption(
         title: Text(localizations.settingsSystemDefault),
         subtitle: _createLocalizedText(context, deviceLocale),
       ),
-      ...localesMap,
+      for (var i = 1; i < supportedLocales.length; i++)
+        supportedLocales[i].languageCode: DisplayOption(
+          title: _createLocalizedText(context, supportedLocales[i]),
+          subtitle: Text(localizations.nameOf(supportedLocales[i].languageCode)!),
+        )
     };
   }
 
@@ -254,43 +261,6 @@ class ThemeModeSettingScreen extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-@deprecated
-class ApplicationSettings extends StatelessWidget {
-  const ApplicationSettings({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return SettingListTile(
-      icon: const Icon(Icons.person),
-      title: Text(localizations.settingsAccount),
-      onTap: () {},
-    );
-  }
-}
-
-@deprecated
-class LocalizationSettings extends StatelessWidget {
-  const LocalizationSettings({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-
-    return SettingListTile(
-      icon: const Icon(Icons.language),
-      title: Text(localizations.settingsLanguage),
-      onTap: () {
-        Navigator.of(context).push(
-          SettingsRouteBuilder(
-            builder: (context) => LocalizationSettingScreen(),
-          ),
-        );
-      },
     );
   }
 }
