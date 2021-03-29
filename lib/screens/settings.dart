@@ -171,7 +171,7 @@ class LocalizationSettingScreen extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  Map<String?, DisplayOption> _buildOptionsMap(BuildContext context) {
+  Map<String, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
     final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
@@ -218,8 +218,7 @@ class LocalizationSettingScreen extends StatelessWidget {
     final appSettings = AppOptions.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.settingsLanguage)),
-      body: SettingRadioListItems<String?>(
+      body: SettingRadioListItems<String>(
         selectedOption: appSettings.locale!.languageCode,
         optionsMap: _buildOptionsMap(context),
         onChanged: (value) {
