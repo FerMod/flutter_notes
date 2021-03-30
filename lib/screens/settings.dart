@@ -7,7 +7,6 @@ import 'package:flutter_notes/widgets/version_widget.dart';
 import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
-import '../extensions/locale_name.dart';
 import '../routes.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
@@ -200,21 +199,6 @@ class LocalizationSettingScreen extends StatelessWidget {
           subtitle: localeNames.nameOf(supportedLocales[i].toString()),
         )
     };
-  }
-
-  Localizations _createLocalizedText(BuildContext context, Locale? locale) {
-    final languageCode = locale?.languageCode ?? 'und';
-    return Localizations.override(
-      context: context,
-      locale: Locale(languageCode),
-      child: Builder(
-        // We need the parent build context
-        builder: (context) {
-          final localizations = AppLocalizations.of(context);
-          return Text(localizations.nameOf(languageCode)!);
-        },
-      ),
-    );
   }
 
   @override

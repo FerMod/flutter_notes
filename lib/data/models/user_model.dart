@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../extensions/theme_mode_extension.dart';
 import '../../src/utils/locale_utils.dart';
 
 class UserModel {
@@ -35,7 +35,7 @@ class UserModel {
       image: data['image'],
       locale: LocaleUtils.localeFromLanguageTag(data['locale']),
       themeMode: ThemeMode.values.firstWhereOrNull(
-        (e) => e.name == data['themeMode'],
+        (e) => describeEnum(e) == data['themeMode'],
       ),
       reference: snapshot.reference,
     );
@@ -47,7 +47,7 @@ class UserModel {
       'name': name,
       'image': image,
       'locale': locale.languageCode,
-      'themeMode': themeMode!.name,
+      'themeMode': describeEnum(themeMode!),
     };
   }
 
