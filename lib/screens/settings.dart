@@ -177,8 +177,10 @@ class LocalizationSettingScreen extends StatelessWidget {
     final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
       ..sort((a, b) {
         // Make the system locale be the first of all
-        if (deviceLocale!.languageCode == a.languageCode || deviceLocale!.languageCode == b.languageCode) {
-          return -1;
+        if (a.languageCode == deviceLocale!.languageCode) {
+          return -1; // 'a' is system locale, order before 'b'
+        } else if (b.languageCode == deviceLocale!.languageCode) {
+          return 1; // 'b' is system locale, order before 'a'
         }
         return a.languageCode.compareTo(b.languageCode);
       });
