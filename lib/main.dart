@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
 import 'data/app_options.dart';
 import 'data/local/app_shared_preferences.dart';
@@ -50,6 +51,8 @@ class NotesApp extends StatelessWidget {
 
   final String? initialRoute;
 
+  /// TODO: Resolve locale using [Unicode TR35](https://unicode.org/reports/tr35/#LanguageMatching)
+  /// language matching
   Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
     final supportedLocalesMap = Map<String?, Locale>.fromIterable(
       supportedLocales,
@@ -87,7 +90,10 @@ class NotesApp extends StatelessWidget {
         builder: (context) {
           return MaterialApp(
             onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: [
+              LocaleNamesLocalizationsDelegate(),
+              ...AppLocalizations.localizationsDelegates,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
             locale: AppOptions.of(context).locale,
             localeListResolutionCallback: _localeListResolution,

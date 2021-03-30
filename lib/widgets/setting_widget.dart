@@ -6,8 +6,8 @@ class DisplayOption {
     this.subtitle,
   });
 
-  final Widget title;
-  final Widget? subtitle;
+  final String title;
+  final String? subtitle;
 }
 
 class SettingsHeader extends StatelessWidget {
@@ -118,6 +118,10 @@ class SettingRadioListItems<T> extends StatelessWidget {
   /// ```
   final ValueChanged<T?> onChanged;
 
+  String _capitalize(String value) {
+    return '${value[0].toUpperCase()}${value.substring(1)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final _options = optionsMap.keys;
@@ -129,11 +133,17 @@ class SettingRadioListItems<T> extends StatelessWidget {
       itemBuilder: (context, index) {
         final value = _options.elementAt(index);
         final displayOption = _displayOptions.elementAt(index);
+
+        Widget? subtitleWidget;
+        if (displayOption.subtitle != null) {
+          subtitleWidget = Text(_capitalize(displayOption.subtitle!));
+        }
+
         return RadioListTile<T>(
           value: value,
           groupValue: selectedOption,
-          title: displayOption.title,
-          subtitle: displayOption.subtitle,
+          title: Text(_capitalize(displayOption.title)),
+          subtitle: subtitleWidget,
           onChanged: onChanged,
         );
       },

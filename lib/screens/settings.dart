@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
@@ -173,6 +174,8 @@ class LocalizationSettingScreen extends StatelessWidget {
 
   Map<String, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final localeNames = LocaleNames.of(context)!;
+    final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
 
     final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
       ..sort((a, b) {
@@ -188,13 +191,13 @@ class LocalizationSettingScreen extends StatelessWidget {
     // We assume there is at least one supported locale
     return {
       supportedLocales.first.languageCode: DisplayOption(
-        title: Text(localizations.settingsSystemDefault),
-        subtitle: _createLocalizedText(context, deviceLocale),
+        title: localizations.settingsSystemDefault,
+        subtitle: nativeLocaleNames[deviceLocale!.toString()],
       ),
       for (var i = 1; i < supportedLocales.length; i++)
         supportedLocales[i].languageCode: DisplayOption(
-          title: _createLocalizedText(context, supportedLocales[i]),
-          subtitle: Text(localizations.nameOf(supportedLocales[i].languageCode)!),
+          title: nativeLocaleNames[supportedLocales[i].toString()]!,
+          subtitle: localeNames.nameOf(supportedLocales[i].toString()),
         )
     };
   }
@@ -219,17 +222,20 @@ class LocalizationSettingScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
 
+    final localeSettingList = SettingRadioListItems<String>(
+      selectedOption: appSettings.locale!.languageCode,
+      optionsMap: _buildOptionsMap(context),
+      onChanged: (value) {
+        AppOptions.update(
+          context,
+          appSettings.copyWith(locale: Locale(value!)),
+        );
+      },
+    );
+
     return Scaffold(
-      body: SettingRadioListItems<String>(
-        selectedOption: appSettings.locale!.languageCode,
-        optionsMap: _buildOptionsMap(context),
-        onChanged: (value) {
-          AppOptions.update(
-            context,
-            appSettings.copyWith(locale: Locale(value!)),
-          );
-        },
-      ),
+      appBar: AppBar(title: Text(localizations.settingsLanguage)),
+      body: localeSettingList,
     );
   }
 }
@@ -240,9 +246,9 @@ class ThemeModeSettingScreen extends StatelessWidget {
   Map<ThemeMode, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return {
-      ThemeMode.system: DisplayOption(title: Text(localizations.settingsSystemDefault)),
-      ThemeMode.dark: DisplayOption(title: Text(localizations.settingsDarkTheme)),
-      ThemeMode.light: DisplayOption(title: Text(localizations.settingsLightTheme)),
+      ThemeMode.system: DisplayOption(title: localizations.settingsSystemDefault),
+      ThemeMode.dark: DisplayOption(title: localizations.settingsDarkTheme),
+      ThemeMode.light: DisplayOption(title: localizations.settingsLightTheme),
     };
   }
 
