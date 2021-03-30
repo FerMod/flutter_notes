@@ -15,7 +15,7 @@ class SettingsHeader extends StatelessWidget {
     Key? key,
     required this.title,
     this.subtitle,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final Widget title;
   final Widget? subtitle;
@@ -147,7 +147,7 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
     RouteSettings? settings,
     bool maintainState = true,
     bool fullscreenDialog = false,
-  })  : super(
+  }) : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             return builder(context);
           },
