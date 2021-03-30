@@ -234,7 +234,20 @@ class LocalizationSettingScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.settingsLanguage)),
+      appBar: AppBar(
+        title: Text(localizations.settingsLanguage),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SettingSearch<String>(settingList: localeSettingList),
+              );
+            },
+          ),
+        ],
+      ),
       body: localeSettingList,
     );
   }
@@ -268,6 +281,80 @@ class ThemeModeSettingScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class SettingSearch<T> extends SearchDelegate<T?> {
+  SettingSearch({
+    required this.settingList,
+  });
+
+  final SettingRadioListItems<T> settingList;
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      if (query.isNotEmpty)
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+          },
+        )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return BackButton(
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  Widget _performSearch(BuildContext context) {
+    final filteredOptions = Map<T, DisplayOption>.from(settingList.optionsMap);
+    if (query.isNotEmpty) {
+      filteredOptions.removeWhere((key, value) {
+        final regExp = RegExp('^$query', caseSensitive: false);
+
+        final titleMatch = value.title.startsWith(regExp);
+        final subtitleMatch = value.subtitle?.startsWith(regExp) ?? false;
+        final isDeviceDefault = filteredOptions.keys.first == key;
+        return !(titleMatch || subtitleMatch || isDeviceDefault);
+      });
+    }
+    return SettingRadioListItems<T>(
+      selectedOption: settingList.selectedOption,
+      optionsMap: filteredOptions,
+      onChanged: (value) {
+        settingList.onChanged(value);
+        close(context, value);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _performSearch(context);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _performSearch(context);
+  }
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.copyWith(
+      inputDecorationTheme: searchFieldDecorationTheme ??
+          InputDecorationTheme(
+            hintStyle: searchFieldStyle ?? theme.inputDecorationTheme.hintStyle,
+            border: InputBorder.none,
+          ),
     );
   }
 }
