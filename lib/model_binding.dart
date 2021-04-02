@@ -10,14 +10,19 @@ class _ModelBindingScope<T> extends InheritedWidget {
     Key? key,
     required this.model,
     required this.modelBindingState,
+    bool updateShouldNotify = false,
     required Widget child,
-  }) : super(key: key, child: child);
+  })   : _updateShouldNotify = updateShouldNotify,
+        super(key: key, child: child);
 
   final T model;
   final _ModelBindingState<T> modelBindingState;
+  final bool _updateShouldNotify;
 
   @override
-  bool updateShouldNotify(_ModelBindingScope<T> old) => model != old.model;
+  bool updateShouldNotify(_ModelBindingScope<T> old) {
+    return model != old.model || _updateShouldNotify;
+  }
 }
 
 /// A generic implementation of an [InheritedWidget].
@@ -45,9 +50,9 @@ class ModelBinding<T> extends StatefulWidget {
   /// Returns the [ModelBinding] widgets [initialModel] from the closest
   /// instance of this class that encloses the given context.
   ///
-  /// You can use this function to obtain the [initialModel]. When that information
-  /// changes, your widget will be scheduled to be rebuilt, keeping your widget
-  /// up-to-date.
+  /// You can use this function to obtain the [initialModel]. When that
+  /// information changes, your widget will be scheduled to be rebuilt, keeping
+  /// your widget up-to-date.
   ///
   /// Typical usage is as follows:
   ///
@@ -93,9 +98,9 @@ class ModelBinding<T> extends StatefulWidget {
   /// If there is no [ModelBinding] in scope, then this function will return
   /// null.
   ///
-  /// You can use this function to obtain the [initialModel]. When that information
-  /// changes, your widget will be scheduled to be rebuilt, keeping your widget
-  /// up-to-date.
+  /// You can use this function to obtain the [initialModel]. When that
+  /// information changes, your widget will be scheduled to be rebuilt, keeping
+  /// your widget up-to-date.
   ///
   /// Typical usage is as follows:
   ///
@@ -132,7 +137,13 @@ class ModelBinding<T> extends StatefulWidget {
   /// Updates the model that corresponds to the given [context] with the new
   /// given one and notifies the framework that the internal state of this
   /// object has changed.
-  static bool update<T>(BuildContext context, T newModel) {
+  ///
+  /// If [updateShouldNotify] is true, it will cause to rebuild the widget
+  /// regardless of the current model being the same as the [newModel] one.
+  ///
+  /// Returns true if the model will update with a new one, false if the model
+  /// has not changed.
+  static bool update<T>(BuildContext context, T newModel, {bool updateShouldNotify = false}) {
     assert(
       // ignore: unnecessary_null_comparison
       context != null,
@@ -150,7 +161,7 @@ class ModelBinding<T> extends StatefulWidget {
 
     final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
     //assert(scope != null, 'a ModelBinding<T> ancestor was not found');
-    return scope.modelBindingState.updateModel(newModel);
+    return scope.modelBindingState.updateModel(newModel, updateShouldNotify: updateShouldNotify);
   }
 
   @override
@@ -165,10 +176,12 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
 
   late T _currentModel;
   T get currentModel => _currentModel;
+  late bool _updateShouldNotify;
 
   @override
   void initState() {
     super.initState();
+    _updateShouldNotify = false;
     _currentModel = widget.initialModel;
   }
 
@@ -187,10 +200,16 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   /// called, which causes the framework to schedule a [build] for this [State]
   /// object.
   ///
-  /// Returns true if the model will rebuild to reflect the changes.
-  bool updateModel(T newModel) {
+  /// If [updateShouldNotify] is true, it will notify regardless of the current
+  /// model being the same as the [newModel] one.
+  ///
+  /// Returns true if the model changed, causing to rebuild to reflect the
+  /// changes.
+  bool updateModel(T newModel, {bool updateShouldNotify = false}) {
+    _updateShouldNotify = updateShouldNotify;
+
     final shouldUpdate = _currentModel != newModel;
-    if (shouldUpdate) {
+    if (shouldUpdate || _updateShouldNotify) {
       setState(() {
         _currentModel = newModel;
       });
@@ -203,6 +222,7 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
     return _ModelBindingScope<T>(
       key: _modelBindingScopeKey,
       model: _currentModel,
+      updateShouldNotify: _updateShouldNotify,
       modelBindingState: this,
       child: widget.child,
     );

@@ -456,6 +456,60 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel, thirdModel]));
       });
+
+      testWidgets('alwaws notify when \'updateShouldNotify\' is true', (tester) async {
+        final globalKey = GlobalKey(debugLabel: 'Test Key');
+
+        final builder = Builder(
+          key: globalKey,
+          builder: (context) {
+            log.add(ModelBinding.of<TestModel>(context));
+            return Container();
+          },
+        );
+
+        final firstModel = TestModel();
+        final firstWidget = ModelBinding(
+          initialModel: firstModel,
+          child: builder,
+        );
+        await tester.pumpWidget(firstWidget);
+        ModelBinding.update<TestModel>(
+          globalKey.currentContext!,
+          firstModel,
+          updateShouldNotify: true,
+        );
+
+        expect(log, equals(<TestModel>[firstModel]));
+
+        final secondModel = TestModel();
+        final secondWidget = ModelBinding(
+          initialModel: secondModel,
+          child: builder,
+        );
+        await tester.pumpWidget(secondWidget);
+        ModelBinding.update<TestModel>(
+          globalKey.currentContext!,
+          secondModel,
+          updateShouldNotify: true,
+        );
+
+        expect(log, equals(<TestModel>[firstModel, secondModel]));
+
+        final thirdModel = TestModel(value: 1);
+        final thirdWidget = ModelBinding(
+          initialModel: thirdModel,
+          child: builder,
+        );
+        await tester.pumpWidget(thirdWidget);
+        ModelBinding.update<TestModel>(
+          globalKey.currentContext!,
+          thirdModel,
+          updateShouldNotify: true,
+        );
+
+        expect(log, equals(<TestModel>[firstModel, secondModel, thirdModel]));
+      });
     });
 
     testWidgets('Update model when reparenting state', (tester) async {

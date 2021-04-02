@@ -112,8 +112,15 @@ class AppOptions {
 
   /// Update the [AppOptions] with the new given [model] parameter, and notifies
   /// that the internal state of this object has changed.
-  static void update(BuildContext context, AppOptions model) {
-    final modelUpdated = ModelBinding.update<AppOptions>(context, model);
+  ///
+  /// If [updateShouldNotify] is true, it will cause to rebuild the widget
+  /// regardless of the current model being the same as the [newModel] one.
+  static void update(BuildContext context, AppOptions model, {bool updateShouldNotify = false}) {
+    final modelUpdated = ModelBinding.update<AppOptions>(
+      context,
+      model,
+      updateShouldNotify: updateShouldNotify,
+    );
     if (modelUpdated) AppOptions.save(model);
   }
 
