@@ -172,6 +172,10 @@ class LocalizationSettingScreen extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  String _capitalize(String value) {
+    return '${value[0].toUpperCase()}${value.substring(1)}';
+  }
+
   Map<String, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final localeNames = LocaleNames.of(context)!;
@@ -192,12 +196,12 @@ class LocalizationSettingScreen extends StatelessWidget {
     return {
       supportedLocales.first.languageCode: DisplayOption(
         title: localizations.settingsSystemDefault,
-        subtitle: nativeLocaleNames[deviceLocale.toString()],
+        subtitle: _capitalize(nativeLocaleNames[deviceLocale.toString()]!),
       ),
       for (var i = 1; i < supportedLocales.length; i++)
         supportedLocales[i].languageCode: DisplayOption(
-          title: nativeLocaleNames[supportedLocales[i].toString()]!,
-          subtitle: localeNames.nameOf(supportedLocales[i].toString()),
+          title: _capitalize(nativeLocaleNames[supportedLocales[i].toString()]!),
+          subtitle: _capitalize(localeNames.nameOf(supportedLocales[i].toString())!),
         )
     };
   }

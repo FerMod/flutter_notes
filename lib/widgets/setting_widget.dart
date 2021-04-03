@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 
+typedef DisplayWidgetBuilder<T> = Widget? Function(BuildContext context, T value);
+
 class DisplayOption {
   const DisplayOption({
     required this.title,
     this.subtitle,
-  });
+    DisplayWidgetBuilder<String>? titleBuilder,
+    DisplayWidgetBuilder<String?>? subtitleBuilder,
+  })  : _titleBuilder = titleBuilder,
+        _subtitleBuilder = subtitleBuilder;
 
   final String title;
   final String? subtitle;
+
+  Widget? _defaultWidgetBuilder(BuildContext context, String? value) {
+    Widget? textWidget;
+    if (value != null) {
+      textWidget = Text(value);
+    }
+    return textWidget;
+  }
+
+  final DisplayWidgetBuilder<String>? _titleBuilder;
+  DisplayWidgetBuilder<String> get titleBuilder => _titleBuilder ?? _defaultWidgetBuilder;
+
+  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
+  DisplayWidgetBuilder<String?> get subtitleBuilder => _subtitleBuilder ?? _defaultWidgetBuilder;
 }
 
 class SettingsHeader extends StatelessWidget {
@@ -118,10 +137,6 @@ class SettingRadioListItems<T> extends StatelessWidget {
   /// ```
   final ValueChanged<T?> onChanged;
 
-  String _capitalize(String value) {
-    return '${value[0].toUpperCase()}${value.substring(1)}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final _options = optionsMap.keys;
@@ -134,16 +149,11 @@ class SettingRadioListItems<T> extends StatelessWidget {
         final value = _options.elementAt(index);
         final displayOption = _displayOptions.elementAt(index);
 
-        Widget? subtitleWidget;
-        if (displayOption.subtitle != null) {
-          subtitleWidget = Text(_capitalize(displayOption.subtitle!));
-        }
-
         return RadioListTile<T>(
           value: value,
           groupValue: selectedOption,
-          title: Text(_capitalize(displayOption.title)),
-          subtitle: subtitleWidget,
+          title: displayOption.titleBuilder(context, displayOption.title),
+          subtitle: displayOption.subtitleBuilder(context, displayOption.subtitle),
           onChanged: onChanged,
         );
       },
