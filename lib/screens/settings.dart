@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:flutter_notes/src/utils/locale_utils.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
@@ -179,19 +180,19 @@ class LocalizationSettingScreen extends StatelessWidget {
     final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
       ..sort((a, b) {
         // Make the system locale be the first of all
-        if (a.languageCode == deviceLocale!.languageCode) {
+        if (a.languageCode == deviceLocale.languageCode) {
           return -1; // 'a' is system locale, order before 'b'
-        } else if (b.languageCode == deviceLocale!.languageCode) {
+        } else if (b.languageCode == deviceLocale.languageCode) {
           return 1; // 'b' is system locale, order before 'a'
         }
-        return a.languageCode.compareTo(b.languageCode);
+        return a.toLanguageTag().compareTo(b.toLanguageTag());
       });
 
     // We assume there is at least one supported locale
     return {
       supportedLocales.first.languageCode: DisplayOption(
         title: localizations.settingsSystemDefault,
-        subtitle: nativeLocaleNames[deviceLocale!.toString()],
+        subtitle: nativeLocaleNames[deviceLocale.toString()],
       ),
       for (var i = 1; i < supportedLocales.length; i++)
         supportedLocales[i].languageCode: DisplayOption(
@@ -207,12 +208,12 @@ class LocalizationSettingScreen extends StatelessWidget {
     final appSettings = AppOptions.of(context);
 
     final localeSettingList = SettingRadioListItems<String>(
-      selectedOption: appSettings.locale!.languageCode,
+      selectedOption: appSettings.locale.languageCode,
       optionsMap: _buildOptionsMap(context),
       onChanged: (value) {
         AppOptions.update(
           context,
-          appSettings.copyWith(locale: Locale(value!)),
+          appSettings.copyWith(locale: LocaleUtils.localeFromLanguageTag(value)),
         );
       },
     );

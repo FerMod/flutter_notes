@@ -69,10 +69,7 @@ class NotesApp extends StatelessWidget {
   }
 
   Locale? _localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
-    deviceLocale = locale;
-    if (deviceLocale != null) {
-      FirebaseAuth.instance.setLanguageCode(locale?.languageCode ?? deviceLocale!.languageCode);
-    }
+    FirebaseAuth.instance.setLanguageCode(locale?.languageCode ?? deviceLocale.languageCode);
     return locale;
   }
 
@@ -82,7 +79,7 @@ class NotesApp extends StatelessWidget {
       initialModel: AppOptions.load(
         defaultSettings: AppOptions(
           themeMode: ThemeMode.system,
-          locale: null,
+          locale: deviceLocale,
           platform: defaultTargetPlatform,
         ),
       ),

@@ -9,9 +9,17 @@ import '../model_binding.dart';
 import '../src/utils/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
 
-Locale? _deviceLocale;
-Locale? get deviceLocale => _deviceLocale;
-set deviceLocale(Locale? locale) => _deviceLocale ??= locale;
+
+/// The system-reported default locale of the device.
+///
+/// This establishes the language and formatting conventions that application
+/// should, if possible, use to render their user interface.
+///
+/// This is the first locale selected by the user and is the user's primary
+/// locale (the locale the device UI is displayed in).
+Locale get deviceLocale {
+  return WidgetsBinding.instance!.platformDispatcher.locale;
+}
 
 /// The settings of the app.
 @immutable
@@ -23,7 +31,47 @@ class AppOptions {
     this.platform,
   }) : _locale = locale;
 
-  /// Creates the settings used in the app from a Json string .
+  /// Describes which theme will be used.
+  final ThemeMode themeMode;
+
+
+  /// The platform that user interaction should adapt to target.
+  final TargetPlatform? platform;
+
+  /// An identifier used to select a user's language and formatting preferences.
+  ///
+  /// If no text scale is set, returns the value selected in the device system
+  /// settings.
+  Locale get locale => isCustomLocale() ? _locale! : deviceLocale;
+  final Locale? _locale;
+
+
+  /// Returns true if the locale that should be using is the one stored in these
+  /// settings.
+  bool isCustomLocale() {
+    return _locale != null && _locale != Locale.fromSubtags();
+  }
+
+  /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
+  /// If the theme is dark, returns light; if the theme is light, returns dark.
+  @Deprecated('Not used anywhere in the code. Already exists \'ThemeMode.system\'')
+  SystemUiOverlayStyle resolvedSystemUiOverlayStyle() {
+    Brightness brightness;
+    switch (themeMode) {
+      case ThemeMode.light:
+        brightness = Brightness.light;
+        break;
+      case ThemeMode.dark:
+        brightness = Brightness.dark;
+        break;
+      default:
+        brightness = WidgetsBinding.instance!.window.platformBrightness;
+    }
+
+    return brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+  }
+
+  /// Creates the settings used in the app from a Json string.
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
 
   /// Creates the settings used in the app from a map.
@@ -57,35 +105,6 @@ class AppOptions {
   static void save(AppOptions settings) {
     final prefs = AppSharedPreferences.instance!;
     prefs.setString('settings', settings.toJson());
-  }
-
-  /// Describes which theme will be used.
-  final ThemeMode themeMode;
-
-  /// The platform that user interaction should adapt to target.
-  final TargetPlatform? platform;
-
-  /// An identifier used to select a user's language and formatting preferences.
-  Locale? get locale => _locale ?? deviceLocale;
-  final Locale? _locale;
-
-  /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
-  /// If the theme is dark, returns light; if the theme is light, returns dark.
-  @Deprecated('Not used anywhere in the code. Already exists \'ThemeMode.system\'')
-  SystemUiOverlayStyle resolvedSystemUiOverlayStyle() {
-    Brightness brightness;
-    switch (themeMode) {
-      case ThemeMode.light:
-        brightness = Brightness.light;
-        break;
-      case ThemeMode.dark:
-        brightness = Brightness.dark;
-        break;
-      default:
-        brightness = WidgetsBinding.instance!.window.platformBrightness;
-    }
-
-    return brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
   }
 
   /// Creates a copy of this settings object with the given fields
@@ -147,27 +166,9 @@ class AppOptions {
   Map<String, dynamic> toMap() {
     return {
       'themeMode': describeEnum(themeMode),
-      'locale': locale!.toLanguageTag(),
+      'locale': locale.toLanguageTag(),
       'platform': describeEnum(platform!),
     };
-  }
-
-  /// Returns a Locale from a valid Unicode BCP47 Locale Identifier.
-  ///
-  /// Some examples of such identifiers: "en", "es-419", "hi-Deva-IN" and
-  /// "zh-Hans-CN". See http://www.unicode.org/reports/tr35/ for technical
-  /// details.
-  static Locale localeFromLanguageTag(String languageTag) {
-    final regExprString = r'^([A-Za-z]{2,3}|[A-Za-z]{5,8})'
-        r'(?:[-_]([A-Za-z]{4}))?'
-        r'(?:[-_]([A-Za-z]{2}|[0-9]{3}))?$';
-    final regExp = RegExp(regExprString);
-    final match = regExp.firstMatch(languageTag);
-    return Locale.fromSubtags(
-      languageCode: match?.group(1) ?? 'und',
-      scriptCode: match?.group(2),
-      countryCode: match?.group(3),
-    );
   }
 
   @override
@@ -190,5 +191,5 @@ class AppOptions {
       );
 
   @override
-  String toString() => 'AppOptions(themeMode: $themeMode, locale: $_locale, platform: $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, locale: $locale, platform: $platform)';
 }
