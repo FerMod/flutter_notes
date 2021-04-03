@@ -101,6 +101,13 @@ class SettingsScreen extends StatelessWidget {
                 _navigateSetting(context, ThemeModeSettingScreen());
               },
             ),
+            SettingListTile(
+              icon: const Icon(Icons.format_size),
+              title: Text(localizations.settingsTextScale),
+              onTap: () {
+                _navigateSetting(context, TextScaleSettingScreen());
+              },
+            ),
             const Divider(),
             const AboutAppWidget(),
             const VersionWidget(),
@@ -267,6 +274,68 @@ class ThemeModeSettingScreen extends StatelessWidget {
           AppOptions.update(
             context,
             appSettings.copyWith(themeMode: value),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class TextScaleSettingScreen extends StatelessWidget {
+  const TextScaleSettingScreen({Key? key}) : super(key: key);
+
+  Map<double, DisplayOption> _buildOptionsMap(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return {
+      -1.0: DisplayOption(
+        title: localizations.settingsSystemDefault,
+        titleBuilder: (context, value) {
+          return Text(value, textScaleFactor: deviceTextScaleFactor);
+        },
+      ),
+      0.8: DisplayOption(
+        title: localizations.settingsTextScaleSmall,
+        titleBuilder: (context, value) {
+          return Text(value, textScaleFactor: 0.8);
+        },
+      ),
+      1.0: DisplayOption(
+        title: localizations.settingsTextScaleNormal,
+        titleBuilder: (context, value) {
+          return Text(value, textScaleFactor: 1.0);
+        },
+      ),
+      1.5: DisplayOption(
+        title: localizations.settingsTextScaleLarge,
+        titleBuilder: (context, value) {
+          return Text(value, textScaleFactor: 1.5);
+        },
+      ),
+      1.8: DisplayOption(
+        title: localizations.settingsTextScaleHuge,
+        titleBuilder: (context, value) {
+          return Text(value, textScaleFactor: 1.8);
+        },
+      ),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final appSettings = AppOptions.of(context);
+    final optionsMap = _buildOptionsMap(context);
+    final selectedOption = appSettings.isCustomTextScale() ? appSettings.textScaleFactor : optionsMap.keys.first;
+    return Scaffold(
+      appBar: AppBar(title: Text(localizations.settingsTextScale)),
+      body: SettingRadioListItems<double>(
+        selectedOption: selectedOption,
+        optionsMap: optionsMap,
+        onChanged: (value) {
+          AppOptions.update(
+            context,
+            appSettings.copyWith(textScaleFactor: value),
+            updateShouldNotify: true,
           );
         },
       ),

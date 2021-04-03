@@ -32,6 +32,26 @@
   "@settingsLanguage": {
     "description": "Title for the language setting."
   },
+  "settingsTextScale": "Text Scale",
+  "@settingsTextScale": {
+    "description": "Title for the text scale setting."
+  },
+  "settingsTextScaleSmall": "Small",
+  "@settingsTextScaleSmall": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleNormal": "Normal",
+  "@settingsTextScaleNormal": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleLarge": "Large",
+  "@settingsTextScaleLarge": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleHuge": "Huge",
+  "@settingsTextScaleHuge": {
+    "description": "Title for the huge text size scale setting."
+  },
   "settingsTheme": "Theme",
   "@settingsTheme": {
     "description": "Title for the theme setting."

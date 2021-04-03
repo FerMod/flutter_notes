@@ -79,6 +79,7 @@ class NotesApp extends StatelessWidget {
       initialModel: AppOptions.load(
         defaultSettings: AppOptions(
           themeMode: ThemeMode.system,
+          textScaleFactor: deviceTextScaleFactor,
           locale: deviceLocale,
           platform: defaultTargetPlatform,
         ),
@@ -100,6 +101,15 @@ class NotesApp extends StatelessWidget {
             themeMode: AppOptions.of(context).themeMode,
             home: SignInScreen(), // TODO: Only for testing, change to real home
             routes: AppRoute.routes,
+            builder: (context, child) {
+              final appSettings = AppOptions.of(context);
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaleFactor: appSettings.textScaleFactor,
+                ),
+                child: child!,
+              );
+            },
             // home: Scaffold(
             //   appBar: AppBar(title: Text('Test')),
             //   body: RichTextEditor(onSubmitted: (value) => developer.log(value)),

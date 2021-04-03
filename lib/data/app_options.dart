@@ -9,6 +9,13 @@ import '../model_binding.dart';
 import '../src/utils/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
 
+/// The system-reported text scale.
+///
+/// This establishes the text scaling factor to use when rendering text,
+/// according to the user's platform preferences.
+double get deviceTextScaleFactor {
+  return WidgetsBinding.instance!.platformDispatcher.textScaleFactor;
+}
 
 /// The system-reported default locale of the device.
 ///
@@ -27,13 +34,24 @@ class AppOptions {
   /// Creates the settings used in the app.
   const AppOptions({
     this.themeMode = ThemeMode.system,
+    double? textScaleFactor,
     Locale? locale,
     this.platform,
-  }) : _locale = locale;
+  })  : _textScaleFactor = textScaleFactor,
+        _locale = locale;
 
   /// Describes which theme will be used.
   final ThemeMode themeMode;
 
+  /// The number of font pixels for each logical pixel.
+  ///
+  /// If the text scale factor is 1.5, text will be 50% larger than the
+  /// specified font size.
+  ///
+  /// If no text scale is set, returns the value selected in the device system
+  /// settings.
+  double get textScaleFactor => isCustomTextScale() ? _textScaleFactor! : deviceTextScaleFactor;
+  final double? _textScaleFactor;
 
   /// The platform that user interaction should adapt to target.
   final TargetPlatform? platform;
@@ -45,6 +63,11 @@ class AppOptions {
   Locale get locale => isCustomLocale() ? _locale! : deviceLocale;
   final Locale? _locale;
 
+  /// Returns true if the text should use the text scale stored in these
+  /// settings.
+  bool isCustomTextScale() {
+    return _textScaleFactor != null && _textScaleFactor! > 0.0;
+  }
 
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
@@ -81,6 +104,7 @@ class AppOptions {
         (e) => describeEnum(e) == map['themeMode'],
         orElse: () => ThemeMode.system,
       ),
+      textScaleFactor: map['textScaleFactor'],
       locale: LocaleUtils.localeFromLanguageTag(map['locale']),
       platform: TargetPlatform.values.firstWhere(
         (e) => describeEnum(e) == map['platform'],
@@ -111,11 +135,13 @@ class AppOptions {
   /// replaced with the new values.
   AppOptions copyWith({
     ThemeMode? themeMode,
+    double? textScaleFactor,
     Locale? locale,
     TargetPlatform? platform,
   }) {
     return AppOptions(
       themeMode: themeMode ?? this.themeMode,
+      textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       locale: locale ?? this.locale,
       platform: platform ?? this.platform,
     );
@@ -148,11 +174,13 @@ class AppOptions {
   static void updateField(
     BuildContext context, {
     ThemeMode? themeMode,
+    double? textScaleFactor,
     Locale? locale,
     TargetPlatform? platform,
   }) {
     final objectCopy = AppOptions.of(context).copyWith(
       themeMode: themeMode,
+      textScaleFactor: textScaleFactor,
       locale: locale,
       platform: platform,
     );
@@ -166,6 +194,7 @@ class AppOptions {
   Map<String, dynamic> toMap() {
     return {
       'themeMode': describeEnum(themeMode),
+      'textScaleFactor': textScaleFactor,
       'locale': locale.toLanguageTag(),
       'platform': describeEnum(platform!),
     };
@@ -180,16 +209,17 @@ class AppOptions {
       return false;
     }
     final AppOptions appOptions = other;
-    return appOptions.themeMode == themeMode && appOptions.platform == platform && appOptions.locale == locale;
+    return appOptions.themeMode == themeMode && appOptions.textScaleFactor == textScaleFactor && appOptions.platform == platform && appOptions.locale == locale;
   }
 
   @override
   int get hashCode => hashValues(
         themeMode,
+        textScaleFactor,
         locale,
         platform,
       );
 
   @override
-  String toString() => 'AppOptions(themeMode: $themeMode, locale: $locale, platform: $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, textScaleFactor: $textScaleFactor, locale: $locale, platform: $platform)';
 }
