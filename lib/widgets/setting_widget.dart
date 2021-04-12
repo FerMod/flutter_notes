@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef DisplayWidgetBuilder<T> = Widget? Function(BuildContext context, T value);
 
+@immutable
 class DisplayOption {
   const DisplayOption({
     required this.title,
@@ -22,11 +23,27 @@ class DisplayOption {
     return textWidget;
   }
 
-  final DisplayWidgetBuilder<String>? _titleBuilder;
   DisplayWidgetBuilder<String> get titleBuilder => _titleBuilder ?? _defaultWidgetBuilder;
+  final DisplayWidgetBuilder<String>? _titleBuilder;
 
-  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
   DisplayWidgetBuilder<String?> get subtitleBuilder => _subtitleBuilder ?? _defaultWidgetBuilder;
+  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
+
+  /// Creates a copy of this class object but with the given fields replaced
+  /// with the new values.
+  DisplayOption copyWith({
+    String? title,
+    String? subtitle,
+    DisplayWidgetBuilder<String>? titleBuilder,
+    DisplayWidgetBuilder<String?>? subtitleBuilder,
+  }) {
+    return DisplayOption(
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      titleBuilder: titleBuilder ?? this.titleBuilder,
+      subtitleBuilder: subtitleBuilder ?? this.subtitleBuilder,
+    );
+  }
 }
 
 class SettingsHeader extends StatelessWidget {
