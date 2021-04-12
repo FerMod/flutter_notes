@@ -388,7 +388,7 @@ class SettingSearch<T> extends SearchDelegate<T?> {
       selectedOption: settingList.selectedOption,
       optionsMap: filteredOptions,
       onChanged: (value) {
-        settingList.onChanged(value);
+        settingList.onChanged?.call(value);
         close(context, value);
       },
     );

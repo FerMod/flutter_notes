@@ -95,7 +95,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
     Key? key,
     required this.selectedOption,
     required this.optionsMap,
-    required this.onChanged,
+    this.onChanged,
   }) : super(key: key);
 
   /// The currently selected value.
@@ -135,7 +135,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
   ///   },
   /// )
   /// ```
-  final ValueChanged<T?> onChanged;
+  final ValueChanged<T>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +154,12 @@ class SettingRadioListItems<T> extends StatelessWidget {
           groupValue: selectedOption,
           title: displayOption.titleBuilder(context, displayOption.title),
           subtitle: displayOption.subtitleBuilder(context, displayOption.subtitle),
-          onChanged: onChanged,
+          onChanged: onChanged != null
+              ? (value) {
+                  // Can only be null if RadioListTile's `toggleable` parameter is true, but it can't be
+                  onChanged?.call(value!);
+                }
+              : null,
         );
       },
     );
