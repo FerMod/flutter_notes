@@ -105,6 +105,7 @@ class NotesApp extends StatelessWidget {
               assert(child != null); // Child should not be null
 
               final appSettings = AppOptions.of(context);
+
               return MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                   textScaleFactor: appSettings.textScaleFactor,

@@ -48,9 +48,14 @@ class AppOptions {
   /// If the text scale factor is 1.5, text will be 50% larger than the
   /// specified font size.
   ///
-  /// If no text scale is set, returns the value selected in the device system
-  /// settings.
-  double get textScaleFactor => isCustomTextScale() ? _textScaleFactor! : deviceTextScaleFactor;
+  /// If no text scale is set or is not valid, returns the value selected in the
+  /// device's system settings.
+  ///
+  /// See:
+  ///
+  /// * [isValidTextScale], to check if the text scale factor in the app
+  ///   settings is considered as valid.
+  double get textScaleFactor => isValidTextScale() ? _textScaleFactor! : deviceTextScaleFactor;
   final double? _textScaleFactor;
 
   /// The platform that user interaction should adapt to target.
@@ -58,20 +63,25 @@ class AppOptions {
 
   /// An identifier used to select a user's language and formatting preferences.
   ///
-  /// If no text scale is set, returns the value selected in the device system
-  /// settings.
-  Locale get locale => isCustomLocale() ? _locale! : deviceLocale;
+  /// If no locale is set or is not valid, returns the supported language
+  /// selected in the device's system settings.
+  ///
+  /// See:
+  ///
+  /// * [isValidLocale], to check if the locale in the app settings is
+  ///   considered as valid.
+  Locale get locale => isValidLocale() ? _locale! : deviceSupportedLocale;
   final Locale? _locale;
 
-  /// Returns true if the text should use the text scale stored in these
-  /// settings.
-  bool isCustomTextScale() {
+  /// Returns true if the text scale stored in the app settings is considered
+  /// valid.
+  bool isValidTextScale() {
     return _textScaleFactor != null && _textScaleFactor! > 0.0;
   }
 
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
-  bool isCustomLocale() {
+  bool isValidLocale() {
     return _locale != null && _locale != Locale.fromSubtags();
   }
 

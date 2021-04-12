@@ -325,7 +325,7 @@ class TextScaleSettingScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
     final optionsMap = _buildOptionsMap(context);
-    final selectedOption = appSettings.isCustomTextScale() ? appSettings.textScaleFactor : optionsMap.keys.first;
+    final selectedOption = appSettings.isValidTextScale() ? appSettings.textScaleFactor : optionsMap.keys.first;
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTextScale)),
       body: SettingRadioListItems<double>(
@@ -343,6 +343,7 @@ class TextScaleSettingScreen extends StatelessWidget {
   }
 }
 
+// TODO: Improve search implementation
 class SettingSearch<T> extends SearchDelegate<T?> {
   SettingSearch({
     required this.settingList,
