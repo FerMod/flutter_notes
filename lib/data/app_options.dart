@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
-
+import 'package:flutter_notes/src/utils/locale_matching.dart';
 import '../model_binding.dart';
 import '../src/utils/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
@@ -14,7 +14,7 @@ import 'local/app_shared_preferences.dart';
 /// This establishes the text scaling factor to use when rendering text,
 /// according to the user's platform preferences.
 double get deviceTextScaleFactor {
-  return WidgetsBinding.instance!.platformDispatcher.textScaleFactor;
+  return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.textScaleFactor;
 }
 
 /// The system-reported default locale of the device.
@@ -25,8 +25,37 @@ double get deviceTextScaleFactor {
 /// This is the first locale selected by the user and is the user's primary
 /// locale (the locale the device UI is displayed in).
 Locale get deviceLocale {
-  return WidgetsBinding.instance!.platformDispatcher.locale;
+  return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.locale;
 }
+
+void updateDeviceLocale(Locale resolvedLocale, Iterable<Locale> supportedLocales) {
+  if (_lastDeviceLocale != deviceLocale || _deviceSupportedLocale == Locale.fromSubtags()) {
+    _deviceSupportedLocale = LocaleMatcher.localeLookup(deviceLocale, supportedLocales);
+    _deviceResolvedLocale = resolvedLocale;
+    _lastDeviceLocale = deviceLocale;
+  }
+}
+
+Locale? _deviceSupportedLocale;
+Locale get deviceSupportedLocale => _deviceSupportedLocale ?? Locale.fromSubtags();
+// set deviceSupportedLocale(Locale value) {
+//   if (_lastDeviceLocale != deviceLocale) {
+//     _deviceSupportedLocale = value;
+//     _lastDeviceLocale = deviceLocale;
+//   }
+// }
+
+Locale? _lastDeviceLocale;
+
+Locale get deviceResolvedLocale => _deviceResolvedLocale ?? Locale.fromSubtags();
+Locale? _deviceResolvedLocale;
+
+// Fake locale to represent the system Locale option.
+final systemLocaleOption = const Locale('system');
+
+// Locale? get deviceSupportedLocale => _deviceSupportedLocale;
+// set deviceSupportedLocale(Locale? locale) => _deviceSupportedLocale ??= locale;
+// Locale? _deviceSupportedLocale;
 
 /// The settings of the app.
 @immutable

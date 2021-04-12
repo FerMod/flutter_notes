@@ -14,6 +14,7 @@ import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
 import 'screens/sign_in.dart';
+import 'src/utils/locale_matching.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,25 +52,25 @@ class NotesApp extends StatelessWidget {
 
   final String? initialRoute;
 
-  /// TODO: Resolve locale using [Unicode TR35](https://unicode.org/reports/tr35/#LanguageMatching)
-  /// language matching
   Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
-    final supportedLocalesMap = Map<String?, Locale>.fromIterable(
+    final locale = LocaleMatcher.localeListResolution(
+      locales,
       supportedLocales,
-      key: (e) => e.languageCode,
+      fallbackLocale: () => deviceResolvedLocale,
     );
-    final locale = locales!.firstWhere(
-      (e) => supportedLocalesMap[e.languageCode] != null,
-      orElse: () => supportedLocales.first,
+    updateDeviceLocale(locale, supportedLocales);
+    developer.log(
+      'Desired locales: $locales\n'
+      'Supported locales: $supportedLocales\n'
+      'Resolved locale: $locale',
     );
-    developer.log('Desired locales: $locales\n'
-        'Supported locales: $supportedLocales\n'
-        'Resolved locale: $locale');
+    // final resolvedLocale = deviceSupportedLocale == Locale.fromSubtags() ? deviceResolvedLocale : locale;
+    //  developer.log('\tresolvedLocale: $resolvedLocale\n\tdeviceResolvedLocale: $deviceResolvedLocale');
     return _localeResolution(locale, supportedLocales);
   }
 
   Locale? _localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
-    FirebaseAuth.instance.setLanguageCode(locale?.languageCode ?? deviceLocale.languageCode);
+    FirebaseAuth.instance.setLanguageCode(locale?.languageCode ?? deviceSupportedLocale.languageCode);
     return locale;
   }
 
@@ -80,7 +81,7 @@ class NotesApp extends StatelessWidget {
         defaultSettings: AppOptions(
           themeMode: ThemeMode.system,
           textScaleFactor: deviceTextScaleFactor,
-          locale: deviceLocale,
+          locale: deviceSupportedLocale,
           platform: defaultTargetPlatform,
         ),
       ),
@@ -88,9 +89,9 @@ class NotesApp extends StatelessWidget {
         builder: (context) {
           return MaterialApp(
             onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-            localizationsDelegates: [
-              LocaleNamesLocalizationsDelegate(),
+            localizationsDelegates: const [
               ...AppLocalizations.localizationsDelegates,
+              LocaleNamesLocalizationsDelegate(),
             ],
             supportedLocales: AppLocalizations.supportedLocales,
             locale: AppOptions.of(context).locale,

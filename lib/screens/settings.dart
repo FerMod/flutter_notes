@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_notes/src/utils/locale_utils.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
@@ -174,40 +173,79 @@ class AccountSettingScreen extends StatelessWidget {
   }
 }
 
-class LocalizationSettingScreen extends StatelessWidget {
+class LocalizationSettingScreen extends StatefulWidget {
   const LocalizationSettingScreen({
     Key? key,
   }) : super(key: key);
 
-  String _capitalize(String value) {
-    return '${value[0].toUpperCase()}${value.substring(1)}';
+  @override
+  _LocalizationSettingScreenState createState() => _LocalizationSettingScreenState();
+}
+
+class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> with WidgetsBindingObserver {
+  late Locale selectedOption;
+  late Map<Locale, DisplayOption> optionsMap;
+  late List<Locale> supportedLocales;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addObserver(this);
+    supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
+    supportedLocales.sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
   }
 
-  Map<String, DisplayOption> _buildOptionsMap(BuildContext context) {
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  bool _isSupportedLocale() {
+    return deviceSupportedLocale != Locale.fromSubtags();
+  }
+
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    if (selectedOption == systemLocaleOption || !optionsMap.containsKey(systemLocaleOption)) {
+      final newOptionsMap = _buildOptionsMap(context);
+      setState(() {
+        optionsMap = newOptionsMap;
+      });
+    } else {
+      setState(() {
+        optionsMap.update(
+          systemLocaleOption,
+          (value) {
+            final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
+            final subtitle = _capitalize(nativeLocaleNames[deviceLocale.toString()]);
+            return value.copyWith(subtitle: subtitle);
+          },
+        );
+      });
+    }
+  }
+
+  String _capitalize(String? value) {
+    if (value?.isEmpty ?? true) return '';
+    return '${value![0].toUpperCase()}${value.substring(1)}';
+  }
+
+  Map<Locale, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final localeNames = LocaleNames.of(context)!;
     final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
 
-    final supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales)
-      ..sort((a, b) {
-        // Make the system locale be the first of all
-        if (a.languageCode == deviceLocale.languageCode) {
-          return -1; // 'a' is system locale, order before 'b'
-        } else if (b.languageCode == deviceLocale.languageCode) {
-          return 1; // 'b' is system locale, order before 'a'
-        }
-        return a.toLanguageTag().compareTo(b.toLanguageTag());
-      });
-
-    // We assume there is at least one supported locale
+    // We assume there is at least one supported locale. (maybe?)
     return {
-      supportedLocales.first.languageCode: DisplayOption(
-        title: localizations.settingsSystemDefault,
-        subtitle: _capitalize(nativeLocaleNames[deviceLocale.toString()]!),
-      ),
-      for (var i = 1; i < supportedLocales.length; i++)
-        supportedLocales[i].languageCode: DisplayOption(
-          title: _capitalize(nativeLocaleNames[supportedLocales[i].toString()]!),
+      if (_isSupportedLocale())
+        systemLocaleOption: DisplayOption(
+          title: localizations.settingsSystemDefault,
+          subtitle: _capitalize(nativeLocaleNames[deviceLocale.toString()]!),
+        ),
+      for (var i = 0; i < supportedLocales.length; i++)
+        supportedLocales[i]: DisplayOption(
+          title: _capitalize(nativeLocaleNames[supportedLocales[i].toString()]),
           subtitle: _capitalize(localeNames.nameOf(supportedLocales[i].toString())!),
         )
     };
@@ -218,13 +256,15 @@ class LocalizationSettingScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
 
-    final localeSettingList = SettingRadioListItems<String>(
-      selectedOption: appSettings.locale.languageCode,
-      optionsMap: _buildOptionsMap(context),
+    optionsMap = _buildOptionsMap(context);
+    selectedOption = _isSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
+    final localeSettingList = SettingRadioListItems<Locale>(
+      selectedOption: selectedOption,
+      optionsMap: optionsMap,
       onChanged: (value) {
         AppOptions.update(
           context,
-          appSettings.copyWith(locale: LocaleUtils.localeFromLanguageTag(value)),
+          appSettings.copyWith(locale: value),
         );
       },
     );
@@ -238,7 +278,7 @@ class LocalizationSettingScreen extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SettingSearch<String>(settingList: localeSettingList),
+                delegate: SettingSearch<Locale>(settingList: localeSettingList),
               );
             },
           ),
