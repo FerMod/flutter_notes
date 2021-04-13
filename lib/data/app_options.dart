@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
-import 'package:flutter_notes/src/utils/locale_matching.dart';
+
 import '../model_binding.dart';
 import '../src/utils/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
@@ -28,34 +29,28 @@ Locale get deviceLocale {
   return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.locale;
 }
 
-void updateDeviceLocale(Locale resolvedLocale, Iterable<Locale> supportedLocales) {
-  if (_lastDeviceLocale != deviceLocale || _deviceSupportedLocale == Locale.fromSubtags()) {
-    _deviceSupportedLocale = LocaleMatcher.localeLookup(deviceLocale, supportedLocales);
-    _deviceResolvedLocale = resolvedLocale;
-    _lastDeviceLocale = deviceLocale;
+/// The full system-reported supported locales of the device.
+///
+/// This establishes the language and formatting conventions that application
+/// should, if possible, use to render their user interface.
+List<Locale> get deviceLocales {
+  return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.locales;
+}
+
+List<Locale>? _lastDeviceLocales;
+
+Locale? _deviceResolvedLocale;
+Locale get deviceResolvedLocale => _deviceResolvedLocale ?? Locale.fromSubtags();
+set deviceResolvedLocale(Locale locale) {
+  final equalLocales = const ListEquality().equals(_lastDeviceLocales, deviceLocales);
+  if (!equalLocales) {
+    _deviceResolvedLocale = locale;
+    _lastDeviceLocales = deviceLocales;
   }
 }
 
-Locale? _deviceSupportedLocale;
-Locale get deviceSupportedLocale => _deviceSupportedLocale ?? Locale.fromSubtags();
-// set deviceSupportedLocale(Locale value) {
-//   if (_lastDeviceLocale != deviceLocale) {
-//     _deviceSupportedLocale = value;
-//     _lastDeviceLocale = deviceLocale;
-//   }
-// }
-
-Locale? _lastDeviceLocale;
-
-Locale get deviceResolvedLocale => _deviceResolvedLocale ?? Locale.fromSubtags();
-Locale? _deviceResolvedLocale;
-
 // Fake locale to represent the system Locale option.
 final systemLocaleOption = const Locale('system');
-
-// Locale? get deviceSupportedLocale => _deviceSupportedLocale;
-// set deviceSupportedLocale(Locale? locale) => _deviceSupportedLocale ??= locale;
-// Locale? _deviceSupportedLocale;
 
 /// The settings of the app.
 @immutable
@@ -99,7 +94,7 @@ class AppOptions {
   ///
   /// * [isValidLocale], to check if the locale in the app settings is
   ///   considered as valid.
-  Locale get locale => isValidLocale() ? _locale! : deviceSupportedLocale;
+  Locale get locale => isValidLocale() ? _locale! : deviceResolvedLocale;
   final Locale? _locale;
 
   /// Returns true if the text scale stored in the app settings is considered

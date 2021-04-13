@@ -56,21 +56,23 @@ class NotesApp extends StatelessWidget {
     final locale = LocaleMatcher.localeListResolution(
       locales,
       supportedLocales,
-      fallbackLocale: () => deviceResolvedLocale,
+      fallback: () => locales?.first == systemLocaleOption ? deviceResolvedLocale : null,
     );
-    updateDeviceLocale(locale, supportedLocales);
+    deviceResolvedLocale = locale;
+
     developer.log(
       'Desired locales: $locales\n'
       'Supported locales: $supportedLocales\n'
-      'Resolved locale: $locale',
+      'Resolved locale: $locale\n'
+      'Device resolved locale: $deviceResolvedLocale',
     );
-    // final resolvedLocale = deviceSupportedLocale == Locale.fromSubtags() ? deviceResolvedLocale : locale;
-    //  developer.log('\tresolvedLocale: $resolvedLocale\n\tdeviceResolvedLocale: $deviceResolvedLocale');
+    developer.log('deviceResolvedLocale: $deviceResolvedLocale\n');
     return _localeResolution(locale, supportedLocales);
   }
 
   Locale? _localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
-    FirebaseAuth.instance.setLanguageCode(locale?.languageCode ?? deviceSupportedLocale.languageCode);
+    final resolvedLocale = locale ?? deviceResolvedLocale;
+    FirebaseAuth.instance.setLanguageCode(resolvedLocale.languageCode);
     return locale;
   }
 
@@ -81,7 +83,7 @@ class NotesApp extends StatelessWidget {
         defaultSettings: AppOptions(
           themeMode: ThemeMode.system,
           textScaleFactor: deviceTextScaleFactor,
-          locale: deviceSupportedLocale,
+          locale: deviceResolvedLocale,
           platform: defaultTargetPlatform,
         ),
       ),

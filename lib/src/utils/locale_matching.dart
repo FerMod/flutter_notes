@@ -15,22 +15,22 @@ class LocaleMatcher {
   ///
   /// When no match at all is found, the first (default) locale in
   /// [supportedLocales] will be returned. If the fallback locale is given with
-  /// [fallbackLocale] and the returned value is not null, that locale will be
-  /// returned instead.
+  /// [fallback] and the returned value is not null, that locale will be used
+  /// instead.
   ///
   /// To summarize, the main matching priority is:
   ///
-  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode]
-  /// 1. [Locale.languageCode] and [Locale.countryCode] only
-  /// 1. [Locale.languageCode] and [Locale.scriptCode] only
-  /// 1. [Locale.languageCode] only (with caveats, see above)
-  /// 1. If [fallbackLocale] is defined and the returned value is not null returns
-  ///    the value fallback locale. Otherwise, returns the first element of
-  ///    [supportedLocales] as a fallback
+  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
+  /// 1. [Locale.languageCode] and [Locale.countryCode] only.
+  /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
+  /// 1. [Locale.languageCode] only.
+  /// 1. If [fallback] is defined and the value is not null returns that fallback
+  ///    locale. Otherwise, returns the first element of [supportedLocales] as a
+  ///    fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
-  static Locale localeListResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallbackLocale}) {
+  static Locale localeListResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
     var locale = _localeResolution(desiredLocales, supportedLocales);
     //final locale = basicLocaleListResolution(desiredLocales, supportedLocales);
     if (locale != Locale.fromSubtags()) {
@@ -42,10 +42,10 @@ class LocaleMatcher {
       locale = supportedLocales.first;
     }
 
-    // If is defined the fallback function, call it. If the returned value is
+    // If is defined the fallback value, use it. If the returned value is
     // not null return that value, otherwise use the default fallback locale. It
     // could be "und", or the first value of the supported locales.
-    return fallbackLocale?.call() ?? locale;
+    return fallback?.call() ?? locale;
   }
 
   /// This algorithm will resolve to the earliest preferred locale that
@@ -56,29 +56,29 @@ class LocaleMatcher {
   /// resolve to the first matching locale listed in the [supportedLocales].
   ///
   /// When no match at all is found, the "und" locale will be returned. If the
-  /// fallback locale is given with [fallbackLocale] and the returned value is
-  /// not null, that locale will be returned instead.
+  /// fallback locale is given with [fallback] and the returned value is not
+  /// null, that locale will used instead.
   ///
   /// To summarize, the main matching priority is:
   ///
-  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode]
-  /// 1. [Locale.languageCode] and [Locale.countryCode] only
-  /// 1. [Locale.languageCode] and [Locale.scriptCode] only
-  /// 1. [Locale.languageCode] only (with caveats, see above)
-  /// 1. If [fallbackLocale] is defined and the returned value is not null returns
-  ///    the value fallback locale. Otherwise, returns "und" locale as a fallback
+  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
+  /// 1. [Locale.languageCode] and [Locale.countryCode] only.
+  /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
+  /// 1. [Locale.languageCode] only.
+  /// 1. If [fallback] is defined and the returned value is not null returns
+  ///    the value fallback locale. Otherwise, returns "und" locale as a fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
-  static Locale localeLookup(Locale desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallbackLocale}) {
-    var locale = _localeResolution([desiredLocale], supportedLocales);
+  static Locale localeLookup(Locale desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
+    final locale = _localeResolution([desiredLocale], supportedLocales);
     if (locale != Locale.fromSubtags()) {
       return locale;
     }
 
-    // If is defined the fallback function, call it. If the returned value is
+    // If is defined the fallback value, use it. If the returned value is
     // not null return that value, otherwise use the default fallback locale.
-    return fallbackLocale?.call() ?? locale;
+    return fallback?.call() ?? locale;
   }
 
   /// This algorithm will resolve to the earliest preferred locale that
@@ -92,11 +92,11 @@ class LocaleMatcher {
   ///
   /// To summarize, the main matching priority is:
   ///
-  ///  1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode]
-  ///  1. [Locale.languageCode] and [Locale.countryCode] only
-  ///  1. [Locale.languageCode] and [Locale.scriptCode] only
-  ///  1. [Locale.languageCode] only (with caveats, see above)
-  ///  1. Returns a locale "und" as a fallback
+  ///  1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
+  ///  1. [Locale.languageCode] and [Locale.countryCode] only.
+  ///  1. [Locale.languageCode] and [Locale.scriptCode] only.
+  ///  1. [Locale.languageCode] only.
+  ///  1. Returns a locale "und" as a fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
