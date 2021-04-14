@@ -17,7 +17,7 @@ class UserAvatar extends StatelessWidget {
     required this.imageUrl,
     this.nameText,
     this.onTap,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final String imageUrl;
   final String? nameText;
@@ -122,9 +122,6 @@ class UserAvatar extends StatelessWidget {
 
 /// A material design that identifies the app's user.
 class UserAccountListTile extends StatelessWidget {
-  /// Constant of the [Icon] size value that should have.
-  static const double alternativeImageIconSize = 40.0;
-
   /// Creates a material design account widget.
   ///
   /// Requires one of its ancestors to be a [Material] widget.
@@ -135,7 +132,7 @@ class UserAccountListTile extends StatelessWidget {
     this.emailText,
     this.onTap,
     this.onTapImage,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final String imageUrl;
   final String? nameText;

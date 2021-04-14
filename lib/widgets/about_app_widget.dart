@@ -22,10 +22,13 @@ class AboutAppWidget extends StatelessWidget {
       future: PackageInfo.fromPlatform(),
       initialData: defaultPackageInfo,
       builder: (context, snapshot) {
+        /*
+        // Package info logging
         if (snapshot.hasError) {
           developer.log('PackageInfo Snapshot Error: ${snapshot.error}');
         }
         developer.log('PackageInfo ConnectionState: ${snapshot.connectionState}');
+        */
 
         final data = snapshot.hasData ? snapshot.data! : defaultPackageInfo;
         final legalNotice = 'Copyright (C) 2021  Ferran Tudela\n'

@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "appName": "Notes App",
+  "@appName": {
+    "description": "The name of the app. This should be the same name across different locale."
+  },
   "appTitle": "Notes App",
   "@appTitle": {
     "description": "Title of the app."
@@ -27,6 +31,10 @@
   "settingsAccount": "Account",
   "@settingsAccount": {
     "description": "Title for the account setting."
+  },
+  "settingsSignInInfo": "Sync and access to your saved your notes across multiple devices",
+  "@settingsSignInInfo": {
+    "description": "Label text that shows information of the advantages of being signed in."
   },
   "settingsLanguage": "Language",
   "@settingsLanguage": {
@@ -196,6 +204,16 @@
       "socialMedia": {
         "type": "String",
         "example": "Google"
+      }
+    }
+  },
+  "signInTo": "Sign in to {appName}",
+  "@signInTo": {
+    "description": "Label text to sign in to the specified [appName].",
+    "placeholders": {
+      "appName": {
+        "type": "String",
+        "example": "My App"
       }
     }
   },

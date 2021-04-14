@@ -63,11 +63,15 @@ class SettingsScreen extends StatelessWidget {
       subtitleWidget = Text(user.email!);
     } else {
       final localizations = AppLocalizations.of(context)!;
-      iconWidget = const Icon(
-        Icons.account_circle,
-        size: UserAvatar.alternativeImageIconSize,
+      iconWidget = FittedBox(
+        fit: BoxFit.contain,
+        child: const Icon(
+          Icons.account_circle,
+          size: UserAvatar.alternativeImageIconSize,
+        ),
       );
-      titleWidget = Text(localizations.settingsAccount);
+      titleWidget = Text(localizations.signInTo(localizations.appName));
+      subtitleWidget = Text(localizations.settingsSignInInfo);
     }
 
     return SettingListTile(
@@ -84,6 +88,50 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildAccountSection(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return [
+      SettingsHeader(
+        title: Text(localizations.settingsAccountHeader),
+      ),
+      _buildAccountSettings(context),
+      const Divider(),
+    ];
+  }
+
+  List<Widget> _buildApplicationSection(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return [
+      SettingsHeader(
+        title: Text(localizations.settingsAplicationHeader),
+      ),
+      SettingListTile(
+        icon: const Icon(Icons.translate),
+        title: Text(localizations.settingsLanguage),
+        onTap: () {
+          _navigateSetting(context, LocalizationSettingScreen());
+        },
+      ),
+      SettingListTile(
+        icon: const Icon(Icons.palette),
+        title: Text(localizations.settingsTheme),
+        onTap: () {
+          _navigateSetting(context, ThemeModeSettingScreen());
+        },
+      ),
+      SettingListTile(
+        icon: const Icon(Icons.format_size),
+        title: Text(localizations.settingsTextScale),
+        onTap: () {
+          _navigateSetting(context, TextScaleSettingScreen());
+        },
+      ),
+      const Divider(),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -96,39 +144,11 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           //padding: const EdgeInsets.all(8.0),
           children: [
-            SettingsHeader(
-              title: Text(localizations.settingsAccountHeader),
-            ),
-            _buildAccountSettings(context),
-            const Divider(),
-            SettingsHeader(
-              title: Text(localizations.settingsAplicationHeader),
-            ),
-            SettingListTile(
-              icon: const Icon(Icons.translate),
-              title: Text(localizations.settingsLanguage),
-              onTap: () {
-                _navigateSetting(context, LocalizationSettingScreen());
-              },
-            ),
-            SettingListTile(
-              icon: const Icon(Icons.palette),
-              title: Text(localizations.settingsTheme),
-              onTap: () {
-                _navigateSetting(context, ThemeModeSettingScreen());
-              },
-            ),
-            SettingListTile(
-              icon: const Icon(Icons.format_size),
-              title: Text(localizations.settingsTextScale),
-              onTap: () {
-                _navigateSetting(context, TextScaleSettingScreen());
-              },
-            ),
-            const Divider(),
+            ..._buildAccountSection(context),
+            ..._buildApplicationSection(context),
             const AboutAppWidget(),
             const VersionWidget(),
-            const Placeholder(fallbackHeight: 900),
+            // const Placeholder(fallbackHeight: 900),
           ],
         ),
       ),
@@ -236,8 +256,8 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     }
   }
 
-  String _capitalize(String? value) {
-    if (value?.isEmpty ?? true) return '';
+  String? _capitalize(String? value) {
+    if (value?.isEmpty ?? true) return value;
     return '${value![0].toUpperCase()}${value.substring(1)}';
   }
 
@@ -254,7 +274,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
         ),
       for (var i = 0; i < supportedLocales.length; i++)
         supportedLocales[i]: DisplayOption(
-          title: _capitalize(nativeLocaleNames[supportedLocales[i].toString()]),
+          title: _capitalize(nativeLocaleNames[supportedLocales[i].toString()])!,
           subtitle: _capitalize(localeNames.nameOf(supportedLocales[i].toString())),
         )
     };
