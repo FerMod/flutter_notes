@@ -212,25 +212,6 @@ class _AccountWidget extends StatelessWidget {
   }
 }
 
-class _SettingsButton extends StatelessWidget {
-  const _SettingsButton({
-    Key? key,
-    this.onPressed,
-  }) : super(key: key);
-
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return IconButton(
-      icon: const Icon(Icons.settings),
-      tooltip: localizations.settingsButtonLabel,
-      onPressed: onPressed, //() => Scaffold.of(context).openEndDrawer(),
-    );
-  }
-}
-
 class _DeleteAlertDialog extends StatelessWidget {
   const _DeleteAlertDialog({Key? key}) : super(key: key);
 

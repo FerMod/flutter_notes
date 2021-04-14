@@ -12,18 +12,36 @@ import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
 import 'sign_in.dart';
 
+void _navigateSetting(BuildContext context, Widget widget) {
+  Navigator.of(context).push(
+    SettingsRouteBuilder(builder: (context) => widget),
+  );
+}
+
+/// Creates an [IconButton], that on click navigates to the [SettingsScreen]
+/// screen.
+class SettingsScreenButton extends StatelessWidget {
+  const SettingsScreenButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return IconButton(
+      icon: const Icon(Icons.settings),
+      tooltip: localizations.settingsButtonLabel,
+      onPressed: () => _navigateSetting(context, SettingsScreen()),
+    );
+  }
+}
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
   void _navigate(BuildContext context, Widget widget) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => widget),
-    );
-  }
-
-  void _navigateSetting(BuildContext context, Widget widget) {
-    Navigator.of(context).push(
-      SettingsRouteBuilder(builder: (context) => widget),
     );
   }
 
