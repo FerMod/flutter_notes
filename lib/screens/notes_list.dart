@@ -74,8 +74,6 @@ class NotesListScreen extends StatelessWidget {
   }
 
   void _newNote(BuildContext context) async {
-    //final user = Provider.of<User>(context, listen: false);
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
     final user = notesListModel.userData.currentUser;
     final note = NoteModel(userId: user?.uid);
 
@@ -92,14 +90,12 @@ class NotesListScreen extends StatelessWidget {
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
     if (lastEdit!.isBefore(resultNote.lastEdit!)) {
       notesListModel.updateNote(resultNote);
     }
   }
 
   void _removeNote(BuildContext context, NoteModel note) async {
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
     final shouldRemove = await _showAlertDialog(context);
     if (shouldRemove) notesListModel.removeNote(note);
   }
@@ -125,9 +121,7 @@ class NotesListScreen extends StatelessWidget {
         ),
         titleSpacing: 0.0,
         actions: [
-          _SettingsButton(
-            onPressed: () => _navigate(context, SettingsScreen()),
-          ),
+          SettingsScreenButton(),
         ],
       ),
       drawer: DrawerMenu(),
