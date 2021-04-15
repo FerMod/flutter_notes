@@ -24,7 +24,7 @@ abstract class FirebaseCollection<T> {
 
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot);
   Stream<List<T>> stream(FromSnapshot<T> entityFromSnapshot);
-  Future<DocumentReference> insert(Map<String, dynamic> data, {String? id, bool merge = false});
+  Future<Document<T>> insert(Map<String, dynamic> data, {String? id, bool merge = false});
   Future<void> update(String id, Map<String, dynamic> data);
   Future<void> delete(String id);
 }
@@ -40,13 +40,25 @@ abstract class FirebaseAuthentication {
   Future<void> delete();
 }
 
+/// An object that represents a Firebase document.
+///
+/// See:
+/// - <https://firebase.google.com/docs/firestore/data-model#documents>
 class Document<T> extends FirebaseDocument<T> {
-  final String path;
+  /// An object that refers to a Firestore document path.
   final DocumentReference reference;
 
-  Document({
-    required this.path,
-  }) : reference = FirebaseFirestore.instance.doc(path);
+  /// Creates a document with the specified [reference].
+  const Document({
+    required this.reference,
+  });
+
+  /// Creates a document with a [reference] with the specified [path].
+  factory Document.path(String path) {
+    return Document(
+      reference: FirebaseFirestore.instance.doc(path),
+    );
+  }
 
   @override
   Future<T> data(FromSnapshot<T> entityFromSnapshot) {
@@ -81,13 +93,25 @@ class Document<T> extends FirebaseDocument<T> {
   }
 }
 
+/// An object that represents a Firebase collection.
+///
+/// See:
+/// - <https://firebase.google.com/docs/firestore/data-model#collections>
 class Collection<T> extends FirebaseCollection<T> {
-  final String path;
+  /// An object that refers to a Firestore collection path.
   final CollectionReference reference;
 
-  Collection({
-    required this.path,
-  }) : reference = FirebaseFirestore.instance.collection(path);
+  /// Creates a collection with the specified [reference].
+  const Collection({
+    required this.reference,
+  });
+
+  /// Creates a collection with a [reference] with the specified [path].
+  factory Collection.path(String path) {
+    return Collection(
+      reference: FirebaseFirestore.instance.collection(path),
+    );
+  }
 
   @override
   Future<List<T>> data(FromSnapshot<T> entityFromSnapshot, [QueryFunction? query]) async {
@@ -114,10 +138,10 @@ class Collection<T> extends FirebaseCollection<T> {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  Future<DocumentReference> insert(Map<String, dynamic> data, {String? id, bool merge = false}) async {
+  Future<Document<T>> insert(Map<String, dynamic> data, {String? id, bool merge = false}) async {
     final newDocument = reference.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
-    return newDocument;
+    return Document(reference: newDocument);
   }
 
   /// Updates data on the document with provided [id]. Data will be merged with
@@ -198,7 +222,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final user = _auth.currentUser;
     if (user == null) return null;
 
-    final doc = Document<T?>(path: '$collection/${user.uid}');
+    final doc = Document<T?>.path('$collection/${user.uid}');
     return doc.data(entityFromSnapshot);
   }
 
@@ -211,7 +235,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       }
 
       print('User is signed in!');
-      final doc = Document<T?>(path: '$collection/${user.uid}');
+      final doc = Document<T?>.path('$collection/${user.uid}');
       return doc.stream(entityFromSnapshot);
     });
 
@@ -231,7 +255,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   //     }
 
   //     print('User is signed in!');
-  //     final doc = Document<T>(path: '$collection/${user.uid}');
+  //     final doc = Document<T>.path('$collection/${user.uid}');
   //     return doc.stream(entityFromSnapshot);
   //   });
   // }
@@ -241,7 +265,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final user = _auth.currentUser;
     if (user == null) return;
 
-    final doc = Collection<T>(path: collection);
+    final doc = Collection<T>.path(collection);
     return doc.update(user.uid, data);
   }
 
@@ -249,7 +273,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   Future<UserCredential> signInAnonymously() async {
     final userCredential = await _auth.signInAnonymously();
     final user = userCredential.user!;
-    final col = Collection<T>(path: collection);
+    final col = Collection<T>.path(collection);
     await col.insert({
       'name': user.displayName ?? '',
       'image': user.photoURL ?? '',
@@ -300,7 +324,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
         password: password,
       );
       final user = userCredential.user!;
-      final col = Collection<T>(path: collection);
+      final col = Collection<T>.path(collection);
       await col.insert({
         'name': user.displayName ?? '',
         'image': user.photoURL ?? '',
@@ -336,7 +360,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
 
     try {
       await user.delete();
-      final col = Collection<T>(path: collection);
+      final col = Collection<T>.path(collection);
       return col.delete(user.uid);
     } on FirebaseAuthException catch (e) {
       developer.log('${e.code}: ${e.message}');

@@ -19,7 +19,7 @@ class UserDataModel with ChangeNotifier, DiagnosticableTreeMixin {
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
-  final Collection<NoteModel> collection = Collection<NoteModel>(path: 'notes');
+  final Collection<NoteModel> collection = Collection<NoteModel>.path('notes');
   final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
 
   StreamController<List<NoteModel>>? _controller;
