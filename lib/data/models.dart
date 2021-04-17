@@ -24,9 +24,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   StreamController<List<NoteModel>>? _controller;
 
-  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
+  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? const [];
 
-  List<NoteModel> _notes = [];
+  List<NoteModel> _notes = const [];
   UnmodifiableListView<NoteModel> get notes => UnmodifiableListView(_notes);
   set notes(List<NoteModel> notes) {
     _notes = notes;

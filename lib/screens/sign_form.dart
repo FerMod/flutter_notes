@@ -12,14 +12,14 @@ class SignFormScreen extends StatelessWidget {
   const SignFormScreen({
     Key? key,
     this.title,
-    this.builder,
+    required this.builder,
   }) : super(key: key);
 
   /// The [AppBar.title] title widget.
   final Widget? title;
 
   /// The content of this widget.
-  final WidgetBuilder? builder;
+  final WidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class SignFormScreen extends StatelessWidget {
         child: Center(
           child: Container(
             constraints: constraints,
-            child: Builder(builder: builder!),
+            child: Builder(builder: builder),
           ),
         ),
       ),
