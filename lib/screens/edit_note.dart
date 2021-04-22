@@ -156,6 +156,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     return dialogResult ?? ChangesAction.none;
   }
 
+  void _handleOnTap(int index) {
+    if (_currentIndex == index) return;
+    setState(() {
+      _currentIndex = index;
+      _color = PredefinedColor.values[index].color;
+    });
+    _updateLastEdit();
+  }
+
   Widget _buildBottomNavigationBar() {
     final theme = Theme.of(context);
 
@@ -228,12 +237,55 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   ),
                 ),
               ),
-              _buildBottomNavigationBar(),
+              _ColorOptionsNavBar(
+                selectedIndex: _currentIndex,
+                items: _bottomNavBarItems,
+                onTap: _handleOnTap,
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _ColorOptionsNavBar extends StatelessWidget {
+  const _ColorOptionsNavBar({
+    Key? key,
+    required this.selectedIndex,
+    required this.items,
+    required this.onTap,
+  }) : super(key: key);
+
+  final int selectedIndex;
+  final List<BottomNavigationBarItem> items;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    Widget bottomNavigationBar = BottomNavigationBar(
+      backgroundColor: theme.colorScheme.surface,
+      type: BottomNavigationBarType.fixed,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      currentIndex: selectedIndex,
+      onTap: onTap,
+      items: items,
+    );
+
+    bottomNavigationBar = Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.3),
+        ),
+      ),
+      child: bottomNavigationBar,
+    );
+
+    return bottomNavigationBar;
   }
 }
 
