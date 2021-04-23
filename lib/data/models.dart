@@ -58,7 +58,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return load(
       () => collection.data(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
-        (query) => query!.where('userId', isEqualTo: user.uid),
+        (query) => query.where('userId', isEqualTo: user.uid),
       ),
       notifyIsLoading: notifyIsLoading,
     );
@@ -94,7 +94,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return stream(
       () => collection.stream(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
-        (query) => query!.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
+        (query) => query.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
       ),
     );
   }

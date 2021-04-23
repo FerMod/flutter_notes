@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
-typedef QueryFunction = Query Function(Query? query);
+typedef QueryFunction = Query Function(Query query);
 typedef FromSnapshot<T> = T Function(DocumentSnapshot snapshot);
 // typedef FromMap<T> = T Function(Map<String, dynamic> data);
 // typedef ToMap<T> = Map<String, dynamic> Function(T entity);
