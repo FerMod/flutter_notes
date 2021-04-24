@@ -7,11 +7,12 @@ class CardHero extends StatelessWidget {
     Key? key,
     required this.tag,
     this.shape,
-    this.elevation = 8.0,
+    this.elevation,
     this.margin,
     this.decoration,
-    this.width = 5.0,
+    this.width,
     this.color,
+    this.backgroundColor,
     this.child,
     this.onTap,
     this.onLongPress,
@@ -44,25 +45,40 @@ class CardHero extends StatelessWidget {
   ///   ),
   /// )
   /// ```
+  ///
   /// See:
-  ///  - [width] to change the border width.
-  ///  - [color] to change the border color.
+  ///
+  /// * [width] to change the border width.
+  /// * [color] to change the border color.
+  /// * [backgroundColor] to change the background color.
   final Decoration? decoration;
 
   /// The width of the the default [decoration] border.
-  final double width;
+  ///
+  /// If this property is null then the default width of 5.0 is used.
+  final double? width;
+  static const double _defaultWidth = 5.0;
 
   /// The color of the default [decoration] border.
+  ///
+  /// If this property is null then [DividerThemeData.color] is used. If that is
+  /// also null, then [ThemeData.dividerColor] is used.
   final Color? color;
+
+  /// The color of the default [decoration] background color.
+  ///
+  /// If this property is null then [CardTheme.color] of [ThemeData.cardTheme]
+  /// is used. If that's null then [ThemeData.cardColor] is used.
+  final Color? backgroundColor;
 
   /// The z-coordinate at which to place this card. This controls the size of
   /// the shadow below the card.
   ///
   /// Defines the card's [Material.elevation].
   ///
-  /// If this property is null then [CardTheme.elevation] of
-  /// [ThemeData.cardTheme] is used. If that's null, the default value is 1.0.
-  final double elevation;
+  /// If this property is null then the default elevation of 8.0 is used.
+  final double? elevation;
+  static const double _defaultElevation = 8.0;
 
   /// The empty space that surrounds the card.
   ///
@@ -88,16 +104,25 @@ class CardHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = Container(
+    final theme = Theme.of(context);
+    final cardTheme = CardTheme.of(context);
+
+    var resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
+    if (backgroundColor == null && theme.brightness == Brightness.light) {
+      resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4)!;
+    }
+
+    Widget content = Ink(
       decoration: decoration ??
           BoxDecoration(
             border: Border(
               top: Divider.createBorderSide(
                 context,
                 color: color,
-                width: width,
+                width: width ?? _defaultWidth,
               ),
             ),
+            color: resolvedCardColor,
           ),
       child: child,
     );
@@ -109,11 +134,11 @@ class CardHero extends StatelessWidget {
         child: content,
       );
     }
-    
+
     return Hero(
       tag: tag,
       child: Card(
-        elevation: elevation,
+        elevation: elevation ?? _defaultElevation,
         shape: shape,
         margin: margin,
         clipBehavior: Clip.antiAlias,
