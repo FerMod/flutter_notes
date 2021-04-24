@@ -26,8 +26,8 @@ enum MenuAction {
 class NotesListScreen extends StatelessWidget {
   NotesListScreen({Key? key}) : super(key: key);
 
-  final notesListModel = NotesListModel();
-  final scrollController = ScrollController();
+  final NotesListModel notesListModel = NotesListModel();
+  final ScrollController scrollController = ScrollController();
 
   PageRoute _pageRouteBuilder(Widget widget) {
     // return MaterialPageRoute(builder: (context) => widget);
@@ -137,9 +137,8 @@ class NotesListScreen extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.active:
             case ConnectionState.done:
-              final notes = snapshot.data ?? [];
               return NoteListWidget(
-                notes: notes,
+                notes: snapshot.data,
                 onTap: (note) => _editNote(context, note),
                 onMenuTap: (note) => _removeNote(context, note),
                 onRefresh: notesListModel.refresh,
@@ -239,14 +238,15 @@ class _DeleteAlertDialog extends StatelessWidget {
 class NoteListWidget extends StatelessWidget {
   const NoteListWidget({
     Key? key,
-    this.notes,
+    required List<NoteModel>? notes,
     this.onTap,
     this.onMenuTap,
     this.onRefresh,
     this.controller,
-  }) : super(key: key);
+  })  : notes = notes ?? const [],
+        super(key: key);
 
-  final List<NoteModel>? notes;
+  final List<NoteModel> notes;
   final void Function(NoteModel)? onTap;
   final void Function(NoteModel)? onMenuTap;
   final Future<void> Function()? onRefresh;
@@ -279,7 +279,6 @@ class NoteListWidget extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: onRefresh!,
-      displacement: 50.0,
       child: Scrollbar(
         controller: controller,
         // thickness: 2.0,
@@ -288,9 +287,9 @@ class NoteListWidget extends StatelessWidget {
           dragStartBehavior: DragStartBehavior.down,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
-          itemCount: notes!.length,
+          itemCount: notes.length,
           itemBuilder: (context, index) {
-            final note = notes![index];
+            final note = notes[index];
             return CardHero(
               tag: 'note-${note.id}',
               color: note.color,
