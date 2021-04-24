@@ -57,39 +57,11 @@ class Message extends StatefulWidget {
     this.data = const MessageData.empty(),
     this.onChange,
     required this.child,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final MessageData data;
   final ValueChanged<MessageData>? onChange;
   final Widget child;
-
-  // static Message _scopeOf(BuildContext context) {
-  //   assert(
-  //     context != null,
-  //     'Tried to call a function on a `context` that is `null`.\n'
-  //     'This can happen if context of a StatefulWidget is used and that'
-  //     'StatefulWidget was disposed.',
-  //   );
-  //   final inheritedMessage = context.dependOnInheritedWidgetOfExactType<_InheritedMessage>();
-  //   return inheritedMessage?.message;
-  // }
-  //
-  // static MessageData of(BuildContext context) {
-  //   final scope = Message._scopeOf(context);
-  //   return scope?.data;
-  // }
-  //
-  // static void _update(BuildContext context, {bool isVisible, String message, List<Widget> actions}) {
-  //   final scope = Message._scopeOf(context);
-  //   if (scope != null) {
-  //     final newModel = scope.data.copyWith(
-  //       isVisible: isVisible,
-  //       message: message,
-  //       actions: actions,
-  //     );
-  //     scope.onChange?.call(newModel);
-  //   }
-  // }
 
   static MessageState? of(BuildContext context) {
     final inheritedMessage = context.dependOnInheritedWidgetOfExactType<_InheritedMessage>();
@@ -187,7 +159,7 @@ class _InheritedMessage extends InheritedWidget {
     Key? key,
     required this.message,
     required Widget child,
-  })  : super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   final MessageState message;
 
@@ -241,57 +213,5 @@ class FormMessageWidget extends StatelessWidget {
       margin: EdgeInsets.all(8.0),
       child: messageWidget,
     );
-  }
-}
-
-@deprecated
-class FormMessage extends StatelessWidget {
-  const FormMessage({
-    Key? key,
-    this.messageData,
-    this.onChange,
-  }) : super(key: key);
-
-  final MessageData? messageData;
-  final ValueChanged<MessageData>? onChange;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    Widget? titleWidget;
-    if (messageData!.message != null) {
-      titleWidget = SelectableText(messageData!.message!);
-    }
-
-    List<Widget>? actionsList;
-    if (messageData!.actions.isEmpty) {
-      final materialLocalizations = MaterialLocalizations.of(context);
-      actionsList = [
-        TextButton(
-          onPressed: () => Message.hide(context),
-          child: Text(materialLocalizations.closeButtonLabel),
-        ),
-      ];
-    }
-    Widget messageWidget = MessageWidget(
-      // visible: messageData.isVisible,
-      leading: const Icon(Icons.warning_rounded),
-      title: titleWidget,
-      decoration: BoxDecoration(
-          border: Border.all(
-        width: 2.0,
-        color: theme.colorScheme.error,
-      )),
-      actions: actionsList ?? messageData!.actions,
-    );
-
-    return messageData!.isVisible
-        ? Card(
-            clipBehavior: Clip.antiAlias,
-            margin: EdgeInsets.all(8.0),
-            child: messageWidget,
-          )
-        : SizedBox.shrink();
   }
 }
