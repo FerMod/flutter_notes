@@ -56,9 +56,13 @@ class NotesListScreen extends StatelessWidget {
   }
 
   Future<NoteModel?> _navigateEditNote(BuildContext context, NoteModel note) async {
-    final result = await Navigator.push(
+    final result = await Navigator.push<NoteModel>(
       context,
-      _pageRouteBuilder(EditNoteScreen(note: note)),
+      NoteRouteBuilder(
+        builder: (context) {
+          return EditNoteScreen(note: note);
+        },
+      ),
     );
     developer.log('Edit note result: $result');
     return result;
@@ -323,6 +327,40 @@ class NoteListWidget extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
+  NoteRouteBuilder({
+    required this.builder,
+    RouteSettings? settings,
+    Duration transitionDuration = const Duration(milliseconds: 400),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 400),
+    bool maintainState = true,
+    bool fullscreenDialog = true,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return builder(context);
+          },
+          settings: settings,
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+          maintainState: maintainState,
+          fullscreenDialog: fullscreenDialog,
+        ) {
+    assert(opaque);
+  }
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    var curve = Curves.easeInOut;
+    var tween = CurveTween(curve: curve);
+    return FadeTransition(
+      opacity: animation.drive(tween),
+      child: child,
     );
   }
 }
