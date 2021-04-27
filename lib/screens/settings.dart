@@ -8,6 +8,7 @@ import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models/user_model.dart';
 import '../routes.dart';
+import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
 import 'sign_in.dart';
@@ -297,23 +298,12 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
         );
       },
     );
-
-    return Scaffold(
-      appBar: AppBar(
+    return SearchScreen(
+      delegate: SettingsSearchDelegate<Locale>(
         title: Text(localizations.settingsLanguage),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: SettingSearch<Locale>(settingList: localeSettingList),
-              );
-            },
-          ),
-        ],
+        deviceDefault: optionsMap.keys.first,
+        settingList: localeSettingList,
       ),
-      body: localeSettingList,
     );
   }
 }
@@ -412,37 +402,18 @@ class TextScaleSettingScreen extends StatelessWidget {
   }
 }
 
-// TODO: Improve search implementation
-class SettingSearch<T> extends SearchDelegate<T?> {
-  SettingSearch({
+class SettingsSearchDelegate<T> extends SearchScreenDelegate<T?> {
+  SettingsSearchDelegate({
+    Widget? title,
+    this.deviceDefault,
     required this.settingList,
-  });
+  }) : super(title: title);
 
+  final T? deviceDefault;
   final SettingRadioListItems<T> settingList;
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      if (query.isNotEmpty)
-        IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () {
-            query = '';
-          },
-        )
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return BackButton(
-      onPressed: () {
-        close(context, null);
-      },
-    );
-  }
-
-  Widget _performSearch(BuildContext context) {
+  Widget buildResults(BuildContext context) {
     final filteredOptions = Map<T, DisplayOption>.from(settingList.optionsMap);
     if (query.isNotEmpty) {
       filteredOptions.removeWhere((key, value) {
@@ -450,39 +421,14 @@ class SettingSearch<T> extends SearchDelegate<T?> {
 
         final titleMatch = value.title.startsWith(regExp);
         final subtitleMatch = value.subtitle?.startsWith(regExp) ?? false;
-        final isDeviceDefault = filteredOptions.keys.first == key;
-        return !(titleMatch || subtitleMatch || isDeviceDefault);
+        final isDeviceDefault = deviceDefault == key;
+        return !titleMatch && !subtitleMatch && !isDeviceDefault;
       });
     }
     return SettingRadioListItems<T>(
       selectedOption: settingList.selectedOption,
       optionsMap: filteredOptions,
-      onChanged: (value) {
-        settingList.onChanged?.call(value);
-        close(context, value);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return _performSearch(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return _performSearch(context);
-  }
-
-  @override
-  ThemeData appBarTheme(BuildContext context) {
-    final theme = Theme.of(context);
-    return theme.copyWith(
-      inputDecorationTheme: searchFieldDecorationTheme ??
-          InputDecorationTheme(
-            hintStyle: searchFieldStyle ?? theme.inputDecorationTheme.hintStyle,
-            border: InputBorder.none,
-          ),
+      onChanged: settingList.onChanged,
     );
   }
 }
