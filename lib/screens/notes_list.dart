@@ -149,10 +149,10 @@ class NotesListScreen extends StatelessWidget {
                 controller: scrollController,
               );
             case ConnectionState.waiting:
-              return LinearProgressIndicator();
+              return const LinearProgressIndicator();
             case ConnectionState.none:
             default:
-              return Loader();
+              return const Loader();
           }
         },
       ),
