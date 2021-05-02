@@ -83,7 +83,7 @@ class NotesApp extends StatelessWidget {
         defaultSettings: AppOptions(
           themeMode: ThemeMode.system,
           textScaleFactor: deviceTextScaleFactor,
-          locale: deviceResolvedLocale,
+          locale: systemLocaleOption,
           platform: defaultTargetPlatform,
         ),
       ),
