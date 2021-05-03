@@ -33,14 +33,15 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
-  bool _isLoading = false;
+  /// The data is currently loading.
   bool get isLoading => _isLoading;
+  bool _isLoading = false;
 
-  @Deprecated('It\'s only used for debugging')
+  @visibleForTesting
   Future<List<NoteModel>> loadDelayed({
     Duration duration = const Duration(seconds: 2),
-    bool notifyIsLoading = true,
-  }) async {
+    bool notifyIsLoading = false,
+  }) {
     developer.log('loadDelayed(duration: $duration, notifyIsLoading: $notifyIsLoading)');
 
     return Future.delayed(
@@ -79,9 +80,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     }
   }
 
-  @Deprecated('It\'s only used for debugging')
+  @visibleForTesting
   Stream<List<NoteModel>> streamDelayed({Duration duration = const Duration(seconds: 2)}) {
-    developer.log('loadDelayed(duration: $duration)');
+    developer.log('streamDelayed(duration: $duration)');
     return streamData().delay(duration);
   }
 

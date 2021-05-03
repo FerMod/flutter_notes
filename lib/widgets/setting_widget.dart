@@ -128,9 +128,9 @@ class SettingRadioListItems<T> extends StatelessWidget {
 
   /// Called when the user selects a radio list item.
   ///
-  /// The widget passes [value] as a parameter to this callback. The widget does
-  /// not change state until the parent widget rebuilds the radio list items
-  /// with the new [selectedOption].
+  /// The widget passes [selectedOption] as a parameter to this callback. The 
+  /// widget does not change state until the parent widget rebuilds the radio
+  /// list items with the new [selectedOption].
   ///
   /// If `null`, the radio list items will be displayed as disabled.
   ///
