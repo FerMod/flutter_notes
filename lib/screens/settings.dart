@@ -6,6 +6,7 @@ import 'package:flutter_notes/widgets/version_widget.dart';
 
 import '../data/app_options.dart';
 import '../data/firebase_service.dart';
+import '../data/models.dart';
 import '../data/models/user_model.dart';
 import '../routes.dart';
 import '../widgets/search_screen.dart';
@@ -47,7 +48,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Widget _buildAccountSettings(BuildContext context) {
-    final userData = UserData<UserModel>(collection: 'users');
+    final userData = DataProvider.userData;
     final user = userData.currentUser;
 
     final isSignedIn = user != null;

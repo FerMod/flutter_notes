@@ -12,15 +12,21 @@ import 'firebase_service.dart';
 import 'models/note_model.dart';
 import 'models/user_model.dart';
 
-class UserDataModel with ChangeNotifier, DiagnosticableTreeMixin {
-  final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
+@immutable
+class DataProvider {
+  DataProvider._internal();
+  static final DataProvider _instance = DataProvider._internal();
 
-  //TODO: Fill body
+  late final UserData<UserModel> _userData = UserData<UserModel>.path('users');
+  static UserData<UserModel> get userData => _instance._userData;
+
+  late final Collection<NoteModel> _notes = Collection<NoteModel>.path('notes');
+  static Collection<NoteModel> get notes => _instance._notes;
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
-  final Collection<NoteModel> collection = Collection<NoteModel>.path('notes');
-  final UserData<UserModel> userData = UserData<UserModel>(collection: 'users');
+  late final Collection<NoteModel> notesCollection = DataProvider.notes;
+  late final UserData<UserModel> userData = DataProvider.userData;
 
   StreamController<List<NoteModel>>? _controller;
 
@@ -72,7 +78,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     }
 
     return load(
-      () => collection.data(
+      () => notesCollection.data(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
         (query) => query.where('userId', isEqualTo: user.uid),
       ),
@@ -122,7 +128,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     }
 
     return stream(
-      () => collection.stream(
+      () => notesCollection.stream(
         (snapshot) => NoteModel.fromSnapshot(snapshot),
         (query) => query.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
       ),
@@ -142,7 +148,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   void addNote(NoteModel note) {
     _notes.add(note);
-    collection.insert(note.toMap());
+    notesCollection.insert(note.toMap());
     notifyListeners();
   }
 
@@ -150,7 +156,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     assert(note.id != null);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
-    collection.update(note.id!, note.toMap());
+    notesCollection.update(note.id!, note.toMap());
     notifyListeners();
   }
 
@@ -163,13 +169,13 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     } else {
       _notes.add(note);
     }
-    collection.insert(note.toMap(), id: note.id, merge: true);
+    notesCollection.insert(note.toMap(), id: note.id, merge: true);
     notifyListeners();
   }
 
   void removeNote(NoteModel note) {
     _notes.removeWhere((element) => element.id == note.id);
-    collection.delete(note.id!);
+    notesCollection.delete(note.id!);
     notifyListeners();
   }
 

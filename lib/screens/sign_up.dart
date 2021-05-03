@@ -6,8 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
+import '../data/models.dart';
 import '../routes.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
@@ -42,7 +41,7 @@ class _SignUpFormState extends State<_SignUpForm> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final _userData = UserData<UserModel>(collection: 'users');
+  final _userData = DataProvider.userData;
 
   @override
   void initState() {

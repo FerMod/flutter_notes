@@ -3,13 +3,11 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
+import '../data/models.dart';
 import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
-  final userData = UserData<UserModel>(collection: 'users');
-  // final _controller = StreamController<UserModel>.broadcast();
+  final userData = DataProvider.userData;
 
   // HomePage() {
   //   userData.stream((snapshot) => UserModel.fromSnapshot(snapshot)).pipe(_controller);

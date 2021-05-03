@@ -1,9 +1,8 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_notes/data/models.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
 import '../screens/notes_list.dart';
 import '../screens/sign_in.dart';
 import '../screens/sign_up.dart';
@@ -14,7 +13,7 @@ import 'user_account.dart';
 class DrawerMenu extends StatelessWidget {
   DrawerMenu({Key? key}) : super(key: key);
 
-  final userData = UserData<UserModel>(collection: 'users');
+  final userData = DataProvider.userData;
 
   Future _navigate(BuildContext context, Widget widget) {
     return Navigator.of(context).push(
@@ -75,12 +74,12 @@ class DrawerMenu extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.login),
           title: Text(localizations.signIn),
-          onTap: () => _navigate(context, SignInScreen()),
+          onTap: () => _navigateReplace(context, SignInScreen()),
         ),
         ListTile(
           leading: const Icon(Icons.account_circle),
           title: Text(localizations.signUp),
-          onTap: () => _navigate(context, SignUpScreen()),
+          onTap: () => _navigateReplace(context, SignUpScreen()),
         ),
       ];
     }
