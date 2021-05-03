@@ -50,7 +50,8 @@ set deviceResolvedLocale(Locale locale) {
 }
 
 // Fake locale to represent the system Locale option.
-final systemLocaleOption = const Locale('system');
+const systemLocaleOption = Locale('system');
+const systemTextScaleFactorOption = -1.0;
 
 /// The settings of the app.
 @immutable
@@ -193,7 +194,7 @@ class AppOptions {
   /// that the internal state of this object has changed.
   ///
   /// If [updateShouldNotify] is true, it will cause to rebuild the widget
-  /// regardless of the current model being the same as the [newModel] one.
+  /// regardless of the current model being the same as the new [model] one.
   static void update(BuildContext context, AppOptions model, {bool updateShouldNotify = false}) {
     final modelUpdated = ModelBinding.update<AppOptions>(
       context,
