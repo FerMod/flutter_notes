@@ -37,6 +37,17 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   bool get isLoading => _isLoading;
   bool _isLoading = false;
 
+  /// Returns the value as a future that runs its computation after a delay.
+  ///
+  /// The loading of the data will be executed after the given [duration] has
+  /// passed, and the future is completed with the result. If [notifyIsLoading]
+  /// is set to true, it notifies that the data is loading and notifies again when
+  /// is finished loading.
+  ///
+  /// See:
+  /// * [isLoading], to obtain if is currently loading.
+  ///
+  /// *It should be only used for debugging*
   @visibleForTesting
   Future<List<NoteModel>> loadDelayed({
     Duration duration = const Duration(seconds: 2),
@@ -50,6 +61,10 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     );
   }
 
+  /// Returns a future completed with the list of notes.
+  /// If the parameter [notifyIsLoading] is set to true, it notifies when the
+  /// future data is requested, and notifies again when the data is resolved and
+  /// completed.
   Future<List<NoteModel>> loadData({bool notifyIsLoading = true}) {
     final user = userData.currentUser;
     if (user == null) {
@@ -67,7 +82,14 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   Future<List<NoteModel>> refresh() => loadData(notifyIsLoading: false);
 
-  Future<List<NoteModel>> load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) async {
+  /// Returns a future completed with the result of the [operation] execution.
+  /// If the parameter [notifyIsLoading] is set to true, it notifies when the
+  /// future data is requested, and notifies again when the data is resolved and
+  /// completed.
+  ///
+  /// See:
+  /// * [isLoading], to obtain if is currently loading.
+  Future<List<NoteModel>> load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
 
@@ -80,12 +102,19 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     }
   }
 
+  /// Returns the value stream that runs its computation after a delay.
+  ///
+  /// The data stream will be executed after the given [duration] has passed,
+  /// and the future is completed with the result.
+  ///
+  /// *It should be only used for debugging*
   @visibleForTesting
   Stream<List<NoteModel>> streamDelayed({Duration duration = const Duration(seconds: 2)}) {
     developer.log('streamDelayed(duration: $duration)');
     return streamData().delay(duration);
   }
 
+  /// Returns a stream completed with the list of notes.
   Stream<List<NoteModel>> streamData() {
     final user = userData.currentUser;
     if (user == null) {
@@ -100,6 +129,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     );
   }
 
+  /// Returns a stream from the the result stream of the [operation] execution.
   Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation) {
     _controller ??= StreamController<List<NoteModel>>.broadcast(onListen: () {
       // Listen for events of this stream and update the list content
