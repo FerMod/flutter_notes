@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,7 +22,20 @@ void main() async {
   await Firebase.initializeApp();
   _initFirebase();
   await AppSharedPreferences.initialize();
-  runApp(const NotesApp());
+
+  runApp(
+    ModelBinding(
+      initialModel: AppOptions.load(
+        defaultSettings: AppOptions(
+          themeMode: ThemeMode.system,
+          textScaleFactor: systemTextScaleFactorOption,
+          locale: systemLocaleOption,
+          platform: defaultTargetPlatform,
+        ),
+      ),
+      child: const NotesApp(),
+    ),
+  );
 }
 
 void _initFirebase() {
@@ -60,13 +74,13 @@ class NotesApp extends StatelessWidget {
     );
     deviceResolvedLocale = locale;
 
-    developer.log(
-      'Desired locales: $locales\n'
-      'Supported locales: $supportedLocales\n'
-      'Resolved locale: $locale\n'
-      'Device resolved locale: $deviceResolvedLocale',
+    print(
+      'Locale resolution:\n'
+      '  Desired locales: $locales\n'
+      '  Supported locales: $supportedLocales\n'
+      '  Resolved locale: $locale\n'
+      '  Device resolved locale: $deviceResolvedLocale',
     );
-    developer.log('deviceResolvedLocale: $deviceResolvedLocale\n');
     return _localeResolution(locale, supportedLocales);
   }
 
@@ -78,53 +92,33 @@ class NotesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ModelBinding(
-      initialModel: AppOptions.load(
-        defaultSettings: AppOptions(
-          themeMode: ThemeMode.system,
-          textScaleFactor: deviceTextScaleFactor,
-          locale: systemLocaleOption,
-          platform: defaultTargetPlatform,
-        ),
-      ),
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
-            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-            localizationsDelegates: const [
-              ...AppLocalizations.localizationsDelegates,
-              LocaleNamesLocalizationsDelegate(),
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: AppOptions.of(context).locale,
-            localeListResolutionCallback: _localeListResolution,
-            localeResolutionCallback: _localeResolution,
-            theme: ThemeData.light(),
-            darkTheme: ThemeData.dark(),
-            themeMode: AppOptions.of(context).themeMode,
-            home: SignInScreen(), // TODO: Only for testing, change to real home
-            routes: AppRoute.routes,
-            builder: (context, child) {
-              assert(child != null); // Child should not be null
+    return MaterialApp(
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      localizationsDelegates: const [
+        ...AppLocalizations.localizationsDelegates,
+        LocaleNamesLocalizationsDelegate(),
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: AppOptions.of(context).locale,
+      localeListResolutionCallback: _localeListResolution,
+      localeResolutionCallback: _localeResolution,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: AppOptions.of(context).themeMode,
+      home: SignInScreen(), // TODO: Only for testing, change to real home
+      routes: AppRoute.routes,
+      builder: (context, child) {
+        assert(child != null); // Child should not be null
 
-              final appSettings = AppOptions.of(context);
-
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaleFactor: appSettings.textScaleFactor,
-                ),
-                child: child!,
-              );
-            },
-            // home: Scaffold(
-            //   appBar: AppBar(title: Text('Test')),
-            //   body: RichTextEditor(onSubmitted: (value) => developer.log(value)),
-            // ),
-            //initialRoute: AppRoute.home.location,
-            //onGenerateRoute: AppRoute.onGenerateRoute,
-          );
-        },
-      ),
+        final appSettings = AppOptions.of(context);
+        final textScaleFactor = appSettings.isValidTextScale() ? appSettings.textScaleFactor : deviceTextScaleFactor;
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaleFactor: textScaleFactor,
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }
