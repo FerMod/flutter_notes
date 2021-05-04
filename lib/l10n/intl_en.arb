@@ -12,6 +12,7 @@
   "@drawerTitle": {
     "description": "Title for the drawer widget."
   },
+
   "homepage": "Homepage",
   "@homepage": {
     "description": "Title for the Demo application."
@@ -193,7 +194,11 @@
   "@signIn": {
     "description": "Label text to sign in."
   },
-  "signInTitle": "Sign in",
+  "notSignedIn": "Not signed in",
+  "@notSignedIn": {
+    "description": "Label text displaying that the user is not signed in."
+  },
+  "signInTitle": "Sign In",
   "@signInTitle": {
     "description": "Title of the sign in screen."
   },

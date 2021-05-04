@@ -16,7 +16,6 @@ import '../widgets/loader.dart';
 import '../widgets/user_account.dart';
 import 'edit_note.dart';
 import 'settings.dart';
-import 'sign_in.dart';
 
 enum MenuAction {
   // share,
@@ -28,32 +27,6 @@ class NotesListScreen extends StatelessWidget {
 
   final NotesListModel notesListModel = NotesListModel();
   final ScrollController scrollController = ScrollController();
-
-  PageRoute _pageRouteBuilder(Widget widget) {
-    // return MaterialPageRoute(builder: (context) => widget);
-    // return PageRouteBuilder(
-    //   pageBuilder: (context, animation, secondaryAnimation) => widget,
-    // );
-    return PageRouteBuilder(
-      fullscreenDialog: true,
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: animation.drive(
-                CurveTween(curve: Curves.easeInOut),
-              ),
-              child: child,
-            );
-          },
-          child: widget,
-        );
-      },
-      transitionDuration: Duration(milliseconds: 400),
-      reverseTransitionDuration: Duration(milliseconds: 400),
-    );
-  }
 
   Future<NoteModel?> _navigateEditNote(BuildContext context, NoteModel note) async {
     final result = await Navigator.push<NoteModel>(
@@ -118,7 +91,6 @@ class NotesListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         title: _AccountWidget(
           onTap: () => _navigate(context, SignInScreen()),
           userData: notesListModel.userData,
@@ -145,7 +117,6 @@ class NotesListScreen extends StatelessWidget {
                 notes: snapshot.data,
                 onTap: (note) => _editNote(context, note),
                 onMenuTap: (note) => _removeNote(context, note),
-                onRefresh: notesListModel.refresh,
                 controller: scrollController,
               );
             case ConnectionState.waiting:
@@ -281,51 +252,48 @@ class NoteListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    return RefreshIndicator(
-      onRefresh: onRefresh!,
-      child: Scrollbar(
+    return Scrollbar(
+      controller: controller,
+      // thickness: 2.0,
+      child: ListView.builder(
         controller: controller,
-        // thickness: 2.0,
-        child: ListView.builder(
-          controller: controller,
-          dragStartBehavior: DragStartBehavior.down,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
-          itemCount: notes.length,
-          itemBuilder: (context, index) {
-            final note = notes[index];
-            return CardHero(
-              tag: 'note-${note.id}',
-              color: note.color,
-              onTap: () => onTap?.call(note),
-              onLongPress: () => developer.log('Long press'),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListTile(
-                      // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                      title: Text(note.title!),
-                      subtitle: Text(
-                        note.content!,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+        dragStartBehavior: DragStartBehavior.down,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          final note = notes[index];
+          return CardHero(
+            tag: 'note-${note.id}',
+            color: note.color,
+            onTap: () => onTap?.call(note),
+            onLongPress: () => developer.log('Long press'),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ListTile(
+                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                    title: Text(note.title!),
+                    subtitle: Text(
+                      note.content!,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  PopupMenuButton<MenuAction>(
-                    itemBuilder: (context) => [
-                      _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
-                    ],
-                    onSelected: (value) => onMenuTap!(note),
-                    padding: EdgeInsets.zero,
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+                PopupMenuButton<MenuAction>(
+                  itemBuilder: (context) => [
+                    _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                  ],
+                  onSelected: (value) => onMenuTap!(note),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

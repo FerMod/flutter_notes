@@ -49,7 +49,7 @@ class DrawerMenu extends StatelessWidget {
             Icons.account_circle,
             size: UserAvatar.alternativeImageIconSize,
           ),
-          title: Text(localizations.signIn),
+          title: Text(localizations.notSignedIn),
         ),
       );
     }
