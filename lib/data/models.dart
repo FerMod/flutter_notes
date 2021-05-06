@@ -28,6 +28,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   late final Collection<NoteModel> notesCollection = DataProvider.notes;
   late final UserData<UserModel> userData = DataProvider.userData;
 
+  /// Controller used to notify of the new data entries that are added.
   StreamController<List<NoteModel>>? _controller;
 
   NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? const [];

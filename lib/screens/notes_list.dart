@@ -16,6 +16,7 @@ import '../widgets/loader.dart';
 import '../widgets/user_account.dart';
 import 'edit_note.dart';
 import 'settings.dart';
+import 'sign_in.dart';
 
 enum MenuAction {
   // share,
@@ -254,6 +255,8 @@ class NoteListWidget extends StatelessWidget {
 
     return Scrollbar(
       controller: controller,
+      isAlwaysShown: true,
+      showTrackOnHover: true,
       // thickness: 2.0,
       child: ListView.builder(
         controller: controller,
