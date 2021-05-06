@@ -41,11 +41,13 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   late DateTime _lastEdit;
 
   int _currentIndex = 0;
-  late List<BottomNavigationBarItem> _bottomNavBarItems;
+  late List<Color> _colorOptions;
 
   @override
   void initState() {
     super.initState();
+
+    _colorOptions = PredefinedColor.values.map((e) => e.color).toList();
 
     _titleEditingController = TextEditingController(text: widget.note.title);
     _contentEditingController = TextEditingController(text: widget.note.content);
@@ -54,8 +56,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _titleEditingController.addListener(_updateLastEdit);
     _contentEditingController.addListener(_updateLastEdit);
-
-    _bottomNavBarItems = _buildNavBarItems();
   }
 
   @override
@@ -63,26 +63,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _titleEditingController.dispose();
     _contentEditingController.dispose();
     super.dispose();
-  }
-
-  List<BottomNavigationBarItem> _buildNavBarItems() {
-    return List.generate(
-      PredefinedColor.values.length,
-      (index) {
-        final cachedColor = CachedColor(PredefinedColor.values[index].color);
-        if (widget.note.color == cachedColor.value) {
-          _currentIndex = index;
-        }
-        return BottomNavigationBarItem(
-          icon: ColorButton(color: cachedColor.value),
-          activeIcon: ColorButton(
-            color: cachedColor.value,
-            icon: Icon(Icons.check, color: cachedColor.contrastingColor()),
-          ),
-          label: PredefinedColor.values[index].name,
-        );
-      },
-    );
   }
 
   void _updateLastEdit() {
@@ -160,41 +140,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     if (_currentIndex == index) return;
     setState(() {
       _currentIndex = index;
-      _color = PredefinedColor.values[index].color;
+      _color = _colorOptions[index];
     });
     _updateLastEdit();
-  }
-
-  Widget _buildBottomNavigationBar() {
-    final theme = Theme.of(context);
-
-    Widget bottomNavigationBar = BottomNavigationBar(
-      backgroundColor: theme.colorScheme.surface,
-      type: BottomNavigationBarType.fixed,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      currentIndex: _currentIndex,
-      onTap: (index) {
-        if (_currentIndex == index) return;
-        setState(() {
-          _currentIndex = index;
-          _color = PredefinedColor.values[index].color;
-        });
-        _updateLastEdit();
-      },
-      items: _bottomNavBarItems,
-    );
-
-    bottomNavigationBar = Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.3),
-        ),
-      ),
-      child: bottomNavigationBar,
-    );
-
-    return bottomNavigationBar;
   }
 
   @override
@@ -239,9 +187,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
               ),
               _ColorOptionsNavBar(
                 selectedIndex: _currentIndex,
-                items: _bottomNavBarItems,
+                colors: _colorOptions,
                 onTap: _handleOnTap,
               ),
+              // _ColorButtons(
+              //   initialValue: _color,
+              //   colors: _colorOptions,
+              //   onPressed: _handleOnTap,
+              // ),
             ],
           ),
         ),
@@ -250,17 +203,48 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 }
 
-class _ColorOptionsNavBar extends StatelessWidget {
+class _ColorOptionsNavBar extends StatefulWidget {
   const _ColorOptionsNavBar({
     Key? key,
     required this.selectedIndex,
-    required this.items,
+    required this.colors,
     required this.onTap,
   }) : super(key: key);
 
   final int selectedIndex;
-  final List<BottomNavigationBarItem> items;
+  final List<Color> colors;
   final ValueChanged<int> onTap;
+
+  @override
+  _ColorOptionsNavBarState createState() => _ColorOptionsNavBarState();
+}
+
+class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
+  late List<BottomNavigationBarItem> _bottomNavBarItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _bottomNavBarItems = _buildNavBarItems(widget.colors);
+  }
+
+  List<BottomNavigationBarItem> _buildNavBarItems(List<Color> values) {
+    return List.generate(
+      values.length,
+      (index) {
+        final cachedColor = CachedColor(values[index]);
+        return BottomNavigationBarItem(
+          icon: ColorButton(color: cachedColor.value),
+          activeIcon: ColorButton(
+            color: cachedColor.value,
+            icon: Icon(Icons.check, color: cachedColor.contrastingColor()),
+          ),
+          label: '', // Prevents tooltip from displaying
+          tooltip: '', // Prevents tooltip from displaying
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -271,9 +255,9 @@ class _ColorOptionsNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: false,
       showUnselectedLabels: false,
-      currentIndex: selectedIndex,
-      onTap: onTap,
-      items: items,
+      currentIndex: widget.selectedIndex,
+      onTap: widget.onTap,
+      items: _bottomNavBarItems,
     );
 
     bottomNavigationBar = Container(
@@ -457,5 +441,41 @@ extension PredefinedColorExtension on PredefinedColor {
       case PredefinedColor.custom:
         return Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     }
+  }
+}
+
+@Deprecated('Will be replaced with BottomNavigationBar')
+class _ColorButtons extends StatelessWidget {
+  const _ColorButtons({
+    Key? key,
+    required this.initialValue,
+    required this.colors,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final List<Color> colors;
+  final Color? initialValue;
+  final void Function(int index) onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return DecoratedBox(
+      // alignment: Alignment.center,
+      // margin: EdgeInsets.zero,
+      // padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
+        ),
+        //borderRadius: BorderRadius.all(Radius.zero),
+      ),
+      child: ColorToggleButtons(
+        initialValue: initialValue,
+        colors: colors,
+        onPressed: onPressed,
+      ),
+    );
   }
 }
