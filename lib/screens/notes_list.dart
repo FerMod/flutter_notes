@@ -117,7 +117,7 @@ class NotesListScreen extends StatelessWidget {
               return NoteListWidget(
                 notes: snapshot.data,
                 onTap: (note) => _editNote(context, note),
-                onMenuTap: (note) => _removeNote(context, note),
+                onMenuTap: (note, action) => _removeNote(context, note),
                 controller: scrollController,
               );
             case ConnectionState.waiting:
@@ -224,7 +224,7 @@ class NoteListWidget extends StatelessWidget {
 
   final List<NoteModel> notes;
   final void Function(NoteModel)? onTap;
-  final void Function(NoteModel)? onMenuTap;
+  final void Function(NoteModel, MenuAction action)? onMenuTap;
   final Future<void> Function()? onRefresh;
 
   final ScrollController? controller;
@@ -257,7 +257,7 @@ class NoteListWidget extends StatelessWidget {
       controller: controller,
       isAlwaysShown: true,
       showTrackOnHover: true,
-      // thickness: 2.0,
+      radius: Radius.zero,
       child: ListView.builder(
         controller: controller,
         dragStartBehavior: DragStartBehavior.down,
@@ -290,7 +290,7 @@ class NoteListWidget extends StatelessWidget {
                   itemBuilder: (context) => [
                     _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
                   ],
-                  onSelected: (value) => onMenuTap!(note),
+                  onSelected: (value) => onMenuTap!(note, value),
                   padding: EdgeInsets.zero,
                 ),
               ],
