@@ -33,7 +33,7 @@ class EditNoteScreen extends StatefulWidget {
 }
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
-  final _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   late TextEditingController _titleEditingController;
   late TextEditingController _contentEditingController;
@@ -260,7 +260,7 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
       items: _bottomNavBarItems,
     );
 
-    bottomNavigationBar = Container(
+    bottomNavigationBar = DecoratedBox(
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(color: theme.colorScheme.onSurface, width: 0.3),
