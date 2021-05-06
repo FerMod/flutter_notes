@@ -8,9 +8,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:flutter_notes/screens/notes_list.dart';
 
 import 'data/app_options.dart';
 import 'data/local/app_shared_preferences.dart';
+import 'data/models.dart';
 import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
@@ -44,12 +46,19 @@ void _initFirebase() {
     // Switch host based on platform.
     final firestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
 
-    FirebaseFirestore.instance.settings = Settings(
-      host: firestoreHost,
-      sslEnabled: false,
-      persistenceEnabled: Global.persistChanges,
-      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-    );
+    try {
+      FirebaseFirestore.instance.settings = Settings(
+        host: firestoreHost,
+        sslEnabled: false,
+        persistenceEnabled: Global.persistChanges,
+        cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+      );
+    } catch (e) {
+      // When hot reloading 'FirebaseError: [code=failed-precondition]' is
+      // launched. It happens when trying to set the Firebase settings more than
+      // once.
+      print(e.toString());
+    }
 
     // Only for web platforms
     if (Global.persistChanges && kIsWeb) {
@@ -92,6 +101,9 @@ class NotesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userData = DataProvider.userData;
+    final userSignedIn = userData.currentUser != null;
+
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: const [
@@ -105,7 +117,7 @@ class NotesApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: AppOptions.of(context).themeMode,
-      home: SignInScreen(), // TODO: Only for testing, change to real home
+      home: userSignedIn ? NotesListScreen() : SignInScreen(),
       routes: AppRoute.routes,
       builder: (context, child) {
         assert(child != null); // Child should not be null
