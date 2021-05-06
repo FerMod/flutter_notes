@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -415,7 +414,6 @@ enum PredefinedColor {
   blue,
   grey,
   black,
-  custom,
 }
 
 extension PredefinedColorExtension on PredefinedColor {
@@ -438,8 +436,6 @@ extension PredefinedColorExtension on PredefinedColor {
         return Color(0xFFAAAAAA);
       case PredefinedColor.black:
         return Color(0xFF454545);
-      case PredefinedColor.custom:
-        return Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
     }
   }
 }
