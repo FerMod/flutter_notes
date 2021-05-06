@@ -98,7 +98,12 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   Widget _createSaveButton() {
     final localizations = AppLocalizations.of(context)!;
     return TextButton(
-      onPressed: _saveChanges,
+      onPressed: () {
+        if (_valuesChanged(widget.note)) {
+          _saveChanges();
+        }
+        Navigator.of(context).pop(widget.note);
+      },
       child: Text(localizations.save),
     );
   }
