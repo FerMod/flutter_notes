@@ -201,7 +201,7 @@ class AccountSettingScreen extends StatelessWidget {
                 userData!.signOut();
                 // TODO: Improve route navigation
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoute.notes,
+                  '/',
                   ModalRoute.withName('/'),
                 );
               },
@@ -347,7 +347,7 @@ class TextScaleSettingScreen extends StatelessWidget {
   Map<double, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return {
-      -1.0: DisplayOption(
+      systemTextScaleFactorOption: DisplayOption(
         title: localizations.settingsSystemDefault,
         titleBuilder: (context, value) {
           return Text(value, textScaleFactor: deviceTextScaleFactor);
