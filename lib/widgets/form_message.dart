@@ -35,10 +35,7 @@ class MessageData with Diagnosticable {
       return false;
     }
 
-    return other is MessageData
-        && other.isVisible == isVisible
-        && other.message == message
-        && other.actions == actions;
+    return other is MessageData && other.isVisible == isVisible && other.message == message && other.actions == actions;
   }
 
   @override
@@ -131,19 +128,14 @@ class MessageState extends State<Message> {
 
   @override
   Widget build(BuildContext context) {
-    var messageWidget = widget.child;
-    if (data.isVisible) {
-      messageWidget = Column(
-        children: [
-          FormMessageWidget(onChange: _handleOnChange),
-          Expanded(child: messageWidget),
-        ],
-      );
-    }
-
     return _InheritedMessage(
       message: this,
-      child: messageWidget,
+      child: Column(
+        children: [
+          data.isVisible ? FormMessageWidget(onChange: _handleOnChange) : SizedBox.shrink(),
+          Expanded(child: widget.child),
+        ],
+      ),
     );
   }
 
