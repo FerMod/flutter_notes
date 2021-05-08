@@ -84,6 +84,7 @@ class Document<T> extends FirebaseDocument<T> {
         developer.log('Error updating document: ${e.message}');
         rethrow;
       }
+      developer.log('$e');
     }
   }
 
@@ -158,6 +159,7 @@ class Collection<T> extends FirebaseCollection<T> {
         developer.log('Error updating document: ${e.message}');
         rethrow;
       }
+      developer.log('$e');
     }
   }
 
@@ -277,25 +279,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      developer.log('${e.code}: ${e.message}');
-      // switch (e.code) {
-      //   case 'user-not-found':
-      //     print('No user found for that email.');
-      //     //rethrow;
-      //     break;
-      //   case 'wrong-password':
-      //     print('Wrong password provided for that user.');
-      //     // rethrow;
-      //     break;
-      //   case 'invalid-email':
-      //     print('The email address is not valid.');
-      //     // rethrow;
-      //     break;
-      //   case 'user-disabled':
-      //     print('The user corresponding to the given email has been disabled.');
-      //     // rethrow;
-      //     break;
-      // }
+      developer.log('$e');
       rethrow;
     }
 
@@ -316,21 +300,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       }, id: user.uid);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      developer.log('${e.code}: ${e.message}');
-      // switch (e.code) {
-      //   case 'weak-password':
-      //     print('The password provided is too weak.');
-      //     // rethrow;
-      //     break;
-      //   case 'invalid-email':
-      //     print('The email address is not valid.');
-      //     // rethrow;
-      //     break;
-      //   case 'email-already-in-use':
-      //     print('The account already exists for that email.');
-      //     // rethrow;
-      //     break;
-      // }
+      developer.log('$e');
       rethrow;
     } on Exception catch (e) {
       print('Exception thrown when signing up.\n$e');
@@ -347,7 +317,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       await user.delete();
       return collection.delete(user.uid);
     } on FirebaseAuthException catch (e) {
-      developer.log('${e.code}: ${e.message}');
+      developer.log('$e');
       // if (e.code == 'requires-recent-login') {
       //   print('The user must reauthenticate before this operation can be executed.');
       // }
@@ -365,13 +335,14 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
 
     if (!user.emailVerified) {
       var actionCodeSettings = ActionCodeSettings(
-          url: 'https://www.example.com/?email=${user.email}',
-          dynamicLinkDomain: "example.page.link",
-          androidPackageName: "com.example.android",
-          androidInstallApp: true,
-          androidMinimumVersion: "12",
-          iOSBundleId: "com.example.ios",
-          handleCodeInApp: true);
+        url: 'https://www.example.com/?email=${user.email}',
+        dynamicLinkDomain: 'example.page.link',
+        androidPackageName: 'com.example.android',
+        androidInstallApp: true,
+        androidMinimumVersion: '12',
+        iOSBundleId: 'com.example.ios',
+        handleCodeInApp: true,
+      );
 
       await user.sendEmailVerification(actionCodeSettings);
     }
