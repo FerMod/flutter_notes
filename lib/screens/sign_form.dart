@@ -23,22 +23,20 @@ class SignFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BoxConstraints? constraints;
-    if (kIsWeb) {
-      final textScaleFactor = MediaQuery.textScaleFactorOf(context);
-      final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
-      constraints = BoxConstraints(maxWidth: desktopMaxWidth);
-    }
+    final childWidget = LayoutBuilder(
+      builder: (context, constraints) {
+        if (kIsWeb) {
+          final textScaleFactor = MediaQuery.textScaleFactorOf(context);
+          final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
+          constraints = constraints.copyWith(maxWidth: desktopMaxWidth);
+        }
 
-    final childWidget = Scrollbar(
-      child: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            constraints: constraints,
-            child: Builder(builder: builder),
-          ),
-        ),
-      ),
+        return Container(
+          alignment: Alignment.center,
+          constraints: constraints,
+          child: Builder(builder: builder),
+        );
+      },
     );
 
     return GestureDetector(
@@ -57,7 +55,11 @@ class SignFormScreen extends StatelessWidget {
         ),
         drawer: DrawerMenu(),
         body: Message(
-          child: childWidget,
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: childWidget,
+            ),
+          ),
         ),
       ),
     );
