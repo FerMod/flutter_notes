@@ -77,8 +77,23 @@ class _SignUpFormState extends State<_SignUpForm> {
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
     } on FirebaseAuthException catch (e) {
-      developer.log(e.toString());
-      Message.show(context, message: e.message);
+      final localizations = AppLocalizations.of(context)!;
+      late String errorMessage;
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage = localizations.errorEmailAlreadyInUse;
+          break;
+        case 'invalid-email':
+          errorMessage = localizations.errorInvalidEmail;
+          break;
+        case 'weak-password':
+          errorMessage = localizations.errorWeakPassword;
+          break;
+        case 'operation-not-allowed':
+        default:
+          errorMessage = localizations.errorUnknown;
+      }
+      Message.show(context, message: errorMessage);
     }
   }
 

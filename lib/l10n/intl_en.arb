@@ -12,7 +12,6 @@
   "@drawerTitle": {
     "description": "Title for the drawer widget."
   },
-
   "homepage": "Homepage",
   "@homepage": {
     "description": "Title for the Demo application."
@@ -222,10 +221,6 @@
       }
     }
   },
-  "signInError": "Incorrect username or password.",
-  "@signInError": {
-    "description": "Sign in error message, when the username or the password are missing or wrong."
-  },
   "signInNoAccount": "Don't have an account?",
   "@signInNoAccount": {
     "description": "Prompt for signing up for an account."
@@ -278,10 +273,6 @@
   "@passwordResetReturn": {
     "description": "Text of the button once a password reset email is sent."
   },
-  "passwordResetError": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
-  "@passwordResetError": {
-    "description": "Error message when no matching email address is found."
-  },
   "passwordResetSuccess": "Check your email for a link to reset your password. If it doesn’t appear within a few minutes, check your spam folder.",
   "@passwordResetSuccess": {
     "description": "Message when a password reset email is sent."
@@ -328,6 +319,14 @@
       }
     }
   },
+  "errorSignIn": "Incorrect username or password.",
+  "@errorSignIn": {
+    "description": "Sign in error message, when the username or the password are missing or wrong."
+  },
+  "errorPasswordReset": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
+  "@errorpasswordReset": {
+    "description": "Error message when no matching email address is found."
+  },
   "errorWeakPassword": "The password is too weak.",
   "@errorWeakPassword": {
     "description": "Message text to show when a the introduced password is weak."
@@ -339,6 +338,10 @@
   "errorEmailAlreadyInUse": "The email is already in use by another account.",
   "@errorEmailAlreadyInUse": {
     "description": "Message text to show when a the introduced email is already in use by another account."
+  },
+  "errorUserDisabled": "The user with the given email is disabled.",
+  "@errorUserDisabled": {
+    "description": "Thrown if the user corresponding to the given email has been disabled."
   },
   "errorUnknown": "An unknown error happened.",
   "@errorUnknown": {

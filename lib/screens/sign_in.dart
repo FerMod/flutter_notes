@@ -72,8 +72,22 @@ class _SignInFormState extends State<_SignInForm> {
         ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
       );
     } on FirebaseAuthException catch (e) {
-      developer.log('$e');
-      Message.show(context, message: e.message);
+      final localizations = AppLocalizations.of(context)!;
+      late String errorMessage;
+
+      switch (e.code) {
+        case 'user-disabled':
+          errorMessage = localizations.errorUserDisabled;
+          break;
+        case 'invalid-email':
+        case 'user-not-found':
+        case 'wrong-password':
+          errorMessage = localizations.errorSignIn;
+          break;
+        default:
+          errorMessage = localizations.errorUnknown;
+      }
+      Message.show(context, message: errorMessage);
     }
   }
 
