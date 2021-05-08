@@ -87,7 +87,7 @@ class Message extends StatefulWidget {
 
 class MessageState extends State<Message> {
   /// The data contained in the message
-  MessageData? data;
+  late MessageData data;
 
   @override
   void initState() {
@@ -104,7 +104,7 @@ class MessageState extends State<Message> {
   }
 
   void _update({bool? isVisible, String? message, List<Widget>? actions}) {
-    final newData = data!.copyWith(
+    final newData = data.copyWith(
       isVisible: isVisible,
       message: message,
       actions: actions,
@@ -132,11 +132,11 @@ class MessageState extends State<Message> {
   @override
   Widget build(BuildContext context) {
     var messageWidget = widget.child;
-    if (data?.isVisible ?? false) {
+    if (data.isVisible) {
       messageWidget = Column(
         children: [
           FormMessageWidget(onChange: _handleOnChange),
-          messageWidget,
+          Expanded(child: messageWidget),
         ],
       );
     }
@@ -178,7 +178,7 @@ class FormMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final messageData = Message.of(context)!.data!;
+    final messageData = Message.of(context)!.data;
 
     Widget? titleWidget;
     if (messageData.message != null) {
