@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
@@ -42,7 +42,7 @@ List<Locale>? _lastDeviceLocales;
 Locale? _deviceResolvedLocale;
 Locale get deviceResolvedLocale => _deviceResolvedLocale ?? Locale.fromSubtags();
 set deviceResolvedLocale(Locale locale) {
-  final equalLocales = const ListEquality().equals(_lastDeviceLocales, deviceLocales);
+  final equalLocales = const IterableEquality<Locale>().equals(_lastDeviceLocales, deviceLocales);
   if (!equalLocales) {
     _deviceResolvedLocale = locale;
     _lastDeviceLocales = deviceLocales;
