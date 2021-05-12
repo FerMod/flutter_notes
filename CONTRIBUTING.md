@@ -83,7 +83,9 @@ Examples:
 
 #### Limit the first line to 72 characters or less
 
-The first line of a commit message serves as a summary. When it's not, add a blank line (this is important) followed the rest of the commit message.
+The first line of a commit message serves as a summary, it should be concise to ensure that they are readable. When it's not, add a blank line (this is important) followed by the rest of the commit message.
+
+The best line length should be of 50 characterers or less, and the 72 characters should be treated as a hard limit.
 
 #### Issue References
 
@@ -101,7 +103,7 @@ Or if the commit references more than one issue:
 Issue #123, #124
 ```
 
-If the commit closes the issue it should be referenced using one of the available keyworkds that automates the issue closing once the branch merges with the default branch.
+If the commit closes the issue it should be referenced using one of the available keywords that automates the issue closing once the branch merges with the default branch.
 
 ```diff
 Add feature
