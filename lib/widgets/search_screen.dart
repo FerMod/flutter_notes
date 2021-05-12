@@ -285,7 +285,8 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
 
     if (widget.delegate._queryTextController != oldWidget.delegate._queryTextController) {
       print('query');
-      oldWidget.delegate._queryTextController
+      oldWidget.delegate._queryTextController.removeListener(_onQueryChanged);
+      widget.delegate._queryTextController
         ..addListener(_onQueryChanged)
         ..value = oldWidget.delegate._queryTextController.value;
     }
