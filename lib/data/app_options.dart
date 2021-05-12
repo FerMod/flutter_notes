@@ -71,8 +71,8 @@ class AppOptions {
     double? textScaleFactor,
     Locale? locale,
     this.platform,
-  })  : _textScaleFactor = textScaleFactor,
-        _locale = locale;
+  })  : _textScaleFactor = textScaleFactor ?? systemTextScaleFactorOption,
+        _locale = locale ?? systemLocaleOption;
 
   /// Describes which theme will be used.
   final ThemeMode themeMode;
@@ -89,6 +89,8 @@ class AppOptions {
   ///
   /// * [isValidTextScale], to check if the text scale factor in the app
   ///   settings is considered valid.
+  double get textScaleFactor => isValidTextScale() ? _textScaleFactor : deviceTextScaleFactor;
+  final double _textScaleFactor;
 
   /// The platform that user interaction should adapt to target.
   final TargetPlatform? platform;
@@ -102,17 +104,19 @@ class AppOptions {
   ///
   /// * [isValidLocale], to check if the locale in the app settings is
   ///   considered valid.
+  Locale get locale => isValidLocale() ? _locale : deviceResolvedLocale;
+  final Locale _locale;
 
   /// Returns true if the text scale stored in the app settings is considered
   /// valid.
   bool isValidTextScale() {
-    return _textScaleFactor != null && _textScaleFactor! > 0.0;
+    return _textScaleFactor > 0.0;
   }
 
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
   bool isValidLocale() {
-    return _locale != null && _locale != Locale.fromSubtags();
+    return _locale != Locale.fromSubtags();
   }
 
   /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
@@ -234,8 +238,8 @@ class AppOptions {
   Map<String, dynamic> toMap() {
     return {
       'themeMode': describeEnum(themeMode),
-      'textScaleFactor': textScaleFactor,
-      'locale': locale.toLanguageTag(),
+      'textScaleFactor': _textScaleFactor,
+      'locale': _locale.toLanguageTag(),
       'platform': describeEnum(platform!),
     };
   }
@@ -249,7 +253,10 @@ class AppOptions {
       return false;
     }
     final AppOptions appOptions = other;
-    return appOptions.themeMode == themeMode && appOptions.textScaleFactor == textScaleFactor && appOptions.platform == platform && appOptions.locale == locale;
+    return appOptions.themeMode == themeMode &&
+        appOptions._textScaleFactor == _textScaleFactor &&
+        appOptions._locale == _locale &&
+        appOptions.platform == platform;
   }
 
   @override
@@ -261,5 +268,5 @@ class AppOptions {
       );
 
   @override
-  String toString() => 'AppOptions(themeMode: $themeMode, textScaleFactor: $textScaleFactor, locale: $locale, platform: $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, textScaleFactor: $_textScaleFactor, locale: $_locale, platform: $platform)';
 }
