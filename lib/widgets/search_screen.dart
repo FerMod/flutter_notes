@@ -284,7 +284,6 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
     super.didUpdateWidget(oldWidget);
 
     if (widget.delegate._queryTextController != oldWidget.delegate._queryTextController) {
-      print('query');
       oldWidget.delegate._queryTextController.removeListener(_onQueryChanged);
       widget.delegate._queryTextController
         ..addListener(_onQueryChanged)
@@ -292,7 +291,6 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
     }
 
     if (widget.delegate._isSearchFieldVisibleNotifier != oldWidget.delegate._isSearchFieldVisibleNotifier) {
-      print('visible');
       oldWidget.delegate._isSearchFieldVisibleNotifier.removeListener(_onSearchFieldChanged);
       widget.delegate._isSearchFieldVisibleNotifier
         ..addListener(_onSearchFieldChanged)
@@ -300,7 +298,6 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
     }
 
     if (widget.delegate._focusNode != oldWidget.delegate._focusNode) {
-      print('focus');
       oldWidget.delegate._focusNode = null;
       widget.delegate._focusNode = focusNode;
     }
