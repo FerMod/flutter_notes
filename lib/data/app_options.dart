@@ -49,8 +49,17 @@ set deviceResolvedLocale(Locale locale) {
   }
 }
 
-// Fake locale to represent the system Locale option.
+/// Fake locale to represent the system Locale option.
+///
+/// This locale does not exist, therefore is invalid and should be only used to
+/// indicate that the locale to try to use, is the one resolved from the system
+/// locale.
 const systemLocaleOption = Locale('system');
+
+/// Text scale factor that represents the system option.
+///
+/// This scale factor value is invalid, and only indicates that the text scale
+/// factor to be used is the one defined in the system settings.
 const systemTextScaleFactorOption = -1.0;
 
 /// The settings of the app.
@@ -73,30 +82,26 @@ class AppOptions {
   /// If the text scale factor is 1.5, text will be 50% larger than the
   /// specified font size.
   ///
-  /// If no text scale is set or is not valid, returns the value selected in the
+  /// If no text scale or an invalid one is set, returns the value selected in the
   /// device's system settings.
   ///
   /// See:
   ///
   /// * [isValidTextScale], to check if the text scale factor in the app
-  ///   settings is considered as valid.
-  double get textScaleFactor => isValidTextScale() ? _textScaleFactor! : deviceTextScaleFactor;
-  final double? _textScaleFactor;
+  ///   settings is considered valid.
 
   /// The platform that user interaction should adapt to target.
   final TargetPlatform? platform;
 
   /// An identifier used to select a user's language and formatting preferences.
   ///
-  /// If no locale is set or is not valid, returns the supported language
+  /// If no locale is set or an invalid one is setor an invalid one is set, returns the supported language
   /// selected in the device's system settings.
   ///
   /// See:
   ///
   /// * [isValidLocale], to check if the locale in the app settings is
-  ///   considered as valid.
-  Locale get locale => isValidLocale() ? _locale! : deviceResolvedLocale;
-  final Locale? _locale;
+  ///   considered valid.
 
   /// Returns true if the text scale stored in the app settings is considered
   /// valid.
