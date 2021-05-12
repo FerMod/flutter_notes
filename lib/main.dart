@@ -123,10 +123,9 @@ class NotesApp extends StatelessWidget {
         assert(child != null); // Child should not be null
 
         final appSettings = AppOptions.of(context);
-        final textScaleFactor = appSettings.isValidTextScale() ? appSettings.textScaleFactor : deviceTextScaleFactor;
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaleFactor: textScaleFactor,
+            textScaleFactor: appSettings.textScaleFactor,
           ),
           child: child!,
         );
