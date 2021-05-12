@@ -76,12 +76,14 @@ class NotesApp extends StatelessWidget {
   final String? initialRoute;
 
   Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
-    final locale = LocaleMatcher.localeListResolution(
-      locales,
-      supportedLocales,
-      fallback: () => locales?.first == systemLocaleOption ? deviceResolvedLocale : null,
-    );
-    deviceResolvedLocale = locale;
+    var locale = deviceResolvedLocale;
+    if (locales?.first != systemLocaleOption) {
+      locale = LocaleMatcher.localeListResolution(
+        locales,
+        supportedLocales,
+      );
+      deviceResolvedLocale = locale;
+    }
 
     print(
       'Locale resolution:\n'
