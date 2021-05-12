@@ -31,10 +31,11 @@ class SignFormScreen extends StatelessWidget {
           constraints = constraints.copyWith(maxWidth: desktopMaxWidth);
         }
 
-        return Container(
-          alignment: Alignment.center,
-          constraints: constraints,
-          child: Builder(builder: builder),
+        return Center(
+          child: Container(
+            constraints: constraints,
+            child: Builder(builder: builder),
+          ),
         );
       },
     );
