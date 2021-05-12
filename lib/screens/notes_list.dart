@@ -162,7 +162,7 @@ class _AccountWidget extends StatelessWidget {
     Widget accountWidget;
     if (user != null) {
       accountWidget = UserAccountListTile(
-        imageUrl: user.photoURL!,
+        imageUrl: user.photoURL,
         nameText: user.displayName,
         emailText: user.email,
       );

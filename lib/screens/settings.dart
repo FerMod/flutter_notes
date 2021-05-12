@@ -8,7 +8,6 @@ import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models.dart';
 import '../data/models/user_model.dart';
-import '../routes.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
@@ -58,7 +57,7 @@ class SettingsScreen extends StatelessWidget {
     Widget? subtitleWidget;
     if (isSignedIn) {
       iconWidget = UserAvatar(
-        imageUrl: user!.photoURL!,
+        imageUrl: user!.photoURL,
         nameText: user.displayName,
       );
       titleWidget = Text(user.displayName!);
@@ -177,7 +176,7 @@ class AccountSettingScreen extends StatelessWidget {
     final user = userData!.currentUser!;
 
     Widget picture = UserAvatar(
-      imageUrl: user.photoURL!,
+      imageUrl: user.photoURL,
       nameText: user.displayName,
     );
     Widget name = Text(user.displayName!);

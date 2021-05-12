@@ -2,25 +2,38 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
 import '../src/cache/cached_color.dart';
 
-/// A material design that identifies the app's user.
+/// A material design that displays the app's user avatar.
 class UserAvatar extends StatelessWidget {
   /// Constant of the [Icon] size value that should have.
   static const double alternativeImageIconSize = 40.0;
 
-  /// Creates a material design account widget.
+  /// Displays the image given the [imageUrl], or generates an image with one of
+  /// more initials with [nameText].
+  ///
+  /// If both of [imageUrl] and [nameText], are null or empty then a default
+  /// user icon will be displayed.
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAvatar({
     Key? key,
-    required this.imageUrl,
-    this.nameText,
+    String? imageUrl,
+    String? nameText,
     this.onTap,
-  }) : super(key: key);
+  })  : imageUrl = imageUrl ?? '',
+        nameText = nameText ?? '',
+        super(key: key);
 
+  /// The user image url string.
   final String imageUrl;
-  final String? nameText;
+
+  /// Text that will be used in case of a missing image to generate one or more
+  /// initial as an avatar.
+  final String nameText;
+
+  /// This function is called when the user makes tap in the avatar.
   final VoidCallback? onTap;
 
   Color? _iconColor(ThemeData theme) {
@@ -86,7 +99,7 @@ class UserAvatar extends StatelessWidget {
       backgroundColor = theme.colorScheme.onPrimary;
     } else {
       final regExp = RegExp(r'(?=\D)(\w)');
-      final match = regExp.firstMatch(nameText!)?.group(1);
+      final match = regExp.firstMatch(nameText)?.group(1);
 
       final cachedColor = CachedColor(_getRandomColor(match.hashCode)); //TODO: Implement better cache system
 
@@ -120,21 +133,23 @@ class UserAvatar extends StatelessWidget {
   }
 }
 
-/// A material design that identifies the app's user.
+/// A ListTile that displays the app's user name, email and image.
 class UserAccountListTile extends StatelessWidget {
-  /// Creates a material design account widget.
+  /// Creates a material design account widget. Displays the user name and email
+  /// given [nameText] and [emailText] with a leading image loaded from the url
+  /// [imageUrl] passed as parameter.
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAccountListTile({
     Key? key,
-    required this.imageUrl,
+    this.imageUrl,
     this.nameText,
     this.emailText,
     this.onTap,
     this.onTapImage,
   }) : super(key: key);
 
-  final String imageUrl;
+  final String? imageUrl;
   final String? nameText;
   final String? emailText;
   final VoidCallback? onTap;

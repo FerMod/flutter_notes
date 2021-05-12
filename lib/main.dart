@@ -21,8 +21,7 @@ import 'src/utils/locale_matching.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  _initFirebase();
+  _initFirestore();
   await AppSharedPreferences.initialize();
 
   runApp(
@@ -40,15 +39,22 @@ void main() async {
   );
 }
 
-void _initFirebase() {
-  if (Global.useFirebaseEmulator) {
-    final isAndroid = defaultTargetPlatform == TargetPlatform.android;
+void _initFirestore() async {
+  await Firebase.initializeApp();
+  _initFirebaseFirestore();
+  _initFirebaseAuth();
+}
+
+void _initFirebaseFirestore() {
+  if (Global.useFirebaseFirestoreEmulator) {
+    final isAndroid = defaultTargetPlatform == TargetPlatform.android && !kIsWeb;
+
     // Switch host based on platform.
-    final firestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
+    final firebaseFirestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
 
     try {
       FirebaseFirestore.instance.settings = Settings(
-        host: firestoreHost,
+        host: firebaseFirestoreHost,
         sslEnabled: false,
         persistenceEnabled: Global.persistChanges,
         cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
@@ -63,6 +69,21 @@ void _initFirebase() {
     // Only for web platforms
     if (Global.persistChanges && kIsWeb) {
       FirebaseFirestore.instance.enablePersistence();
+    }
+  }
+}
+
+void _initFirebaseAuth() {
+  if (Global.useFirebaseAuthEmulator) {
+    final isAndroid = defaultTargetPlatform == TargetPlatform.android && !kIsWeb;
+
+    // Switch host based on platform.
+    final firebaseAuthHost = isAndroid ? 'http://10.0.2.2:9099' : 'http://localhost:9099';
+
+    try {
+      FirebaseAuth.instance.useEmulator(firebaseAuthHost);
+    } catch (e) {
+      print(e.toString());
     }
   }
 }

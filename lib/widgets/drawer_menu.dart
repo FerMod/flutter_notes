@@ -35,8 +35,8 @@ class DrawerMenu extends StatelessWidget {
     if (user != null) {
       headerWidget = UserAccountsDrawerHeader(
         currentAccountPicture: UserAvatar(
+          imageUrl: user.photoURL,
           nameText: user.displayName,
-          imageUrl: user.photoURL!,
         ),
         accountName: Text(user.displayName!),
         accountEmail: Text(user.email!),
