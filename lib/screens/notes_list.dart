@@ -58,7 +58,7 @@ class NotesListScreen extends StatelessWidget {
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    if (resultNote.title!.isNotEmpty || resultNote.content!.isNotEmpty) {
+    if (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty) {
       notesListModel.addNote(resultNote);
     }
   }
@@ -68,7 +68,7 @@ class NotesListScreen extends StatelessWidget {
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    if (lastEdit!.isBefore(resultNote.lastEdit!)) {
+    if (lastEdit.isBefore(resultNote.lastEdit)) {
       notesListModel.updateNote(resultNote);
     }
   }
@@ -278,9 +278,9 @@ class NoteListWidget extends StatelessWidget {
                   child: ListTile(
                     // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                    title: Text(note.title!),
+                    title: Text(note.title),
                     subtitle: Text(
-                      note.content!,
+                      note.content,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                     ),

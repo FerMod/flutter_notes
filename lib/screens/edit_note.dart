@@ -50,8 +50,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _titleEditingController = TextEditingController(text: widget.note.title);
     _contentEditingController = TextEditingController(text: widget.note.content);
-    _color = widget.note.color!;
-    _lastEdit = widget.note.lastEdit!;
+    _color = widget.note.color;
+    _lastEdit = widget.note.lastEdit;
 
     _titleEditingController.addListener(_updateLastEdit);
     _contentEditingController.addListener(_updateLastEdit);

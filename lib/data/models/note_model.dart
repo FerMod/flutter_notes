@@ -5,25 +5,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class NoteModel {
   String? id;
   String? userId;
-  String? title;
-  String? content;
-  Color? color;
-  DateTime? lastEdit;
+  String title;
+  String content;
+  Color color;
+  DateTime lastEdit;
 
   DocumentReference? reference;
 
   NoteModel({
     this.id,
     this.userId,
-    String? title,
-    String? content,
-    Color? color,
+    this.title = '',
+    this.content = '',
+    this.color = const Color(0xFFFFFF8D),
     DateTime? lastEdit,
     this.reference,
-  })  : title = title ?? '',
-        content = content ?? '',
-        color = color ?? const Color(0xFFFFFF8D),
-        lastEdit = lastEdit ?? DateTime.now();
+  }) : lastEdit = lastEdit ?? DateTime.now();
 
   factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data()!;
@@ -44,8 +41,8 @@ class NoteModel {
       'userId': userId,
       'title': title,
       'content': content,
-      'color': color!.value,
-      'lastEdit': Timestamp.fromDate(lastEdit!),
+      'color': color.value,
+      'lastEdit': Timestamp.fromDate(lastEdit),
     };
   }
 
@@ -70,5 +67,7 @@ class NoteModel {
   }
 
   @override
-  String toString() => 'NoteModel(id: "$id", userId: "$userId", title: "$title", content: "$content", color: $color, lastEdit: "$lastEdit",  reference: $reference)';
+  String toString() {
+    return 'NoteModel(id: $id, userId: $userId, title: $title, content: $content, color: $color, lastEdit: $lastEdit, reference: $reference)';
+  }
 }
