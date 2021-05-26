@@ -70,7 +70,13 @@ class _SignUpFormState extends State<_SignUpForm> {
     if (!formState.validate()) return;
 
     try {
-      final credential = await _userData.signUp(_emailController.text, _passwordController.text);
+      final credential = await _userData.signUp(
+        _emailController.text,
+        _passwordController.text,
+        data: {
+          'name': _usernameController.text,
+        },
+      );
       developer.log('$credential');
       return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesListScreen()),

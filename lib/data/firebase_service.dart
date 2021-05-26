@@ -287,17 +287,19 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   }
 
   @override
-  Future<UserCredential> signUp(String email, String password) async {
+  Future<UserCredential> signUp(String email, String password, {Map<String, dynamic>? data}) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       final user = userCredential.user!;
-      await collection.insert({
+
+      data ??= {
         'name': user.displayName ?? '',
         'image': user.photoURL ?? '',
-      }, id: user.uid);
+      };
+      await collection.insert(data, id: user.uid);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       developer.log('$e');
