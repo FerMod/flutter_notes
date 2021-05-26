@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +54,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _titleEditingController.addListener(_updateLastEdit);
     _contentEditingController.addListener(_updateLastEdit);
+
+    final resolvedIndex = _colorOptions.indexOf(widget.note.color);
+    _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
   }
 
   @override
