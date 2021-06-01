@@ -1,9 +1,9 @@
 import 'dart:ui';
-
+import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NoteModel {
-  String? id;
+  String id;
   String? userId;
   String title;
   String content;
@@ -13,14 +13,15 @@ class NoteModel {
   DocumentReference? reference;
 
   NoteModel({
-    this.id,
+    String? id,
     this.userId,
     this.title = '',
     this.content = '',
     this.color = const Color(0xFFFFFF8D),
     DateTime? lastEdit,
     this.reference,
-  }) : lastEdit = lastEdit ?? DateTime.now();
+  })  : id = id ?? Uuid().v4(),
+        lastEdit = lastEdit ?? DateTime.now();
 
   factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data()!;

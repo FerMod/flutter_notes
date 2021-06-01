@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-import '../../src/utils/locale_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class UserModel {
-  String? id;
+  String id;
   String? name;
   String? image;
   Locale locale;
@@ -15,16 +11,13 @@ class UserModel {
   DocumentReference? reference;
 
   UserModel({
-    this.id,
+    String? id,
     String? name,
     String? image,
     Locale? locale,
     ThemeMode? themeMode,
     this.reference,
-  })  : name = name ?? '',
-        image = image ?? '',
-        locale = locale ?? const Locale('und'),
-        themeMode = themeMode ?? ThemeMode.system;
+  }) : id = id ?? Uuid().v4();
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     final data = snapshot.data();
