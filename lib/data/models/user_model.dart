@@ -24,7 +24,7 @@ class UserModel {
     if (data == null) return UserModel();
     return UserModel(
       id: snapshot.id,
-      name: snapshot.get('name'),
+      name: data['name'],
       image: data['image'],
       locale: LocaleUtils.localeFromLanguageTag(data['locale']),
       themeMode: ThemeMode.values.firstWhereOrNull(
