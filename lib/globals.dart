@@ -12,7 +12,7 @@ class Global {
   static const bool isReleaseMode = kReleaseMode;
 
   /// A constant that represents if should use the firebase firestore emulator.
-  static const bool useFirebaseFirestoreEmulator = true;
+  static const bool useFirebaseFirestoreEmulator = false;
 
   /// A constant that represents if should use the firebase auth emulator.
   static const bool useFirebaseAuthEmulator = false;
