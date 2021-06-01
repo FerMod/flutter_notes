@@ -12,8 +12,8 @@ class UserModel {
 
   UserModel({
     String? id,
-    String? name,
-    String? image,
+    this.name,
+    this.image,
     Locale? locale,
     ThemeMode? themeMode,
     this.reference,
