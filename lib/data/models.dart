@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 // ignore: unused_import
 import 'dart:developer' as developer;
 
@@ -17,11 +16,17 @@ class DataProvider {
   DataProvider._internal();
   static final DataProvider _instance = DataProvider._internal();
 
-  late final UserData<UserModel> _userData = UserData<UserModel>.path('users');
   static UserData<UserModel> get userData => _instance._userData;
+  late final UserData<UserModel> _userData = UserData<UserModel>.path(
+    'users',
+    (snapshot) => UserModel.fromSnapshot(snapshot),
+  );
 
-  late final Collection<NoteModel> _notes = Collection<NoteModel>.path('notes');
   static Collection<NoteModel> get notes => _instance._notes;
+  late final Collection<NoteModel> _notes = Collection<NoteModel>.path(
+    'notes',
+    (snapshot) => NoteModel.fromSnapshot(snapshot),
+  );
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
@@ -31,10 +36,10 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Controller used to notify of the new data entries that are added.
   StreamController<List<NoteModel>>? _controller;
 
-  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? const [];
+  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
 
-  List<NoteModel> _notes = const [];
-  UnmodifiableListView<NoteModel> get notes => UnmodifiableListView(_notes);
+  List<NoteModel> _notes = [];
+  List<NoteModel> get notes => _notes;
   set notes(List<NoteModel> notes) {
     _notes = notes;
     notifyListeners();
@@ -74,15 +79,17 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// completed.
   Future<List<NoteModel>> loadData({bool notifyIsLoading = true}) {
     final user = userData.currentUser;
+    late Future<List<NoteModel>> futureResult;
     if (user == null) {
-      return Future.value([]);
+      futureResult = Future.value(_notes);
+    } else {
+      futureResult = notesCollection.data(
+        (query) => query.where('userId', isEqualTo: user.uid),
+      );
     }
 
     return load(
-      () => notesCollection.data(
-        (snapshot) => NoteModel.fromSnapshot(snapshot),
-        (query) => query.where('userId', isEqualTo: user.uid),
-      ),
+      () => futureResult,
       notifyIsLoading: notifyIsLoading,
     );
   }
@@ -124,19 +131,52 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Returns a stream completed with the list of notes.
   Stream<List<NoteModel>> streamData() {
     final user = userData.currentUser;
+    late Stream<List<NoteModel>> streamResult;
     if (user == null) {
-      return Stream.value([]); // TODO: what if user is null?
-    }
-
-    return stream(
-      () => notesCollection.stream(
-        (snapshot) => NoteModel.fromSnapshot(snapshot),
+      streamResult = Stream.value(_notes);
+    } else {
+      streamResult = notesCollection.stream(
         (query) => query.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
+      );
+    }
+    return _pipeStream(
+      streamResult.asBroadcastStream(
+        onCancel: (sub) => sub.cancel(),
       ),
     );
   }
 
+  Stream<List<NoteModel>> _pipeStream(Stream<List<NoteModel>> operation) {
+    //late StreamController<List<NoteModel>> streamController;
+    late StreamSubscription<List<NoteModel>> subscription;
+    void onListen() {
+      print('StreamController onListen');
+      subscription = operation.listen(
+        (value) {
+          print('$value');
+          _controller!.add(value);
+          _notes = value;
+        },
+        onError: _controller!.addError,
+        //onDone: _controller!.close,
+      );
+    }
+
+    void onCancel() {
+      print('StreamController onCancel');
+      subscription.cancel();
+    }
+
+    _controller ??= StreamController.broadcast(
+      onListen: onListen,
+      onCancel: onCancel,
+    );
+
+    return _controller!.stream;
+  }
+
   /// Returns a stream from the the result stream of the [operation] execution.
+  @deprecated
   Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation) {
     _controller ??= StreamController<List<NoteModel>>.broadcast(onListen: () {
       // Listen for events of this stream and update the list content
@@ -149,34 +189,34 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
 
   void addNote(NoteModel note) {
     _notes.add(note);
-    notesCollection.insert(note.toMap());
+    if (userData.isSignedIn) {
+      notesCollection.insert(note.toMap());
+    } else {
+      _controller?.add(_notes);
+    }
     notifyListeners();
   }
 
   void updateNote(NoteModel note) {
+    // ignore: unnecessary_null_comparison
     assert(note.id != null);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
-    notesCollection.update(note.id!, note.toMap());
-    notifyListeners();
-  }
-
-  @deprecated
-  void upsertNote(NoteModel note) {
-    assert(note.id != null);
-    final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
-    if (replaceIndex != -1) {
-      _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
+    if (userData.isSignedIn) {
+      notesCollection.update(note.id, note.toMap());
     } else {
-      _notes.add(note);
+      _controller?.add(_notes);
     }
-    notesCollection.insert(note.toMap(), id: note.id, merge: true);
     notifyListeners();
   }
 
   void removeNote(NoteModel note) {
     _notes.removeWhere((element) => element.id == note.id);
-    notesCollection.delete(note.id!);
+    if (userData.isSignedIn) {
+      notesCollection.delete(note.id);
+    } else {
+      _controller?.add(_notes);
+    }
     notifyListeners();
   }
 
@@ -189,7 +229,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty('notes', notes));
+    properties.add(IterableProperty('notes', _notes));
     properties.add(FlagProperty('isLoading', value: isLoading));
   }
 }

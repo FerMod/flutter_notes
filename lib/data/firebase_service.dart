@@ -6,15 +6,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
 typedef QueryFunction<T> = T Function(T query);
-typedef FromSnapshot<T, S> = T Function(S snapshot);
+typedef Converter<T, S> = T Function(S value);
+
 // typedef FromMap<T> = T Function(Map<String, dynamic> data);
 // typedef ToMap<T> = Map<String, dynamic> Function(T entity);
 
 abstract class FirebaseDocument<T> {
   const FirebaseDocument();
 
-  Future<T> data(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot);
-  Stream<T> stream(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot);
+  Future<T> data();
+  Stream<T> stream();
   Future<void> update(Map<String, dynamic> data);
   Future<void> delete();
 }
@@ -22,9 +23,9 @@ abstract class FirebaseDocument<T> {
 abstract class FirebaseCollection<T> {
   const FirebaseCollection();
 
-  Future<List<T>> data(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot);
-  Stream<List<T>> stream(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot);
-  Future<Document<T>> insert(Map<String, dynamic> data, {String? id, bool merge = false});
+  Future<List<T>> data();
+  Stream<List<T>> stream();
+  Future<FirebaseDocument<T>> insert(Map<String, dynamic> data, {String? id, bool merge = false});
   Future<void> update(String id, Map<String, dynamic> data);
   Future<void> delete(String id);
 }
@@ -47,27 +48,30 @@ abstract class FirebaseAuthentication {
 class Document<T> extends FirebaseDocument<T> {
   /// An object that refers to a Firestore document path.
   final DocumentReference reference;
+  final Converter<T, DocumentSnapshot> converter;
 
   /// Creates a document with the specified [reference].
   const Document({
     required this.reference,
+    required this.converter,
   });
 
   /// Creates a document with a [reference] with the specified [path].
-  factory Document.path(String path) {
+  factory Document.path(String path, Converter<T, DocumentSnapshot> converter) {
     return Document(
       reference: FirebaseFirestore.instance.doc(path),
+      converter: converter,
     );
   }
 
   @override
-  Future<T> data(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot) {
-    return reference.get().then(entityFromSnapshot);
+  Future<T> data() {
+    return reference.get().then(converter);
   }
 
   @override
-  Stream<T> stream(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot) {
-    return reference.snapshots().map(entityFromSnapshot);
+  Stream<T> stream() {
+    return reference.snapshots().map(converter);
   }
 
   /// Updates data on the document. The data will be merged with any existing
@@ -102,29 +106,33 @@ class Collection<T> extends FirebaseCollection<T> {
   /// An object that refers to a Firestore collection path.
   final CollectionReference reference;
 
+  final Converter<T, DocumentSnapshot> converter;
+
   /// Creates a collection with the specified [reference].
   const Collection({
     required this.reference,
+    required this.converter,
   });
 
   /// Creates a collection with a [reference] with the specified [path].
-  factory Collection.path(String path) {
+  factory Collection.path(String path, Converter<T, DocumentSnapshot> converter) {
     return Collection(
       reference: FirebaseFirestore.instance.collection(path),
+      converter: converter,
     );
   }
 
   @override
-  Future<List<T>> data(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot, [QueryFunction<Query>? query]) async {
+  Future<List<T>> data([QueryFunction<Query>? query]) async {
     final queryFunction = query?.call(reference) ?? reference;
     final snapshots = await queryFunction.get();
-    return snapshots.docs.map(entityFromSnapshot).toList();
+    return snapshots.docs.map(converter).toList();
   }
 
   @override
-  Stream<List<T>> stream(FromSnapshot<T, DocumentSnapshot> entityFromSnapshot, [QueryFunction<Query>? query]) {
+  Stream<List<T>> stream([QueryFunction<Query>? query]) {
     final queryFunction = query?.call(reference) ?? reference;
-    return queryFunction.snapshots().map((snapshot) => snapshot.docs.map(entityFromSnapshot).toList());
+    return queryFunction.snapshots().map((snapshot) => snapshot.docs.map(converter).toList());
   }
 
   /// Returns a `DocumentReference` after populating it with the provided [data].
@@ -142,7 +150,7 @@ class Collection<T> extends FirebaseCollection<T> {
   Future<Document<T>> insert(Map<String, dynamic> data, {String? id, bool merge = false}) async {
     final newDocument = reference.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
-    return Document(reference: newDocument);
+    return Document(reference: newDocument, converter: converter);
   }
 
   /// Updates data on the document with provided [id]. Data will be merged with
@@ -173,6 +181,7 @@ class Collection<T> extends FirebaseCollection<T> {
 /// data.
 class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final Collection<T> collection;
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
@@ -219,25 +228,28 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   /// updates.
   User? get currentUser => _auth.currentUser;
 
+  /// Whether there is currently a [User] signed-in.
+  bool get isSignedIn => currentUser != null;
+
   UserData({
     required this.collection,
   });
 
-  factory UserData.path(String path) {
-    return UserData(collection: Collection<T>.path(path));
+  factory UserData.path(String path, Converter<T, DocumentSnapshot> converter) {
+    return UserData(collection: Collection<T>.path(path, converter));
   }
 
   @override
-  Future<T?> data(FromSnapshot<T?, DocumentSnapshot> entityFromSnapshot) async {
+  Future<T?> data() async {
     final user = _auth.currentUser;
     if (user == null) return null;
 
-    final doc = Document<T?>.path('$collection/${user.uid}');
-    return doc.data(entityFromSnapshot);
+    final doc = Document<T?>.path('$collection/${user.uid}', collection.converter);
+    return doc.data();
   }
 
   @override
-  Stream<T?> stream(FromSnapshot<T?, DocumentSnapshot> entityFromSnapshot) {
+  Stream<T?> stream() {
     return userChanges.switchMap((user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -245,8 +257,8 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       }
 
       print('User is signed in!');
-      final doc = Document<T?>.path('$collection/${user.uid}');
-      return doc.stream(entityFromSnapshot);
+      final doc = Document<T?>.path('$collection/${user.uid}', collection.converter);
+      return doc.stream();
     });
   }
 
@@ -288,8 +300,9 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
 
   @override
   Future<UserCredential> signUp(String email, String password, {Map<String, dynamic>? data}) async {
+    UserCredential userCredential;
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -299,15 +312,15 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
         'name': user.displayName ?? '',
         'image': user.photoURL ?? '',
       };
-      await collection.insert(data, id: user.uid);
-      return userCredential;
+      // TODO: Show message, when no it could not connect to the database
+      // ignore: unawaited_futures
+      collection.insert(data, id: user.uid);
     } on FirebaseAuthException catch (e) {
       developer.log('$e');
       rethrow;
-    } on Exception catch (e) {
-      print('Exception thrown when signing up.\n$e');
-      rethrow;
     }
+
+    return userCredential;
   }
 
   @override
