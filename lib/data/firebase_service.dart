@@ -275,7 +275,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final userCredential = await _auth.signInAnonymously();
     final user = userCredential.user!;
     await collection.insert({
-      'name': user.displayName ?? '',
+      'name': user.displayName ?? 'Anonymous',
       'image': user.photoURL ?? '',
     }, id: user.uid);
 
