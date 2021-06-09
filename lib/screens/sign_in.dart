@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -11,7 +12,6 @@ import '../routes.dart';
 import '../widgets/checkbox_field.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
-import 'notes_list.dart';
 import 'sign_form.dart';
 import 'sign_up.dart';
 
@@ -67,9 +67,30 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await _userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
+      return Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoute.notes,
+        ModalRoute.withName('/'), // TODO: Improve routes
+      );
+    } on FirebaseAuthException catch (e) {
+      final localizations = AppLocalizations.of(context)!;
+      late String errorMessage;
+
+      switch (e.code) {
+        case 'user-disabled':
+          errorMessage = localizations.errorUserDisabled;
+          break;
+        case 'invalid-email':
+        case 'user-not-found':
+        case 'wrong-password':
+          errorMessage = localizations.errorSignIn;
+          break;
+        default:
+          errorMessage = localizations.errorUnknown;
+      }
+      Message.show(context, message: errorMessage);
+    }
+  }
+
       );
     } on FirebaseAuthException catch (e) {
       final localizations = AppLocalizations.of(context)!;
@@ -92,9 +113,7 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   void _handleOnSignUp() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => SignUpScreen()),
-    );
+    Navigator.pushNamed(context, AppRoute.signUp);
   }
 
   @override

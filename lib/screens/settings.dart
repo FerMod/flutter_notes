@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
@@ -32,7 +33,9 @@ class SettingsScreenButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.settings),
       tooltip: localizations.settingsButtonLabel,
-      onPressed: () => _navigateSetting(context, SettingsScreen()),
+      onPressed: () {
+        Navigator.of(context).pushNamed(AppRoute.settings);
+      },
     );
   }
 }
@@ -40,28 +43,28 @@ class SettingsScreenButton extends StatelessWidget {
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
-  void _navigate(BuildContext context, Widget widget) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => widget),
-    );
+  void _navigate(BuildContext context, String routeName) {
+    // Pop the settings screen and navigate to the new route
+    Navigator.of(context)
+      ..pop()
+      ..pushReplacementNamed(routeName);
   }
 
   Widget _buildAccountSettings(BuildContext context) {
     final userData = DataProvider.userData;
-    final user = userData.currentUser;
-
-    final isSignedIn = user != null;
 
     Widget iconWidget;
     Widget titleWidget;
     Widget? subtitleWidget;
-    if (isSignedIn) {
+    if (userData.isSignedIn && !userData.currentUser!.isAnonymous) {
+      final user = userData.currentUser;
+
       iconWidget = UserAvatar(
         imageUrl: user!.photoURL,
         nameText: user.displayName,
       );
-      titleWidget = Text(user.displayName!);
-      subtitleWidget = Text(user.email!);
+      titleWidget = Text(user.displayName ?? '');
+      subtitleWidget = Text(user.email ?? '');
     } else {
       final localizations = AppLocalizations.of(context)!;
       iconWidget = FittedBox(
@@ -80,10 +83,10 @@ class SettingsScreen extends StatelessWidget {
       title: titleWidget,
       subtitle: subtitleWidget,
       onTap: () {
-        if (isSignedIn) {
+        if (userData.isSignedIn && !userData.currentUser!.isAnonymous) {
           _navigateSetting(context, AccountSettingScreen(userData: userData));
         } else {
-          _navigate(context, SignInScreen());
+          _navigate(context, AppRoute.signIn);
         }
       },
     );
@@ -173,36 +176,43 @@ class AccountSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final user = userData!.currentUser!;
-
-    Widget picture = UserAvatar(
-      imageUrl: user.photoURL,
-      nameText: user.displayName,
-    );
-    Widget name = Text(user.displayName!);
-    Widget email = Text(user.email!);
+    final userData = DataProvider.userData;
 
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
       body: Scrollbar(
         child: ListView(
           children: [
-            UserAccountsDrawerHeader(
-              margin: EdgeInsets.zero,
-              currentAccountPicture: picture,
-              accountName: name,
-              accountEmail: email,
+            // TODO: Improve user data obtention
+            FutureBuilder<UserModel?>(
+              future: userData.data(),
+              builder: (context, snapshot) {
+                final user = userData.currentUser;
+
+                final userName = snapshot.data?.name ?? user?.displayName ?? '';
+                final userImage = snapshot.data?.image ?? user?.photoURL ?? user?.photoURL;
+                final userEmail = user?.email ?? '';
+
+                return UserAccountsDrawerHeader(
+                  margin: EdgeInsets.zero,
+                  currentAccountPicture: UserAvatar(
+                    imageUrl: userImage,
+                    nameText: userName,
+                  ),
+                  accountName: Text(userName),
+                  accountEmail: Text(userEmail),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.login),
               title: Text(localizations.signOut),
-              onTap: () {
-                userData!.signOut();
+              onTap: () async {
+                await userData.signOut();
                 // TODO: Improve route navigation
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/',
-                  ModalRoute.withName('/'),
-                );
+                // Navigator.of(context).popUntil((route) => route.isFirst);
+                // await Navigator.of(context).popAndPushNamed('/');
+                await Navigator.of(context).pushNamedAndRemoveUntil(AppRoute.signIn, ModalRoute.withName('/'));
               },
             ),
           ],

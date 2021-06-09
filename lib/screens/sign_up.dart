@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:ui';
 
@@ -5,14 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/routes.dart';
 
 import '../data/models.dart';
-import '../routes.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
-import 'notes_list.dart';
 import 'sign_form.dart';
-import 'sign_in.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -75,12 +74,13 @@ class _SignUpFormState extends State<_SignUpForm> {
         _passwordController.text,
         data: {
           'name': _usernameController.text,
+          'image': '',
         },
       );
       developer.log('$credential');
-      return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
+      return Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoute.notes,
+        ModalRoute.withName('/'), // TODO: Improve routes
       );
     } on FirebaseAuthException catch (e) {
       final localizations = AppLocalizations.of(context)!;
@@ -104,9 +104,7 @@ class _SignUpFormState extends State<_SignUpForm> {
   }
 
   void _handleOnSignIn() {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => SignInScreen(),
-    ));
+    Navigator.pushNamed(context, AppRoute.signIn);
   }
 
   @override

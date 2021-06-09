@@ -1,11 +1,9 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/data/models.dart';
+import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
-import '../screens/notes_list.dart';
-import '../screens/sign_in.dart';
-import '../screens/sign_up.dart';
 import 'about_app_widget.dart';
 import 'drawer_header.dart';
 import 'user_account.dart';
@@ -15,16 +13,14 @@ class DrawerMenu extends StatelessWidget {
 
   final userData = DataProvider.userData;
 
-  Future _navigate(BuildContext context, Widget widget) {
-    return Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => widget),
-    );
-  }
-
-  Future _navigateReplace(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => widget),
-    );
+  Future _navigateReplacementNamed(BuildContext context, String routeName) {
+    final navigator = Navigator.of(context);
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute?.settings.name != routeName) {
+      return navigator.pushReplacementNamed(routeName);
+    }
+    navigator.pop();
+    return Future.value();
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
@@ -61,14 +57,13 @@ class DrawerMenu extends StatelessWidget {
 
   List<Widget> _buildDrawerChildren(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final user = userData.currentUser;
-
-    if (user != null) {
+    final userData = DataProvider.userData;
+    if (userData.isSignedIn) {
       return [
         ListTile(
           leading: const Icon(Icons.sticky_note_2),
           title: Text(localizations.note(2)),
-          onTap: () => _navigateReplace(context, NotesListScreen()),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.notes),
         ),
       ];
     } else {
@@ -76,12 +71,12 @@ class DrawerMenu extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.login),
           title: Text(localizations.signIn),
-          onTap: () => _navigateReplace(context, SignInScreen()),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.signIn),
         ),
         ListTile(
           leading: const Icon(Icons.account_circle),
           title: Text(localizations.signUp),
-          onTap: () => _navigateReplace(context, SignUpScreen()),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.signUp),
         ),
       ];
     }
