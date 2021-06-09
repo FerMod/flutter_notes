@@ -90,27 +90,6 @@ class _SignInFormState extends State<_SignInForm> {
     }
   }
 
-      );
-    } on FirebaseAuthException catch (e) {
-      final localizations = AppLocalizations.of(context)!;
-      late String errorMessage;
-
-      switch (e.code) {
-        case 'user-disabled':
-          errorMessage = localizations.errorUserDisabled;
-          break;
-        case 'invalid-email':
-        case 'user-not-found':
-        case 'wrong-password':
-          errorMessage = localizations.errorSignIn;
-          break;
-        default:
-          errorMessage = localizations.errorUnknown;
-      }
-      Message.show(context, message: errorMessage);
-    }
-  }
-
   void _handleOnSignUp() {
     Navigator.pushNamed(context, AppRoute.signUp);
   }
