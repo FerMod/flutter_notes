@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_notes/screens/notes_list.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 import 'data/app_options.dart';
 import 'data/local/app_shared_preferences.dart';
@@ -16,13 +16,16 @@ import 'data/models.dart';
 import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
-import 'screens/sign_in.dart';
 import 'src/utils/locale_matching.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   _initFirestore();
   await AppSharedPreferences.initialize();
+
+  // Set the URL strategy for the web app
+  setPathUrlStrategy();
 
   runApp(
     ModelBinding(
@@ -39,8 +42,7 @@ void main() async {
   );
 }
 
-void _initFirestore() async {
-  await Firebase.initializeApp();
+void _initFirestore() {
   _initFirebaseFirestore();
   _initFirebaseAuth();
 }

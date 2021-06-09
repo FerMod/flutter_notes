@@ -24,6 +24,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
 
   # Internationalization support.
   flutter_localizations:
@@ -43,6 +45,7 @@ dependencies:
   package_info_plus: ^1.0.0
   url_launcher: ^6.0.2
   uuid: ^3.0.4
+  url_strategy: ^0.2.0
 
   firebase_core: ^1.0.1
   firebase_auth: ^1.0.1
