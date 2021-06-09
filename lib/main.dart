@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:flutter_notes/src/utils/device_type.dart';
+import 'package:logging/logging.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'data/app_options.dart';
@@ -16,6 +18,7 @@ import 'data/models.dart';
 import 'globals.dart';
 import 'model_binding.dart';
 import 'routes.dart';
+import 'src/debug/app_logger.dart';
 import 'src/utils/locale_matching.dart';
 
 Future<void> main() async {
@@ -49,10 +52,8 @@ void _initFirestore() {
 
 void _initFirebaseFirestore() {
   if (Global.useFirebaseFirestoreEmulator) {
-    final isAndroid = defaultTargetPlatform == TargetPlatform.android && !kIsWeb;
-
     // Switch host based on platform.
-    final firebaseFirestoreHost = isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
+    final firebaseFirestoreHost = DeviceType.isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
 
     try {
       FirebaseFirestore.instance.settings = Settings(
@@ -69,7 +70,7 @@ void _initFirebaseFirestore() {
     }
 
     // Only for web platforms
-    if (Global.persistChanges && kIsWeb) {
+    if (Global.persistChanges && DeviceType.isWeb) {
       FirebaseFirestore.instance.enablePersistence();
     }
   }
@@ -77,10 +78,8 @@ void _initFirebaseFirestore() {
 
 void _initFirebaseAuth() {
   if (Global.useFirebaseAuthEmulator) {
-    final isAndroid = defaultTargetPlatform == TargetPlatform.android && !kIsWeb;
-
     // Switch host based on platform.
-    final firebaseAuthHost = isAndroid ? 'http://10.0.2.2:9099' : 'http://localhost:9099';
+    final firebaseAuthHost = DeviceType.isAndroid ? 'http://10.0.2.2:9099' : 'http://localhost:9099';
 
     try {
       FirebaseAuth.instance.useEmulator(firebaseAuthHost);
@@ -142,8 +141,8 @@ class NotesApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: AppOptions.of(context).themeMode,
-      home: userSignedIn ? NotesListScreen() : SignInScreen(),
-      routes: AppRoute.routes,
+      initialRoute: userData.isSignedIn ? AppRoute.notes : AppRoute.signIn,
+      onGenerateRoute: RouteConfiguration.onGenerateRoute,
       builder: (context, child) {
         assert(child != null); // Child should not be null
 

@@ -46,13 +46,13 @@ dependencies:
   url_launcher: ^6.0.2
   uuid: ^3.0.4
   url_strategy: ^0.2.0
+  universal_platform: ^1.0.0-nullsafety
 
   firebase_core: ^1.0.1
   firebase_auth: ^1.0.1
   cloud_firestore: ^1.0.1
-  flutter_signin_button: ^2.0.0-nullsafety.0
-  # firebase_dynamic_links: ^0.8.0
-  # overlay_support: ^1.2.0
+  # firebase_analytics: ^8.1.1
+  # firebase_dynamic_links: ^2.0.5
 
 dev_dependencies:
   flutter_test:
