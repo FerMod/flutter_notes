@@ -29,21 +29,23 @@ class DrawerMenu extends StatelessWidget {
 
   Widget _buildDrawerHeader(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final user = userData.currentUser;
+    final userData = DataProvider.userData;
 
     Widget headerWidget;
-    if (user != null) {
+    if (userData.isSignedIn) {
+      final user = userData.currentUser!;
+
       headerWidget = UserAccountsDrawerHeader(
         currentAccountPicture: UserAvatar(
           imageUrl: user.photoURL,
           nameText: user.displayName,
         ),
-        accountName: Text(user.displayName!),
-        accountEmail: Text(user.email!),
+        accountName: Text(user.displayName ?? ''),
+        accountEmail: Text(user.email ?? ''),
       );
     } else {
       headerWidget = TitleDrawerHeader(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: EdgeInsets.symmetric(vertical: 16.0),
         child: ListTile(
           leading: const Icon(
             Icons.account_circle,

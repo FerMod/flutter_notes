@@ -89,11 +89,16 @@ class NotesListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
 
     return Scaffold(
       appBar: AppBar(
         title: _AccountWidget(
-          onTap: () => _navigate(context, SignInScreen()),
+          onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
+              ? null
+              : () {
+                  _navigate(context, SignInScreen());
+                },
           userData: notesListModel.userData,
         ),
         titleSpacing: 0.0,
@@ -129,7 +134,7 @@ class NotesListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: Visibility(
-        visible: notesListModel.userData.currentUser != null,
+        visible: userData.isSignedIn,
         child: FloatingActionButton(
           onPressed: () => _newNote(context),
           tooltip: localizations.addNote,
@@ -156,28 +161,51 @@ class _AccountWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
     final user = userData.currentUser;
 
-    Widget accountWidget;
-    if (user != null) {
-      accountWidget = UserAccountListTile(
+    Widget? imageWidget;
+    Widget? nameWidget;
+    Widget? emailWidget;
+    if (user != null && !user.isAnonymous) {
+      final displayName = user.displayName;
+      final email = user.email;
+
+      if (displayName != null && displayName.isNotEmpty) {
+        nameWidget = Text(displayName);
+      }
+
+      if (email != null && email.isNotEmpty) {
+        emailWidget = Text(email);
+      }
+
+      imageWidget = UserAvatar(
         imageUrl: user.photoURL,
-        nameText: user.displayName,
-        emailText: user.email,
+        nameText: displayName,
+        onTap: onTapImage,
       );
     } else {
-      accountWidget = ListTile(
-        leading: const Icon(
-          Icons.account_circle,
-          size: UserAvatar.alternativeImageIconSize,
-        ),
-        title: Text(localizations!.signIn),
-        onTap: onTap,
+      imageWidget = const Icon(
+        Icons.account_circle,
+        size: UserAvatar.alternativeImageIconSize,
       );
+      nameWidget = Text(localizations!.signIn);
     }
 
-    return accountWidget;
+    return FutureBuilder(
+      future: userData.data(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Loader();
+        }
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: imageWidget,
+          title: nameWidget,
+          subtitle: emailWidget,
+          onTap: onTap,
+        );
+      },
+    );
   }
 }
 
