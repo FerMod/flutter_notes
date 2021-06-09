@@ -27,7 +27,6 @@ class NotesListScreen extends StatelessWidget {
   NotesListScreen({Key? key}) : super(key: key);
 
   final NotesListModel notesListModel = NotesListModel();
-  final ScrollController scrollController = ScrollController();
 
   Future<NoteModel?> _navigateEditNote(BuildContext context, NoteModel note) async {
     final result = await Navigator.push<NoteModel>(
@@ -107,7 +106,6 @@ class NotesListScreen extends StatelessWidget {
         ],
       ),
       drawer: DrawerMenu(),
-      // endDrawer: DrawerRight(), // TODO: Decide to use Drawer or Screen
       body: StreamBuilder<List<NoteModel>>(
         initialData: notesListModel.notes,
         stream: notesListModel.streamData(),
@@ -123,7 +121,6 @@ class NotesListScreen extends StatelessWidget {
                 notes: snapshot.data,
                 onTap: (note) => _editNote(context, note),
                 onMenuTap: (note, action) => _removeNote(context, note),
-                controller: scrollController,
               );
             case ConnectionState.waiting:
               return const LinearProgressIndicator();
@@ -255,9 +252,11 @@ class NoteListWidget extends StatelessWidget {
   final void Function(NoteModel, MenuAction action)? onMenuTap;
   final Future<void> Function()? onRefresh;
 
+  /// An object that can be used to control the position to which this scroll
+  /// view is scrolled.
   final ScrollController? controller;
 
-  /// Padding that prevents the FloatingActionButton from blocking ListTiles
+  /// Padding that prevents the FloatingActionButton from blocking ListTiles.
   static const double listBottomPadding = kFloatingActionButtonMargin * 2.0 + 48.0;
 
   PopupMenuItem<MenuAction> _buildPopMenuItem(MenuAction action, String text, Icon icon) {
@@ -280,10 +279,8 @@ class NoteListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
     return Scrollbar(
       controller: controller,
-      isAlwaysShown: true,
       showTrackOnHover: true,
       radius: Radius.zero,
       child: ListView.builder(
