@@ -77,8 +77,8 @@ As a general rule, the style and formatting of commit messages should follow the
 
 When displayed on the web, it's often styled as a heading, and in emails, it's typically used as the subject. As such, you should capitalize it and omit any trailing punctuation. Consistent wording makes it easier to mentally process a list of commits.
 
-Examples:
-`Add feature` not ~~`Added feature`~~
+Examples:  
+`Add feature` not ~~`Added feature`~~  
 `Fix bug` not ~~`Fixed bug`~~ or ~~`Fixes bug`~~
 
 #### Limit the first line to 72 characters or less
