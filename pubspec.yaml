@@ -42,7 +42,7 @@ dependencies:
   provider: ^5.0.0
   path_provider: ^2.0.1
   rxdart: ^0.26.0
-  package_info_plus: ^1.0.0
+  package_info_plus: ^1.0.2
   url_launcher: ^6.0.2
   uuid: ^3.0.4
   url_strategy: ^0.2.0
@@ -53,6 +53,7 @@ dependencies:
   cloud_firestore: ^1.0.1
   # firebase_analytics: ^8.1.1
   # firebase_dynamic_links: ^2.0.5
+  # flutter_signin_button: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import '../data/models.dart';
 import '../routes.dart';
@@ -157,6 +158,47 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
+  List<Widget> signInMethods(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return [
+      // SignInButton(
+      //   Buttons.Google,
+      //   text: localizations.signInWith('Google'),
+      //   onPressed: () => developer.log('Sign in Google'),
+      // ),
+      // SignInButton(
+      //   Buttons.Facebook,
+      //   text: localizations.signInWith('Facebook'),
+      //   onPressed: () => developer.log('Sign in Facebook'),
+      // ),
+      // SignInButton(
+      //   Buttons.Twitter,
+      //   text: localizations.signInWith('Twitter'),
+      //   onPressed: () => developer.log('Sign in Twitter'),
+      // ),
+      // SignInButton(
+      //   Buttons.GitHub,
+      //   text: localizations.signInWith('GitHub'),
+      //   onPressed: () => developer.log('Sign in GitHub'),
+      // ),
+      // SignInButton(
+      //   Buttons.Yahoo,
+      //   text: localizations.signInWith('Yahoo'),
+      //   onPressed: () => developer.log('Sign in Method1'),
+      // ),
+      // SignInButton(
+      //   Buttons.Microsoft,
+      //   text: localizations.signInWith('Microsoft'),
+      //   onPressed: () => developer.log('Sign in Microsoft'),
+      // ),
+      // SignInButton(
+      //   Buttons.Apple,
+      //   text: localizations.signInWith('Apple'),
+      //   onPressed: () => developer.log('Sign in Apple'),
+      // ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -193,7 +235,7 @@ class _BodyWidget extends StatelessWidget {
       passwordInput,
       signUpButton,
       divider,
-      //...signInMethods,
+      //...signInMethods(context),
     ];
     return FormFields(fields: formFields);
   }
@@ -292,45 +334,4 @@ class _RememberMeCheckbox extends StatelessWidget {
     //   },
     // );
   }
-}
-
-List<Widget> signInMethods(BuildContext context) {
-  final localizations = AppLocalizations.of(context)!;
-  return [
-    SignInButton(
-      Buttons.Google,
-      text: localizations.signInWith('Google'),
-      onPressed: () => developer.log('Sign in Google'),
-    ),
-    SignInButton(
-      Buttons.Facebook,
-      text: localizations.signInWith('Facebook'),
-      onPressed: () => developer.log('Sign in Facebook'),
-    ),
-    SignInButton(
-      Buttons.Twitter,
-      text: localizations.signInWith('Twitter'),
-      onPressed: () => developer.log('Sign in Twitter'),
-    ),
-    SignInButton(
-      Buttons.GitHub,
-      text: localizations.signInWith('GitHub'),
-      onPressed: () => developer.log('Sign in GitHub'),
-    ),
-    SignInButton(
-      Buttons.Yahoo,
-      text: localizations.signInWith('Yahoo'),
-      onPressed: () => developer.log('Sign in Method1'),
-    ),
-    SignInButton(
-      Buttons.Microsoft,
-      text: localizations.signInWith('Microsoft'),
-      onPressed: () => developer.log('Sign in Microsoft'),
-    ),
-    SignInButton(
-      Buttons.Apple,
-      text: localizations.signInWith('Apple'),
-      onPressed: () => developer.log('Sign in Apple'),
-    ),
-  ];
 }

@@ -228,19 +228,12 @@ class _BodyWidget extends StatelessWidget {
 
     final signUpButton = _SignUpButton(onPressed: onSignUp);
 
-    final divider = DividerText(
-      text: Text(localizations.signInOr),
-      color: theme.cardColor,
-    );
-
     final formFields = [
       usernameInput,
       emailInput,
       passwordInput,
       confirmPasswordInput,
       signUpButton,
-      divider,
-      //...signInMethods,
     ];
 
     return FormFields(fields: formFields);
