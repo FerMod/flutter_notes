@@ -24,14 +24,13 @@ class NoteModel {
         lastEdit = lastEdit ?? DateTime.now();
 
   factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data()!;
     return NoteModel(
       id: snapshot.id,
-      userId: data['userId'],
-      title: data['title'],
-      content: data['content'],
-      color: Color(data['color'] as int),
-      lastEdit: (data['lastEdit'] as Timestamp).toDate(),
+      userId: snapshot['userId'],
+      title: snapshot['title'],
+      content: snapshot['content'],
+      color: Color(snapshot['color'] as int),
+      lastEdit: (snapshot['lastEdit'] as Timestamp).toDate(),
       reference: snapshot.reference,
     );
   }

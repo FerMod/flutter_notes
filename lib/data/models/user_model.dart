@@ -16,11 +16,10 @@ class UserModel {
   }) : id = id ?? Uuid().v4();
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data()!;
     return UserModel(
       id: snapshot.id,
-      name: data['name'],
-      image: data['image'],
+      name: snapshot['name'],
+      image: snapshot['image'],
       reference: snapshot.reference,
     );
   }
