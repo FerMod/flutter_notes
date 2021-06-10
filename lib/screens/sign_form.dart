@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_notes/src/utils/device_type.dart';
 
 import '../widgets/drawer_menu.dart';
 import '../widgets/form_message.dart';

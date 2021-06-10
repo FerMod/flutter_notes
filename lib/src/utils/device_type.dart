@@ -1,6 +1,15 @@
 import 'package:universal_platform/universal_platform.dart';
 
-/// Utility class to
+/// Helper class to perform platform checks. This class is not platform
+/// dependant and can be used with any of them, without throwing any errors.
+/// 
+/// For example:
+/// 
+/// ```dart
+/// if(DeviceType.isAndroid) {
+///   // Do something
+/// }
+/// ```
 class DeviceType {
   // Syntax sugar, proxy the UniversalPlatform methods so our views can reference
   // a single API.
