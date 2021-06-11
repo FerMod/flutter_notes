@@ -1,6 +1,7 @@
 name: flutter_notes
 description: An app to take notes, made with Flutter.
 repository: https://github.com/FerMod/flutter_notes
+issue_tracker: https://github.com/FerMod/flutter_notes/issues
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
