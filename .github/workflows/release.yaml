@@ -144,5 +144,5 @@ jobs:
         with:
           upload_url: ${{ needs.draft-release.outputs.upload_url }}
           asset_path: ./${{ matrix.build_path }}/flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
-          asset_name: flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+          asset_name: flutter_notes_${{ matrix.build_target }}_${{ github.ref }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
