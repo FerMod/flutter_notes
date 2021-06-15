@@ -8,13 +8,13 @@ on:
       - "v*" # Push events that match 'v*'. For example: 'v1.0', 'v20.15.10'
 
 jobs:
-  create-release:
+  draft-release:
     name: Create draft release
     runs-on: ubuntu-20.04
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Create draft release
+      - name: Draft release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -25,131 +25,124 @@ jobs:
           draft: true
           prerelease: false
 
-  build:
-    name: Build application
+  create-build:
+    name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [android, linux, macos, windows, web] # [android, ios, windows, linux, macos, web]
+        target: [Android, Web] # [Android, iOS, Linux, macOS, Windows, Web]
         include:
           - os: ubuntu-20.04
-            target: android
+            target: Android
             build_target: apk
-            channel: stable
-            path: build/app/outputs/apk/release
+            build_path: build/app/outputs/apk/release
             asset_extension: .apk
             asset_content_type: application/vnd.android.package-archive
+            channel: stable
           # - os: ubuntu-20.04
-          #   target: linux
-          #   channel: stable
-          #   path: build/linux/release/bundle
+          #   target: Linux
+          #   build_target: linux
+          #   build_path: build/linux/release/bundle
           #   asset_extension: .tar.gz
           #   asset_content_type: application/gzip
-          # - os: macos-10.15
-          #   target: macos
           #   channel: stable
-          #   path: build/macos/Build/Products/Release
+          # - os: macos-10.15
+          #   target: macOS
+          #   build_target: macos
+          #   build_path: build/macos/Build/Products/Release
           #   asset_extension: .zip
           #   asset_content_type: application/zip
+          #   channel: stable
           # - os: windows-2019
           #   target: windows
-          #   channel: stable
-          #   path: build/windows/runner/Release
+          #   build_target: windows
+          #   build_path: build/windows/runner/Release
           #   asset_extension: .zip
           #   asset_content_type: application/zip
+          #   channel: stable
           - os: ubuntu-20.04
-            target: web
-            channel: stable
-            path: build/web
+            target: Web
+            build_target: web
+            build_path: build/web
             asset_extension: .tar.gz
             asset_content_type: application/gzip
+            channel: stable
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
-    needs: create-release
+    needs: draft-release
     steps:
       # Set up Flutter and add it to the path.
       - name: Clone Flutter repository with ${{ matrix.channel }} channel
-        uses: actions/checkout@v2
+        uses: subosito/flutter-action@v1.5.3
         with:
-          repository: "flutter/flutter"
-          ref: ${{ matrix.channel }}
-          path: "flutter"
-          fetch-depth: 0
-      - name: Add Flutter to the PATH for Linux, macOS and Android
-        if: matrix.target != 'windows'
-        run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
-      - name: Add Flutter to the PATH for Windows
-        if: matrix.target == 'windows'
-        run: echo "${env:GITHUB_WORKSPACE}/flutter/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          channel: ${{ matrix.channel }}
+
+      # Set up required dependencies.
       - name: Install Linux dependencies
-        if: matrix.target == 'linux'
+        if: matrix.build_target == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev
       - name: Install Android dependencies
-        if: matrix.target == 'android'
+        if: matrix.build_target == 'android'
         uses: actions/setup-java@v1
         with:
           java-version: "12.x"
       - name: Enable web support
-        if: matrix.target == 'web'
+        if: matrix.build_target == 'web'
         run: flutter config --enable-web
       - name: Enable ${{ matrix.target }} desktop support
-        if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
-        run: flutter config --enable-${{ matrix.target }}-desktop
+        if: matrix.build_target == 'linux' || matrix.build_target == 'windows' || matrix.build_target == 'macos'
+        run: flutter config --enable-${{ matrix.build_target }}-desktop
       - name: Run Flutter doctor
         run: flutter doctor -v
 
-      # Clone the repository under 'code', to avoid conflicts with 'flutter'.
+      # Clone the repository, create missing files and get required packages.
       - name: Clone the repository
         uses: actions/checkout@v2
-        with:
-          path: "code"
       - name: Get packages for the Flutter project
         run: |
           flutter create .
           flutter pub get
-        working-directory: code
 
       # Build the application.
       - name: Build project
-        run: flutter build -v ${{ matrix.build_target || matrix.target }} --release
-        working-directory: code
+        run: flutter build -v ${{ matrix.build_target }} --release
 
       # Prepare release build package.
-      - name: Copy VC redistributables to release directory
-        if: matrix.target == 'windows'
+      - name: Copy VC redistributables to release directory for Windows
+        if: matrix.build_target == 'windows'
         run: |
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
-        working-directory: code/${{ matrix.path }}
 
+      # Compress build.
       - name: Compress build for Windows
-        if: matrix.target == 'windows'
-        run: compress-archive -Path * -DestinationPath ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
-        working-directory: code/${{ matrix.path }}
+        if: matrix.build_target == 'windows'
+        run: compress-archive -Path * -DestinationPath ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        working-directory: ${{ matrix.build_path }}
       - name: Compress build for Linux
-        if: matrix.target == 'linux' || matrix.target == 'web'
-        run: tar czf ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }} *
-        working-directory: code/${{ matrix.path }}
+        if: matrix.build_target == 'linux' || matrix.build_target == 'web'
+        run: tar czf ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }} *
+        working-directory: ${{ matrix.build_path }}
       - name: Compress build for macOS
-        if: matrix.target == 'macos'
-        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
-        working-directory: code/${{ matrix.path }}
+        if: matrix.build_target == 'macos'
+        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        working-directory: ${{ matrix.build_path }}
       - name: Rename build for Android
-        if: matrix.target == 'android'
-        run: mv app-release${{ matrix.asset_extension }} ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
-        working-directory: code/${{ matrix.path }}
+        if: matrix.build_target == 'apk'
+        run: mv app-release${{ matrix.asset_extension }} ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        working-directory: ${{ matrix.build_path }}
 
-      # Upload the release build.
+      # Upload the build.
       - name: Upload release asset
         id: upload_release_asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./code/${{ matrix.path }}/flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
-          asset_name: flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
+          upload_url: ${{ needs.draft-release.outputs.upload_url }}
+          asset_path: ./${{ matrix.build_path }}/flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+          asset_name: flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
