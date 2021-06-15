@@ -26,7 +26,7 @@ jobs:
           prerelease: false
 
   create-build:
-    name: Create ${{ matrix.os }} build
+    name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
