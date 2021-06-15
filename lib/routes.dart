@@ -80,18 +80,24 @@ class RouteConfiguration {
   /// matching.
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     for (final path in paths) {
-      final regExpPattern = RegExp(path.pattern);
+      final regExpPattern = RegExp(path.pattern, caseSensitive: false);
       if (settings.name != null && regExpPattern.hasMatch(settings.name!)) {
         final firstMatch = regExpPattern.firstMatch(settings.name!);
         final match = firstMatch?.groupCount == 1 ? firstMatch?.group(1) : null;
-       /*
-       if (DeviceType.isDesktopOrWeb) {
+
+        if (settings.name == AppRoute.settings) {
+          return SettingsRouteBuilder(
+            builder: (context) => path.builder(context, match),
+            settings: settings,
+          );
+        }
+
+        if (DeviceType.isDesktopOrWeb) {
           return NoAnimationMaterialPageRoute<void>(
             builder: (context) => path.builder(context, match),
             settings: settings,
           );
         }
-        */
         return MaterialPageRoute<void>(
           builder: (context) => path.builder(context, match),
           settings: settings,
@@ -101,6 +107,41 @@ class RouteConfiguration {
 
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
     return null;
+  }
+}
+
+class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
+  SettingsRouteBuilder({
+    required this.builder,
+    RouteSettings? settings,
+    bool maintainState = true,
+    bool fullscreenDialog = false,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return builder(context);
+          },
+          settings: settings,
+          maintainState: maintainState,
+          fullscreenDialog: fullscreenDialog,
+        ) {
+    assert(opaque);
+  }
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    var begin = Offset(1.0, 0.0);
+    var end = Offset.zero;
+    var curve = Curves.easeIn;
+
+    var tween = Tween(begin: begin, end: end);
+    tween.chain(CurveTween(curve: curve));
+
+    return SlideTransition(
+      position: animation.drive(tween),
+      child: child,
+    );
   }
 }
 
