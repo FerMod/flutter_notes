@@ -12,7 +12,6 @@ import '../data/models/user_model.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
-import 'sign_in.dart';
 
 void _navigateSetting(BuildContext context, Widget widget) {
   Navigator.of(context).push(

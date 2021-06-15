@@ -26,7 +26,7 @@ Future<void> main() async {
   await AppSharedPreferences.initialize();
 
   // Set the URL strategy for the web app
-  setPathUrlStrategy();
+  Global.usePathUrlStrategy ? setPathUrlStrategy() : setHashUrlStrategy();
 
   runApp(
     ModelBinding(

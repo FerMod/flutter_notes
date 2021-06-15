@@ -5,6 +5,10 @@ class Global {
   static final Global _instance = Global._internal();
   factory Global() => _instance;
 
+  /// Sets the URL strategy of the web app to use paths instead of a leading
+  /// hash.
+  static const bool usePathUrlStrategy = false;
+
   /// A constant that is true if the application was compiled in debug mode.
   static const bool isDebugMode = kDebugMode;
 

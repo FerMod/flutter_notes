@@ -128,7 +128,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
 
   /// Called when the user selects a radio list item.
   ///
-  /// The widget passes [selectedOption] as a parameter to this callback. The 
+  /// The widget passes [selectedOption] as a parameter to this callback. The
   /// widget does not change state until the parent widget rebuilds the radio
   /// list items with the new [selectedOption].
   ///
@@ -179,41 +179,6 @@ class SettingRadioListItems<T> extends StatelessWidget {
               : null,
         );
       },
-    );
-  }
-}
-
-class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
-  SettingsRouteBuilder({
-    required this.builder,
-    RouteSettings? settings,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
-  }) : super(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return builder(context);
-          },
-          settings: settings,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
-        ) {
-    assert(opaque);
-  }
-
-  final WidgetBuilder builder;
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var begin = Offset(1.0, 0.0);
-    var end = Offset.zero;
-    var curve = Curves.easeIn;
-
-    var tween = Tween(begin: begin, end: end);
-    tween.chain(CurveTween(curve: curve));
-
-    return SlideTransition(
-      position: animation.drive(tween),
-      child: child,
     );
   }
 }
