@@ -5,7 +5,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - "v*" # Push events that match 'v*'. For example: 'v1.0', 'v20.15.10'
+      - "*" # Push events that match "*". For example: "1.0", "20.15.10"
 
 jobs:
   draft-release:
@@ -25,7 +25,7 @@ jobs:
           draft: true
           prerelease: false
 
-  create-build:
+  build:
     name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -138,11 +138,11 @@ jobs:
       # Upload the build.
       - name: Upload release asset
         id: upload_release_asset
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.draft-release.outputs.upload_url }}
           asset_path: ./${{ matrix.build_path }}/flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
-          asset_name: flutter_notes_${{ matrix.build_target }}_${{ github.ref }}${{ matrix.asset_extension }}
+          asset_name: flutter_notes_${{ matrix.build_target }}_${{ needs.draft-release.steps.with.tag_name }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
