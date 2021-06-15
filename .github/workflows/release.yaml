@@ -145,7 +145,7 @@ jobs:
         run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
       - name: Rename build for Android
-        if: matrix.build_target == 'android'
+        if: matrix.build_target == 'apk'
         run: mv app-release${{ matrix.asset_extension }} ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
 
