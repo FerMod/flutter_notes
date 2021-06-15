@@ -67,9 +67,9 @@ jobs:
       - name: Clone Flutter repository with ${{ matrix.channel }} channel
         uses: actions/checkout@v2
         with:
-          repository: 'flutter/flutter'
+          repository: "flutter/flutter"
           ref: ${{ matrix.channel }}
-          path: 'flutter'
+          path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH for Linux, macOS and Android
         if: matrix.target != 'windows'
@@ -86,7 +86,7 @@ jobs:
         if: matrix.target == 'android'
         uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
+          java-version: "12.x"
       - name: Enable web support
         if: matrix.target == 'web'
         run: flutter config --enable-web
@@ -95,23 +95,23 @@ jobs:
         run: flutter config --enable-${{ matrix.target }}-desktop
       - name: Run Flutter doctor
         run: flutter doctor -v
-      
+
       # Clone the repository under 'code', to avoid conflicts with 'flutter'.
       - name: Clone the repository
         uses: actions/checkout@v2
         with:
-          path: 'code'
+          path: "code"
       - name: Get packages for the Flutter project
         run: |
           flutter create .
           flutter pub get
         working-directory: code
-    
+
       # Build the application.
       - name: Build project
         run: flutter build -v ${{ matrix.build_target || matrix.target }} --release
         working-directory: code
-      
+
       # Prepare release build package.
       - name: Copy VC redistributables to release directory
         if: matrix.target == 'windows'
@@ -120,7 +120,7 @@ jobs:
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
         working-directory: code/${{ matrix.path }}
-      
+
       - name: Compress build for Windows
         if: matrix.target == 'windows'
         run: compress-archive -Path * -DestinationPath ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
@@ -137,7 +137,7 @@ jobs:
         if: matrix.target == 'android'
         run: mv app-release${{ matrix.asset_extension }} ./flutter_notes_${{ matrix.target }}${{ matrix.asset_extension }}
         working-directory: code/${{ matrix.path }}
-      
+
       # Upload the release build.
       - name: Upload release asset
         id: upload_release_asset

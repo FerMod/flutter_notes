@@ -17,9 +17,9 @@ jobs:
       - name: Clone Flutter repository
         uses: actions/checkout@v2
         with:
-          repository: 'flutter/flutter'
-          ref: 'stable'
-          path: 'flutter'
+          repository: "flutter/flutter"
+          ref: "stable"
+          path: "flutter"
           fetch-depth: 0
       - name: Add Flutter to the PATH for Unix
         if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
@@ -34,7 +34,7 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v2
         with:
-          path: 'code'
+          path: "code"
 
       # Run the tests for the repository.
       - name: Get packages for the Flutter project
