@@ -141,7 +141,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION_TAG: ${{ GITHUB_REF#*/ }}
+          VERSION_TAG: $GITHUB_REF#*/
         with:
           upload_url: ${{ needs.draft-release.outputs.upload_url }}
           asset_path: ./${{ matrix.build_path }}/flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
