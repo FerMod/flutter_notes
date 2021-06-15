@@ -1,13 +1,49 @@
 import 'package:flutter/material.dart';
 
+typedef DisplayWidgetBuilder<T> = Widget? Function(BuildContext context, T value);
+
+@immutable
 class DisplayOption {
   const DisplayOption({
     required this.title,
     this.subtitle,
-  });
+    DisplayWidgetBuilder<String>? titleBuilder,
+    DisplayWidgetBuilder<String?>? subtitleBuilder,
+  })  : _titleBuilder = titleBuilder,
+        _subtitleBuilder = subtitleBuilder;
 
-  final Widget title;
-  final Widget? subtitle;
+  final String title;
+  final String? subtitle;
+
+  Widget? _defaultWidgetBuilder(BuildContext context, String? value) {
+    Widget? textWidget;
+    if (value != null) {
+      textWidget = Text(value);
+    }
+    return textWidget;
+  }
+
+  DisplayWidgetBuilder<String> get titleBuilder => _titleBuilder ?? _defaultWidgetBuilder;
+  final DisplayWidgetBuilder<String>? _titleBuilder;
+
+  DisplayWidgetBuilder<String?> get subtitleBuilder => _subtitleBuilder ?? _defaultWidgetBuilder;
+  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
+
+  /// Creates a copy of this class object but with the given fields replaced
+  /// with the new values.
+  DisplayOption copyWith({
+    String? title,
+    String? subtitle,
+    DisplayWidgetBuilder<String>? titleBuilder,
+    DisplayWidgetBuilder<String?>? subtitleBuilder,
+  }) {
+    return DisplayOption(
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      titleBuilder: titleBuilder ?? this.titleBuilder,
+      subtitleBuilder: subtitleBuilder ?? this.subtitleBuilder,
+    );
+  }
 }
 
 class SettingsHeader extends StatelessWidget {
@@ -15,7 +51,7 @@ class SettingsHeader extends StatelessWidget {
     Key? key,
     required this.title,
     this.subtitle,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final Widget title;
   final Widget? subtitle;
@@ -76,7 +112,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
     Key? key,
     required this.selectedOption,
     required this.optionsMap,
-    required this.onChanged,
+    this.onChanged,
   }) : super(key: key);
 
   /// The currently selected value.
@@ -92,9 +128,9 @@ class SettingRadioListItems<T> extends StatelessWidget {
 
   /// Called when the user selects a radio list item.
   ///
-  /// The widget passes [value] as a parameter to this callback. The widget does
-  /// not change state until the parent widget rebuilds the radio list items
-  /// with the new [selectedOption].
+  /// The widget passes [selectedOption] as a parameter to this callback. The 
+  /// widget does not change state until the parent widget rebuilds the radio
+  /// list items with the new [selectedOption].
   ///
   /// If `null`, the radio list items will be displayed as disabled.
   ///
@@ -116,7 +152,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
   ///   },
   /// )
   /// ```
-  final ValueChanged<T?> onChanged;
+  final ValueChanged<T>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -129,12 +165,18 @@ class SettingRadioListItems<T> extends StatelessWidget {
       itemBuilder: (context, index) {
         final value = _options.elementAt(index);
         final displayOption = _displayOptions.elementAt(index);
+
         return RadioListTile<T>(
           value: value,
           groupValue: selectedOption,
-          title: displayOption.title,
-          subtitle: displayOption.subtitle,
-          onChanged: onChanged,
+          title: displayOption.titleBuilder(context, displayOption.title),
+          subtitle: displayOption.subtitleBuilder(context, displayOption.subtitle),
+          onChanged: onChanged != null
+              ? (value) {
+                  // Can only be null if RadioListTile's `toggleable` parameter is true, but it can't be
+                  onChanged?.call(value!);
+                }
+              : null,
         );
       },
     );
@@ -147,7 +189,7 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
     RouteSettings? settings,
     bool maintainState = true,
     bool fullscreenDialog = false,
-  })  : super(
+  }) : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             return builder(context);
           },

@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "appName": "Notes App",
+  "@appName": {
+    "description": "The name of the app. This should be the same name across different locale."
+  },
   "appTitle": "Notes App",
   "@appTitle": {
     "description": "Title of the app."
@@ -28,9 +32,33 @@
   "@settingsAccount": {
     "description": "Title for the account setting."
   },
+  "settingsSignInInfo": "Sync and access to your saved your notes across multiple devices",
+  "@settingsSignInInfo": {
+    "description": "Label text that shows information of the advantages of being signed in."
+  },
   "settingsLanguage": "Language",
   "@settingsLanguage": {
     "description": "Title for the language setting."
+  },
+  "settingsTextScale": "Text Scale",
+  "@settingsTextScale": {
+    "description": "Title for the text scale setting."
+  },
+  "settingsTextScaleSmall": "Small",
+  "@settingsTextScaleSmall": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleNormal": "Normal",
+  "@settingsTextScaleNormal": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleLarge": "Large",
+  "@settingsTextScaleLarge": {
+    "description": "Title for the huge text size scale setting."
+  },
+  "settingsTextScaleHuge": "Huge",
+  "@settingsTextScaleHuge": {
+    "description": "Title for the huge text size scale setting."
   },
   "settingsTheme": "Theme",
   "@settingsTheme": {
@@ -165,7 +193,11 @@
   "@signIn": {
     "description": "Label text to sign in."
   },
-  "signInTitle": "Sign in",
+  "notSignedIn": "Not signed in",
+  "@notSignedIn": {
+    "description": "Label text displaying that the user is not signed in."
+  },
+  "signInTitle": "Sign In",
   "@signInTitle": {
     "description": "Title of the sign in screen."
   },
@@ -179,9 +211,15 @@
       }
     }
   },
-  "signInError": "Incorrect username or password.",
-  "@signInError": {
-    "description": "Sign in error message, when the username or the password are missing or wrong."
+  "signInTo": "Sign in to {appName}",
+  "@signInTo": {
+    "description": "Label text to sign in to the specified [appName].",
+    "placeholders": {
+      "appName": {
+        "type": "String",
+        "example": "My App"
+      }
+    }
   },
   "signInNoAccount": "Don't have an account?",
   "@signInNoAccount": {
@@ -235,10 +273,6 @@
   "@passwordResetReturn": {
     "description": "Text of the button once a password reset email is sent."
   },
-  "passwordResetError": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
-  "@passwordResetError": {
-    "description": "Error message when no matching email address is found."
-  },
   "passwordResetSuccess": "Check your email for a link to reset your password. If it doesn’t appear within a few minutes, check your spam folder.",
   "@passwordResetSuccess": {
     "description": "Message when a password reset email is sent."
@@ -285,6 +319,14 @@
       }
     }
   },
+  "errorSignIn": "Incorrect username or password.",
+  "@errorSignIn": {
+    "description": "Sign in error message, when the username or the password are missing or wrong."
+  },
+  "errorPasswordReset": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
+  "@errorpasswordReset": {
+    "description": "Error message when no matching email address is found."
+  },
   "errorWeakPassword": "The password is too weak.",
   "@errorWeakPassword": {
     "description": "Message text to show when a the introduced password is weak."
@@ -297,9 +339,27 @@
   "@errorEmailAlreadyInUse": {
     "description": "Message text to show when a the introduced email is already in use by another account."
   },
+  "errorUserDisabled": "The user with the given email is disabled.",
+  "@errorUserDisabled": {
+    "description": "Thrown if the user corresponding to the given email has been disabled."
+  },
   "errorUnknown": "An unknown error happened.",
   "@errorUnknown": {
     "description": "Message text to show when an unknown error happens."
+  },
+  "aboutApp": "About",
+  "@aboutApp": {
+    "description": "Text for the widget that shows information obout the application. To provide the application name use [aboutNamedApp]."
+  },
+  "aboutNamedApp": "About {applicationName}",
+  "@aboutNamedApp": {
+    "description": "Text for the widget that shows information obout the application, with the given {applicationName} name.",
+    "placeholders": {
+      "applicationName": {
+        "type": "String",
+        "example": "My Cool App"
+      }
+    }
   },
   "und": "Undefined",
   "@und": {

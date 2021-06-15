@@ -19,20 +19,19 @@ class TitleDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        margin: margin,
-        decoration: BoxDecoration(
-          color: theme.primaryColor,
-          border: Border(
-            bottom: Divider.createBorderSide(context),
-          ),
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        color: theme.primaryColor,
+        border: Border(
+          bottom: Divider.createBorderSide(context),
         ),
+      ),
+      child: SafeArea(
+        bottom: false,
         child: AnimatedContainer(
-          padding: padding.add(EdgeInsets.only(top: statusBarHeight)),
+          padding: padding,
           duration: duration,
           curve: curve,
           child: child,

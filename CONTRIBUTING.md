@@ -1,4 +1,5 @@
 > **WIP document**
+
 # Contributing
 
 First off, thank you for considering contributing to this project!
@@ -15,7 +16,7 @@ Use your best judgment, and feel free to propose changes to this document in a p
 
 ### Responsibilities
 
-- Ensure cross-platform compatibility for every change that's accepted. Windows, Mac, Debian & Ubuntu Linux.
+- Ensure for every change that's accepted, cross-platform compatibility of the project supported platforms.
 - Ensure that code that goes into core meets a minimum requirements.
 - Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 - Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the [Code of Conduct](CODE_OF_CONDUCT.md).
@@ -37,7 +38,7 @@ If a maintainer asks you to "rebase" your PR, they're saying that a lot of code 
 
 ### Prerequisites
 
-This project requires to have **JDK 1.8**, and **Maven** which will manage all the remaining dependencies. **Doxygen** is required when generating documentation from the annotated sources.
+This project requires to have **Flutter** installed.
 
 ### Cloning/Forking the repository
 
@@ -76,13 +77,15 @@ As a general rule, the style and formatting of commit messages should follow the
 
 When displayed on the web, it's often styled as a heading, and in emails, it's typically used as the subject. As such, you should capitalize it and omit any trailing punctuation. Consistent wording makes it easier to mentally process a list of commits.
 
-Examples:
-`Add feature` not ~~`Added feature`~~
+Examples:  
+`Add feature` not ~~`Added feature`~~  
 `Fix bug` not ~~`Fixed bug`~~ or ~~`Fixes bug`~~
 
 #### Limit the first line to 72 characters or less
 
-The first line of a commit message serves as a summary. When it's not, add a blank line (this is important) followed the rest of the commit message.
+The first line of a commit message serves as a summary, it should be concise to ensure that they are readable. When it's not, add a blank line (this is important) followed by the rest of the commit message.
+
+The best line length should be of 50 characterers or less, and the 72 characters should be treated as a hard limit.
 
 #### Issue References
 
@@ -100,7 +103,7 @@ Or if the commit references more than one issue:
 Issue #123, #124
 ```
 
-If the commit closes the issue it should be referenced using one of the available keyworkds that automates the issue closing once the branch merges with the default branch.
+If the commit closes the issue it should be referenced using one of the available keywords that automates the issue closing once the branch merges with the default branch.
 
 ```diff
 Add feature

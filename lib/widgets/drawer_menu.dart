@@ -1,214 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/data/models.dart';
+import 'package:flutter_notes/routes.dart';
+import 'package:flutter_notes/widgets/version_widget.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
-import '../screens/home_page.dart';
-import '../screens/notes_list.dart';
-import '../screens/sign_in.dart';
-import '../screens/sign_up.dart';
+import 'about_app_widget.dart';
 import 'drawer_header.dart';
 import 'user_account.dart';
-import 'user_account_dropdown.dart';
 
 class DrawerMenu extends StatelessWidget {
   DrawerMenu({Key? key}) : super(key: key);
 
-  final userData = UserData<UserModel>(collection: 'users');
+  final userData = DataProvider.userData;
 
-  Widget _buildHeader() {
-    final user = userData.currentUser;
-
-    Widget headerWidget;
-
-    if (user != null) {
-      Widget? currentAccountPicture;
-      if (user.photoURL != null) {
-        currentAccountPicture = Image.network(user.photoURL!);
-      }
-
-      Widget accountName;
-      if (user.displayName != null) {
-        accountName = Text(user.displayName!);
-      }
-
-      Widget accountEmail;
-      if (user.email != null) {
-        accountEmail = Text(user.email!);
-      }
-
-      final otherAccountsPictures = <Widget?>[
-        currentAccountPicture,
-        currentAccountPicture,
-      ];
-      // headerWidget = UserAccountsDrawerHeader(
-      //   currentAccountPicture: currentAccountPicture,
-      //   accountName: accountName,
-      //   accountEmail: accountEmail,
-      //   onDetailsPressed: () {},
-      //   //otherAccountsPictures: otherAccountsPictures,
-      // );
-
-      // headerWidget = UserAccountDropdown(
-      //   accountPicture: CircleAvatar(
-      //     child: const Icon(Icons.account_circle),
-      //   ),
-      //   accountName: accountName,
-      //   accountEmail: accountEmail,
-      //   showArrow: true,
-      //   onTap: () {},
-      // );
-
-      // headerWidget = ListTile(
-      //   leading: CircleAvatar(
-      //     child: Image.network(user.email) ,
-      //   ),
-      //   title: accountName,
-      //   subtitle: accountEmail,
-      //   onTap: () {},
-      // );
-      headerWidget = UserAccountListTile(
-        imageUrl: user.photoURL!,
-        nameText: user.displayName,
-        emailText: user.email,
-      );
-
-      headerWidget = UserAccountDropdown(
-        accountPicture: CircleAvatar(
-          child: const Icon(Icons.account_circle),
-        ),
-        accountName: Text('Test'),
-        accountEmail: Text('Email'),
-        showArrow: true,
-        onTap: () {},
-      );
-    } else {
-      headerWidget = TitleDrawerHeader(
-        child: ListTile(
-          leading: Icon(Icons.account_circle),
-          title: Text('Sign in'),
-          onTap: () {},
-        ),
-      );
+  Future _navigateReplacementNamed(BuildContext context, String routeName) {
+    final navigator = Navigator.of(context);
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute?.settings.name != routeName) {
+      return navigator.pushReplacementNamed(routeName);
     }
-
-    return headerWidget;
-  }
-
-  Future _navigate(BuildContext context, Widget widget) {
-    return Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => widget),
-    );
-  }
-
-  Future _navigateReplace(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => widget),
-    );
+    navigator.pop();
+    return Future.value();
   }
 
   Widget _buildDrawerHeader(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
-    final user = userData.currentUser;
+    final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
 
     Widget headerWidget;
-    if (user != null) {
+    if (userData.isSignedIn) {
+      final user = userData.currentUser!;
+
       headerWidget = UserAccountsDrawerHeader(
         currentAccountPicture: UserAvatar(
+          imageUrl: user.photoURL,
           nameText: user.displayName,
-          imageUrl: user.photoURL!,
         ),
-        accountName: Text(user.displayName!),
-        accountEmail: Text(user.email!),
+        accountName: Text(user.displayName ?? ''),
+        accountEmail: Text(user.email ?? ''),
       );
     } else {
       headerWidget = TitleDrawerHeader(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
         child: ListTile(
-          leading: Icon(Icons.account_circle),
-          title: Text(localizations!.signIn),
-          onTap: () => _navigate(context, SignInScreen()),
+          leading: const Icon(
+            Icons.account_circle,
+            size: UserAvatar.alternativeImageIconSize,
+          ),
+          title: Text(localizations.notSignedIn),
         ),
       );
     }
 
     return headerWidget;
+  }
+
+  List<Widget> _buildDrawerChildren(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
+    if (userData.isSignedIn) {
+      return [
+        ListTile(
+          leading: const Icon(Icons.sticky_note_2),
+          title: Text(localizations.note(2)),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.notes),
+        ),
+      ];
+    } else {
+      return [
+        ListTile(
+          leading: const Icon(Icons.login),
+          title: Text(localizations.signIn),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.signIn),
+        ),
+        ListTile(
+          leading: const Icon(Icons.account_circle),
+          title: Text(localizations.signUp),
+          onTap: () => _navigateReplacementNamed(context, AppRoute.signUp),
+        ),
+      ];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          // TitleDrawerHeader(
-          //   child: Text(
-          //     localizations.drawerTitle,
-          //     style: theme.textTheme.headline5,
-          //   ),
-          // ),
-          _buildDrawerHeader(context),
-          // ListTile(
-          //   leading: Icon(Icons.home),
-          //   title: Text(localizations.homepage),
-          //   onTap: () => _navigateReplace(context, HomePage()),
-          // ),
-          ListTile(
-            leading: Icon(Icons.sticky_note_2),
-            title: Text(localizations.note(2)),
-            onTap: () => _navigateReplace(context, NotesListScreen()),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.login),
-            title: Text(localizations.signIn),
-            onTap: () => _navigate(context, SignInScreen()),
-          ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text(localizations.signUp),
-            onTap: () => _navigate(context, SignUpScreen()),
-          ),
-        ],
-      ),
-    );
-    
-    /*
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          // TitleDrawerHeader(
-          //   child: Text(
-          //     localizations.drawerTitle,
-          //     style: theme.textTheme.headline5,
-          //   ),
-          // ),
           _buildDrawerHeader(context),
-          ListTile(
-            leading: Icon(Icons.sticky_note_2),
-            title: Text(localizations.note(2)),
-            onTap: () => _navigateReplace(context, NotesListScreen()),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.login),
-            title: Text(localizations.signOut),
-            onTap: () {
-              userData.signOut();
-              // TODO: Improve route navigation
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRoute.notes,
-                ModalRoute.withName('/'),
-              );
-            },
-          ),
+          ..._buildDrawerChildren(context),
+          const Divider(),
+          const AboutAppWidget(),
+          const VersionWidget(),
         ],
       ),
     );
-    */
   }
 }

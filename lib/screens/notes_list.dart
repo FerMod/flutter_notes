@@ -26,39 +26,16 @@ enum MenuAction {
 class NotesListScreen extends StatelessWidget {
   NotesListScreen({Key? key}) : super(key: key);
 
-  final notesListModel = NotesListModel();
-  final scrollController = ScrollController();
-
-  PageRoute _pageRouteBuilder(Widget widget) {
-    // return MaterialPageRoute(builder: (context) => widget);
-    // return PageRouteBuilder(
-    //   pageBuilder: (context, animation, secondaryAnimation) => widget,
-    // );
-    return PageRouteBuilder(
-      fullscreenDialog: true,
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: animation.drive(
-                CurveTween(curve: Curves.easeInOut),
-              ),
-              child: child,
-            );
-          },
-          child: widget,
-        );
-      },
-      transitionDuration: Duration(milliseconds: 400),
-      reverseTransitionDuration: Duration(milliseconds: 400),
-    );
-  }
+  final NotesListModel notesListModel = NotesListModel();
 
   Future<NoteModel?> _navigateEditNote(BuildContext context, NoteModel note) async {
-    final result = await Navigator.push(
+    final result = await Navigator.push<NoteModel>(
       context,
-      _pageRouteBuilder(EditNoteScreen(note: note)),
+      NoteRouteBuilder(
+        builder: (context) {
+          return EditNoteScreen(note: note);
+        },
+      ),
     );
     developer.log('Edit note result: $result');
     return result;
@@ -74,15 +51,13 @@ class NotesListScreen extends StatelessWidget {
   }
 
   void _newNote(BuildContext context) async {
-    //final user = Provider.of<User>(context, listen: false);
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
     final user = notesListModel.userData.currentUser;
     final note = NoteModel(userId: user?.uid);
 
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    if (resultNote.title!.isNotEmpty || resultNote.content!.isNotEmpty) {
+    if (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty) {
       notesListModel.addNote(resultNote);
     }
   }
@@ -92,14 +67,12 @@ class NotesListScreen extends StatelessWidget {
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
-    if (lastEdit!.isBefore(resultNote.lastEdit!)) {
+    if (lastEdit.isBefore(resultNote.lastEdit)) {
       notesListModel.updateNote(resultNote);
     }
   }
 
   void _removeNote(BuildContext context, NoteModel note) async {
-    //final notesListModel = Provider.of<NotesListModel>(context, listen: false);
     final shouldRemove = await _showAlertDialog(context);
     if (shouldRemove) notesListModel.removeNote(note);
   }
@@ -115,23 +88,24 @@ class NotesListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         title: _AccountWidget(
-          onTap: () => _navigate(context, SignInScreen()),
+          onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
+              ? null
+              : () {
+                  _navigate(context, SignInScreen());
+                },
           userData: notesListModel.userData,
         ),
         titleSpacing: 0.0,
         actions: [
-          _SettingsButton(
-            onPressed: () => _navigate(context, SettingsScreen()),
-          ),
+          SettingsScreenButton(),
         ],
       ),
       drawer: DrawerMenu(),
-      // endDrawer: DrawerRight(), // TODO: Decide to use Drawer or Screen
       body: StreamBuilder<List<NoteModel>>(
         initialData: notesListModel.notes,
         stream: notesListModel.streamData(),
@@ -143,24 +117,21 @@ class NotesListScreen extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.active:
             case ConnectionState.done:
-              final notes = snapshot.data ?? [];
               return NoteListWidget(
-                notes: notes,
+                notes: snapshot.data,
                 onTap: (note) => _editNote(context, note),
-                onMenuTap: (note) => _removeNote(context, note),
-                onRefresh: notesListModel.refresh,
-                controller: scrollController,
+                onMenuTap: (note, action) => _removeNote(context, note),
               );
             case ConnectionState.waiting:
-              return LinearProgressIndicator();
+              return const LinearProgressIndicator();
             case ConnectionState.none:
             default:
-              return Loader();
+              return const Loader();
           }
         },
       ),
       floatingActionButton: Visibility(
-        visible: notesListModel.userData.currentUser != null,
+        visible: userData.isSignedIn,
         child: FloatingActionButton(
           onPressed: () => _newNote(context),
           tooltip: localizations.addNote,
@@ -187,46 +158,50 @@ class _AccountWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
     final user = userData.currentUser;
 
-    Widget accountWidget;
-    if (user != null) {
-      accountWidget = UserAccountListTile(
-        imageUrl: user.photoURL!,
-        nameText: user.displayName,
-        emailText: user.email,
+    Widget? imageWidget;
+    Widget? nameWidget;
+    Widget? emailWidget;
+    if (user != null && !user.isAnonymous) {
+      final displayName = user.displayName;
+      final email = user.email;
+
+      if (displayName != null && displayName.isNotEmpty) {
+        nameWidget = Text(displayName);
+      }
+
+      if (email != null && email.isNotEmpty) {
+        emailWidget = Text(email);
+      }
+
+      imageWidget = UserAvatar(
+        imageUrl: user.photoURL,
+        nameText: displayName,
+        onTap: onTapImage,
       );
     } else {
-      accountWidget = ListTile(
-        leading: const Icon(
-          Icons.account_circle,
-          size: UserAvatar.alternativeImageIconSize,
-        ),
-        title: Text(localizations!.signIn),
-        onTap: onTap,
+      imageWidget = const Icon(
+        Icons.account_circle,
+        size: UserAvatar.alternativeImageIconSize,
       );
+      nameWidget = Text(localizations!.signIn);
     }
 
-    return accountWidget;
-  }
-}
-
-class _SettingsButton extends StatelessWidget {
-  const _SettingsButton({
-    Key? key,
-    this.onPressed,
-  }) : super(key: key);
-
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return IconButton(
-      icon: const Icon(Icons.settings),
-      tooltip: localizations.settingsButtonLabel,
-      onPressed: onPressed, //() => Scaffold.of(context).openEndDrawer(),
+    return FutureBuilder(
+      future: userData.data(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Loader();
+        }
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: imageWidget,
+          title: nameWidget,
+          subtitle: emailWidget,
+          onTap: onTap,
+        );
+      },
     );
   }
 }
@@ -264,21 +239,24 @@ class _DeleteAlertDialog extends StatelessWidget {
 class NoteListWidget extends StatelessWidget {
   const NoteListWidget({
     Key? key,
-    this.notes,
+    required List<NoteModel>? notes,
     this.onTap,
     this.onMenuTap,
     this.onRefresh,
     this.controller,
-  }) : super(key: key);
+  })  : notes = notes ?? const [],
+        super(key: key);
 
-  final List<NoteModel>? notes;
+  final List<NoteModel> notes;
   final void Function(NoteModel)? onTap;
-  final void Function(NoteModel)? onMenuTap;
+  final void Function(NoteModel, MenuAction action)? onMenuTap;
   final Future<void> Function()? onRefresh;
 
+  /// An object that can be used to control the position to which this scroll
+  /// view is scrolled.
   final ScrollController? controller;
 
-  /// Padding that prevents the FloatingActionButton from blocking ListTiles
+  /// Padding that prevents the FloatingActionButton from blocking ListTiles.
   static const double listBottomPadding = kFloatingActionButtonMargin * 2.0 + 48.0;
 
   PopupMenuItem<MenuAction> _buildPopMenuItem(MenuAction action, String text, Icon icon) {
@@ -301,55 +279,84 @@ class NoteListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-
-    return RefreshIndicator(
-      onRefresh: onRefresh!,
-      child: Scrollbar(
+    return Scrollbar(
+      controller: controller,
+      showTrackOnHover: true,
+      radius: Radius.zero,
+      child: ListView.builder(
         controller: controller,
-        // thickness: 2.0,
-        child: ListView.builder(
-          controller: controller,
-          dragStartBehavior: DragStartBehavior.down,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
-          itemCount: notes!.length,
-          itemBuilder: (context, index) {
-            final note = notes![index];
-            return CardHero(
-              tag: 'note-${note.id}',
-              color: note.color,
-              child: InkWell(
-                onTap: () => onTap?.call(note),
-                onLongPress: () => developer.log('Long press'),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ListTile(
-                        // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                        mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                        title: Text(note.title!),
-                        subtitle: Text(
-                          note.content!,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+        dragStartBehavior: DragStartBehavior.down,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: listBottomPadding), // Prevent FAB from blocking ListTiles
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          final note = notes[index];
+          return CardHero(
+            tag: 'note-${note.id}',
+            color: note.color,
+            onTap: () => onTap?.call(note),
+            onLongPress: () => developer.log('Long press'),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ListTile(
+                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                    title: Text(note.title),
+                    subtitle: Text(
+                      note.content,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    PopupMenuButton<MenuAction>(
-                      itemBuilder: (context) => [
-                        _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
-                      ],
-                      onSelected: (value) => onMenuTap!(note),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
+                PopupMenuButton<MenuAction>(
+                  itemBuilder: (context) => [
+                    _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                  ],
+                  onSelected: (value) => onMenuTap!(note, value),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+          );
+        },
       ),
+    );
+  }
+}
+
+class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
+  NoteRouteBuilder({
+    required this.builder,
+    RouteSettings? settings,
+    Duration transitionDuration = const Duration(milliseconds: 400),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 400),
+    bool maintainState = true,
+    bool fullscreenDialog = true,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return builder(context);
+          },
+          settings: settings,
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+          maintainState: maintainState,
+          fullscreenDialog: fullscreenDialog,
+        ) {
+    assert(opaque);
+  }
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    var curve = Curves.easeInOut;
+    var tween = CurveTween(curve: curve);
+    return FadeTransition(
+      opacity: animation.drive(tween),
+      child: child,
     );
   }
 }

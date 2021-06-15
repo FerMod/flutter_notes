@@ -1,39 +1,36 @@
 import 'dart:ui';
-
+import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NoteModel {
-  String? id;
+  String id;
   String? userId;
-  String? title;
-  String? content;
-  Color? color;
-  DateTime? lastEdit;
+  String title;
+  String content;
+  Color color;
+  DateTime lastEdit;
 
   DocumentReference? reference;
 
   NoteModel({
-    this.id,
+    String? id,
     this.userId,
-    String? title,
-    String? content,
-    Color? color,
+    this.title = '',
+    this.content = '',
+    this.color = const Color(0xFFFFFF8D),
     DateTime? lastEdit,
     this.reference,
-  })  : title = title ?? '',
-        content = content ?? '',
-        color = color ?? const Color(0xFFFFFF8D),
+  })  : id = id ?? Uuid().v4(),
         lastEdit = lastEdit ?? DateTime.now();
 
   factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data()!;
     return NoteModel(
       id: snapshot.id,
-      userId: data['userId'],
-      title: data['title'],
-      content: data['content'],
-      color: Color(data['color'] as int),
-      lastEdit: (data['lastEdit'] as Timestamp).toDate(),
+      userId: snapshot['userId'],
+      title: snapshot['title'],
+      content: snapshot['content'],
+      color: Color(snapshot['color'] as int),
+      lastEdit: (snapshot['lastEdit'] as Timestamp).toDate(),
       reference: snapshot.reference,
     );
   }
@@ -44,8 +41,8 @@ class NoteModel {
       'userId': userId,
       'title': title,
       'content': content,
-      'color': color!.value,
-      'lastEdit': Timestamp.fromDate(lastEdit!),
+      'color': color.value,
+      'lastEdit': Timestamp.fromDate(lastEdit),
     };
   }
 
@@ -70,5 +67,7 @@ class NoteModel {
   }
 
   @override
-  String toString() => 'NoteModel(id: "$id", userId: "$userId", title: "$title", content: "$content", color: $color, lastEdit: "$lastEdit",  reference: $reference)';
+  String toString() {
+    return 'NoteModel(id: $id, userId: $userId, title: $title, content: $content, color: $color, lastEdit: $lastEdit, reference: $reference)';
+  }
 }

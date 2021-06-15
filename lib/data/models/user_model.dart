@@ -1,42 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/material.dart';
-
-import '../../extensions/theme_mode_extension.dart';
-import '../../src/utils/locale_utils.dart';
+import 'package:uuid/uuid.dart';
 
 class UserModel {
-  String? id;
+  String id;
   String? name;
   String? image;
-  Locale locale;
-  ThemeMode? themeMode;
 
   DocumentReference? reference;
 
   UserModel({
-    this.id,
-    String? name,
-    String? image,
-    Locale? locale,
-    ThemeMode? themeMode,
+    String? id,
+    this.name,
+    this.image,
     this.reference,
-  })  : name = name ?? '',
-        image = image ?? '',
-        locale = locale ?? const Locale('und'),
-        themeMode = themeMode ?? ThemeMode.system;
+  }) : id = id ?? Uuid().v4();
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data();
-    if (data == null) return UserModel();
     return UserModel(
       id: snapshot.id,
-      name: snapshot.get('name'),
-      image: data['image'],
-      locale: LocaleUtils.localeFromLanguageTag(data['locale']),
-      themeMode: ThemeMode.values.firstWhereOrNull(
-        (e) => e.name == data['themeMode'],
-      ),
+      name: snapshot['name'],
+      image: snapshot['image'],
       reference: snapshot.reference,
     );
   }
@@ -46,8 +29,6 @@ class UserModel {
       // 'id': id,
       'name': name,
       'image': image,
-      'locale': locale.languageCode,
-      'themeMode': themeMode!.name,
     };
   }
 
@@ -55,20 +36,18 @@ class UserModel {
     String? id,
     String? name,
     String? image,
-    Locale? locale,
-    ThemeMode? themeMode,
     DocumentReference? reference,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       image: image ?? this.image,
-      locale: locale ?? this.locale,
-      themeMode: themeMode ?? this.themeMode,
       reference: reference ?? this.reference,
     );
   }
 
   @override
-  String toString() => 'UserModel(id: "$id", name: "$name", image: "$image", locale: ${locale.toLanguageTag()}, themeMode: $themeMode, reference: $reference)';
+  String toString() {
+    return 'UserModel(id: $id, name: $name, image: $image, reference: $reference)';
+  }
 }

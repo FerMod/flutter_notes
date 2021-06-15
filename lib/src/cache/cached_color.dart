@@ -68,8 +68,9 @@ class CachedColor {
   /// If the [relativeLuminance] is greater than the [contrastRatio], the
   /// returned color is [Colors.black], otherwise, returns [Colors.white].
   ///
-  /// See:
-  ///  - [CachedColor.brightness]
+  /// See also:
+  /// * [CachedColor.brightness], to obtain the estimated [Brightness] value of
+  ///   the color.
   Color contrastingColor() {
     return isBright ? Colors.black : Colors.white;
   }
