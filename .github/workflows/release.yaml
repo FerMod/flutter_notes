@@ -137,7 +137,7 @@ jobs:
 
       # Upload the build.
       - name: Get release tag version
-        run: echo "RELEASE_TAG=${GITHUB_REF#*/}" >> $GITHUB_ENV
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Upload release asset
         id: upload_release_asset
         uses: actions/upload-release-asset@v1
