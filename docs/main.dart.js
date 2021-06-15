@@ -9242,7 +9242,7 @@ l=n.n_(r)
 s=l==null
 if((s?g:l.b.length-1)===1)k=s?g:l.b[1]
 else k=g
-if(r==="/settings")return T.aCD(new T.adT(o,k),a,t.z)
+if(n.b.test("/settings"))return T.aCD(new T.adT(o,k),a,t.z)
 if($.axL()||$.axJ()||$.axI()||$.axK()){s=H.a([],t.Zt)
 r=$.a_
 q=t.U
