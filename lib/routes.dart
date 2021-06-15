@@ -85,7 +85,7 @@ class RouteConfiguration {
         final firstMatch = regExpPattern.firstMatch(settings.name!);
         final match = firstMatch?.groupCount == 1 ? firstMatch?.group(1) : null;
 
-        if (settings.name == AppRoute.settings) {
+        if (regExpPattern.hasMatch(AppRoute.settings)) {
           return SettingsRouteBuilder(
             builder: (context) => path.builder(context, match),
             settings: settings,
