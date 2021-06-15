@@ -6,6 +6,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - "v*" # Push events that match 'v*'. For example: 'v1.0', 'v20.15.10'
+
 jobs:
   create-release:
     name: Create draft release
@@ -23,6 +24,7 @@ jobs:
           release_name: Flutter Notes ${{ github.ref }}
           draft: true
           prerelease: false
+
   build:
     name: Build application
     runs-on: ${{ matrix.os }}
