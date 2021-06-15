@@ -1,5 +1,7 @@
 name: Deploy GitHub Pages
 on:
+  workflow_dispatch:
+    # Enable manual workflow run
   push:
     branches:
       - main

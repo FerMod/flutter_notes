@@ -1,5 +1,7 @@
 name: Draft Release
 on:
+  workflow_dispatch:
+    # Enable manual workflow run
   push:
     # Sequence of patterns matched against refs/tags
     tags:
