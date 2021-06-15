@@ -1,18 +1,17 @@
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+// import 'package:flutter_signin_button/flutter_signin_button.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
+import '../data/models.dart';
 import '../routes.dart';
 import '../widgets/checkbox_field.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
-import 'notes_list.dart';
 import 'sign_form.dart';
 import 'sign_up.dart';
 
@@ -41,7 +40,7 @@ class _SignInFormState extends State<_SignInForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final _userData = UserData<UserModel>(collection: 'users');
+  final _userData = DataProvider.userData;
 
   @override
   void initState() {
@@ -68,20 +67,32 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await _userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
+      return Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoute.notes,
+        ModalRoute.withName('/'), // TODO: Improve routes
       );
     } on FirebaseAuthException catch (e) {
-      developer.log('$e');
-      Message.show(context, message: e.message);
+      final localizations = AppLocalizations.of(context)!;
+      late String errorMessage;
+
+      switch (e.code) {
+        case 'user-disabled':
+          errorMessage = localizations.errorUserDisabled;
+          break;
+        case 'invalid-email':
+        case 'user-not-found':
+        case 'wrong-password':
+          errorMessage = localizations.errorSignIn;
+          break;
+        default:
+          errorMessage = localizations.errorUnknown;
+      }
+      Message.show(context, message: errorMessage);
     }
   }
 
   void _handleOnSignUp() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => SignUpScreen()),
-    );
+    Navigator.pushNamed(context, AppRoute.signUp);
   }
 
   @override
@@ -147,6 +158,47 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
+  List<Widget> signInMethods(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return [
+      // SignInButton(
+      //   Buttons.Google,
+      //   text: localizations.signInWith('Google'),
+      //   onPressed: () => developer.log('Sign in Google'),
+      // ),
+      // SignInButton(
+      //   Buttons.Facebook,
+      //   text: localizations.signInWith('Facebook'),
+      //   onPressed: () => developer.log('Sign in Facebook'),
+      // ),
+      // SignInButton(
+      //   Buttons.Twitter,
+      //   text: localizations.signInWith('Twitter'),
+      //   onPressed: () => developer.log('Sign in Twitter'),
+      // ),
+      // SignInButton(
+      //   Buttons.GitHub,
+      //   text: localizations.signInWith('GitHub'),
+      //   onPressed: () => developer.log('Sign in GitHub'),
+      // ),
+      // SignInButton(
+      //   Buttons.Yahoo,
+      //   text: localizations.signInWith('Yahoo'),
+      //   onPressed: () => developer.log('Sign in Method1'),
+      // ),
+      // SignInButton(
+      //   Buttons.Microsoft,
+      //   text: localizations.signInWith('Microsoft'),
+      //   onPressed: () => developer.log('Sign in Microsoft'),
+      // ),
+      // SignInButton(
+      //   Buttons.Apple,
+      //   text: localizations.signInWith('Apple'),
+      //   onPressed: () => developer.log('Sign in Apple'),
+      // ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -183,7 +235,7 @@ class _BodyWidget extends StatelessWidget {
       passwordInput,
       signUpButton,
       divider,
-      //...signInMethods,
+      //...signInMethods(context),
     ];
     return FormFields(fields: formFields);
   }
@@ -282,45 +334,4 @@ class _RememberMeCheckbox extends StatelessWidget {
     //   },
     // );
   }
-}
-
-List<Widget> signInMethods(BuildContext context) {
-  final localizations = AppLocalizations.of(context)!;
-  return [
-    SignInButton(
-      Buttons.Google,
-      text: localizations.signInWith('Google'),
-      onPressed: () => developer.log('Sign in Google'),
-    ),
-    SignInButton(
-      Buttons.Facebook,
-      text: localizations.signInWith('Facebook'),
-      onPressed: () => developer.log('Sign in Facebook'),
-    ),
-    SignInButton(
-      Buttons.Twitter,
-      text: localizations.signInWith('Twitter'),
-      onPressed: () => developer.log('Sign in Twitter'),
-    ),
-    SignInButton(
-      Buttons.GitHub,
-      text: localizations.signInWith('GitHub'),
-      onPressed: () => developer.log('Sign in GitHub'),
-    ),
-    SignInButton(
-      Buttons.Yahoo,
-      text: localizations.signInWith('Yahoo'),
-      onPressed: () => developer.log('Sign in Method1'),
-    ),
-    SignInButton(
-      Buttons.Microsoft,
-      text: localizations.signInWith('Microsoft'),
-      onPressed: () => developer.log('Sign in Microsoft'),
-    ),
-    SignInButton(
-      Buttons.Apple,
-      text: localizations.signInWith('Apple'),
-      onPressed: () => developer.log('Sign in Apple'),
-    ),
-  ];
 }

@@ -22,7 +22,7 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
   late List<CachedColor> _cachedColors;
   late List<Widget> _children;
   late List<bool> _isSelected;
-  int? _currentIndex;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -32,11 +32,11 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
     _isSelected = List.filled(colorsList.length, false);
     print(_isSelected.toString());
 
-    // Find the index of the intial value and update the selection state.
+    // Find the index of the initial value and update the selection state.
     // If none is found, set the first index as default.
     final index = colorsList.indexOf(widget.initialValue);
     _currentIndex = index != -1 ? index : 0;
-    _isSelected[_currentIndex!] = true;
+    _isSelected[_currentIndex] = true;
 
     // Init list of cached colors
     _cachedColors = List.generate(
@@ -55,11 +55,11 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
   }
 
   void _handleOnPressed(int index) {
-    assert(_isSelected[_currentIndex!] == true);
+    assert(_isSelected[_currentIndex] == true);
     if (index == _currentIndex) return;
 
     setState(() {
-      _isSelected[_currentIndex!] = false;
+      _isSelected[_currentIndex] = false;
       _isSelected[index] = true;
     });
     _currentIndex = index;
@@ -75,7 +75,7 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
       onPressed: _handleOnPressed,
       color: Colors.transparent,
       //selectedColor: _contrastColor(widget.colors[_currentIndex]), //theme.colorScheme.primary,
-      selectedColor: _cachedColors[_currentIndex!].contrastingColor(),
+      selectedColor: _cachedColors[_currentIndex].contrastingColor(),
       fillColor: Colors.transparent,
       // focusColor: null,
       // hoverColor: null,

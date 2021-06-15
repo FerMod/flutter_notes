@@ -92,13 +92,21 @@ class DividerText extends StatelessWidget {
   }
 }
 
+/// A class to help to perform multiple validations on a single [FormField].
+///
+/// See:
+/// * [Validation], that represents a single validation
 class FieldValidator<T> {
+  /// Creates a field validator that takes a list of [validations].
   const FieldValidator({
     this.validations = const [],
   });
 
+  /// The list of validations.
   final List<Validation<T?>> validations;
 
+  /// The error message of the first [Validation] satisfying [test], or `null`
+  /// if there are none.
   String? validate(T? value) {
     final validation = validations.firstWhereOrNull(
       (e) => e.test(value),
@@ -107,12 +115,20 @@ class FieldValidator<T> {
   }
 }
 
+/// Represents a [FormField] validation.
+///
+/// Normally used with [FieldValidator].
 class Validation<T> {
+  /// Creates a validation that takes as parameters the [errorMessage] of this
+  /// validation that should be shown when satisfying [test].
   const Validation({
     required this.errorMessage,
     required this.test,
   });
 
+  /// The message that explaining the why the validation failed.
   final String errorMessage;
+
+  /// The function signature that performs the validation.
   final bool Function(T? value) test;
 }

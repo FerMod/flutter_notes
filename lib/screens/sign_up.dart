@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:ui';
 
@@ -5,15 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/routes.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
-import '../routes.dart';
+import '../data/models.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
-import 'notes_list.dart';
 import 'sign_form.dart';
-import 'sign_in.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -42,7 +40,7 @@ class _SignUpFormState extends State<_SignUpForm> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final _userData = UserData<UserModel>(collection: 'users');
+  final _userData = DataProvider.userData;
 
   @override
   void initState() {
@@ -71,22 +69,42 @@ class _SignUpFormState extends State<_SignUpForm> {
     if (!formState.validate()) return;
 
     try {
-      final credential = await _userData.signUp(_emailController.text, _passwordController.text);
+      final credential = await _userData.signUp(
+        _emailController.text,
+        _passwordController.text,
+        data: {
+          'name': _usernameController.text,
+          'image': '',
+        },
+      );
       developer.log('$credential');
-      return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => NotesListScreen()),
-        ModalRoute.withName(AppRoute.notes), // TODO: Improve routes
+      return Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoute.notes,
+        ModalRoute.withName('/'), // TODO: Improve routes
       );
     } on FirebaseAuthException catch (e) {
-      developer.log(e.toString());
-      Message.show(context, message: e.message);
+      final localizations = AppLocalizations.of(context)!;
+      late String errorMessage;
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage = localizations.errorEmailAlreadyInUse;
+          break;
+        case 'invalid-email':
+          errorMessage = localizations.errorInvalidEmail;
+          break;
+        case 'weak-password':
+          errorMessage = localizations.errorWeakPassword;
+          break;
+        case 'operation-not-allowed':
+        default:
+          errorMessage = localizations.errorUnknown;
+      }
+      Message.show(context, message: errorMessage);
     }
   }
 
   void _handleOnSignIn() {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => SignInScreen(),
-    ));
+    Navigator.pushNamed(context, AppRoute.signIn);
   }
 
   @override
@@ -210,19 +228,12 @@ class _BodyWidget extends StatelessWidget {
 
     final signUpButton = _SignUpButton(onPressed: onSignUp);
 
-    final divider = DividerText(
-      text: Text(localizations.signInOr),
-      color: theme.cardColor,
-    );
-
     final formFields = [
       usernameInput,
       emailInput,
       passwordInput,
       confirmPasswordInput,
       signUpButton,
-      divider,
-      //...signInMethods,
     ];
 
     return FormFields(fields: formFields);

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1090" height="1090" version="1.1" viewBox="0 0 1090 1090" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <defs>
+  <linearGradient id="f" x1="5.7171" x2="17.351" y1="-12.378" y2="-12.111" gradientTransform="matrix(0 22.704 -23.94 0 -201.96 -12.007)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#daae00" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="e" x1="9.0059" x2="16.882" y1="-12.162" y2="-12.076" gradientTransform="matrix(0 22.704 -23.94 0 706.21 -12.006)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#daaf00" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="d" x2="7.5754" y1="8" y2="9.3376" gradientTransform="matrix(22.704 0 0 22.704 0 .0010201)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#948114" offset="0"/>
+   <stop stop-color="#202020" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="c" x1="8.2785" x2="17.125" y1="-12.229" y2="-12.182" gradientTransform="matrix(-35.608 0 79.203 37.716 2061.7 604.32)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#d9ae00" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="h" x1="500.52" x2="506.71" y1="196.87" y2="14.957" gradientTransform="matrix(1.2 0 0 1 -217.96 0)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#c59e01" stop-opacity=".15261" offset="0"/>
+   <stop stop-color="#fd5" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="g" x1="-.98146" x2="13.222" y1="-12.338" y2="-12.2" gradientTransform="matrix(22.704 0 0 23.94 -193.64 383.61)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#fffffe" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="a" x1="965.07" x2="812.08" y1="56.699" y2="357.29" gradientTransform="matrix(1.5754 0 0 1.5754 -627.1 .0017263)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#bda649" offset="0"/>
+   <stop stop-color="#978000" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="m" x1="17.217" x2="5.807" y1="-10.457" y2="-18.551" gradientTransform="matrix(-20.411 -29.372 30.971 -21.522 1337 164.46)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#dbae00" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="l" x1="-8.3952" x2="16.402" y1="-24.211" y2="-12.944" gradientTransform="matrix(-2.5317 8.054 -6.7356 -3.3658 961.12 63.924)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#feffff" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity=".01" offset="1"/>
+  </linearGradient>
+  <linearGradient id="o" x2="7.5754" y1="8" y2="9.3376" gradientTransform="matrix(0 -22.704 22.704 0 .001025 1089.8)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#948114" offset="0"/>
+   <stop stop-color="#202020" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="k" x1="6.2639" x2="17.003" y1="-11.859" y2="-12.017" gradientTransform="matrix(22.704 0 0 23.94 -12.007 1291.8)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#dabb00" offset="0"/>
+   <stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="n" x2="7.5754" y1="8" y2="9.3376" gradientTransform="matrix(-22.704 0 0 -22.704 1089.8 1089.8)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#948114" offset="0"/>
+   <stop stop-color="#202020" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="j" x1="5.7171" x2="16.904" y1="-12.378" y2="-12.347" gradientTransform="matrix(0 -22.704 23.94 0 1291.8 1101.8)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#daae00" offset="0"/>
+   <stop stop-color="#ffe037" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="i" x1="133.58" x2="205.64" y1="777.99" y2="774.28" gradientTransform="matrix(0 -1.2058 .91322 0 -609.01 1111.1)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#fff1a5" offset="0"/>
+   <stop stop-color="#ffdf2a" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="b" x1="17.706" x2="199.34" y1="766.33" y2="766.33" gradientTransform="matrix(-1.2058 0 0 -.91322 1111.3 1698.9)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#fffffe" offset="0"/>
+   <stop stop-color="#fffffe" stop-opacity=".01" offset="1"/>
+  </linearGradient>
+  <linearGradient id="p" x1="500.52" x2="506.71" y1="196.87" y2="14.957" gradientTransform="matrix(-.65229 -.93543 .84263 -.67536 950.47 663.98)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#c59e01" stop-opacity=".15261" offset="0"/>
+   <stop stop-color="#fd5" stop-opacity="0" offset="1"/>
+  </linearGradient>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <path d="m0.1 181.74 870.3-0.013 219.49 104.52 0.01 803.65h-1089.8z" fill="#ffe680"/>
+ <g transform="translate(.1 .10005)">
+  <path d="m0 181.64-0.1-181.74 488.99 0.09705 381.41 181.63z" fill="#ffd42a" stroke-width=".99976"/>
+  <path d="m488.9 0.0034334 600.89 286.14-311.91-0.00352-600.9-286.14z" fill="url(#c)" stroke-width="1.5754"/>
+  <path d="m1089.8 286.15-324.65 302.26-276.5-588.4z" fill="url(#a)" stroke-width="1.5754"/>
+  <path d="m0 181.64v-181.63l487.83 1.4771 382.09 180.7z" fill="url(#h)" stroke-width="1.0954"/>
+  <path d="m1089.8 286.15-257.82 208.08-343.06-494.23z" fill="#ffe680" stroke-width="0"/>
+  <path d="m985.5 370.5-153.54 123.72-343.07-494.22 324.98 154.57z" fill="#ffd42a" stroke-width="1.0117"/>
+  <path d="M 831.96,494.23 985.5,370.51 814.55,154.52 488.89,0.01 488.91,0 Z" display="none" fill="url(#m)" stroke-width="1.5754"/>
+  <path d="m985.5 370.5-153.5 123.58-343.11-494.08 325.66 154.52z" fill="url(#p)" stroke-width="1.1085"/>
+ </g>
+</svg>

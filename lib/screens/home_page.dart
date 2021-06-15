@@ -3,37 +3,20 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/firebase_service.dart';
-import '../data/models/user_model.dart';
+import '../data/models.dart';
 import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
-  final userData = UserData<UserModel>(collection: 'users');
-  // final _controller = StreamController<UserModel>.broadcast();
+  final userData = DataProvider.userData;
 
-  // HomePage() {
-  //   userData.stream((snapshot) => UserModel.fromSnapshot(snapshot)).pipe(_controller);
-  // }
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    // StreamSubscription<UserModel> _streamSubscription;
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.homepage),
       ),
       drawer: DrawerMenu(),
-      // body: Container(
-      //   padding: EdgeInsets.all(20.0),
-      //   child: DropdownButton(
-      //     value: options.locale.languageCode,
-      //     items: _dropdownMenuItems,
-      //     onChanged: (value) => AppOptions.update(
-      //       context,
-      //       options.copyWith(locale: Locale(value)),
-      //     ),
-      //   ),
-      // ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
