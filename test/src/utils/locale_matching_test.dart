@@ -1,10 +1,11 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_notes/src/utils/locale_matching.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('LocaleMatching', () {
+  group('LocaleMatcher', () {
     test('resolve locales only with language code', () {
       Locale expectedLocale;
       Locale resolvedLocale;
@@ -253,6 +254,41 @@ void main() {
           expectedLocale,
           Locale.fromSubtags(languageCode: 'en', countryCode: 'UK'),
         ],
+      );
+      expect(resolvedLocale.toLanguageTag(), expectedLocale.toLanguageTag());
+    });
+
+    test('returns the fallback locale if no match is found in desired locales', () {
+      Locale expectedLocale;
+      Locale resolvedLocale;
+
+      final desiredLocales = [
+        Locale.fromSubtags(languageCode: 'fr', countryCode: 'FR'),
+        Locale.fromSubtags(languageCode: 'es', countryCode: 'ES'),
+      ];
+
+      expectedLocale = Locale.fromSubtags(languageCode: 'es', countryCode: 'ES');
+      var supportedLocales = <Locale>[
+        expectedLocale,
+        Locale.fromSubtags(languageCode: 'eus', countryCode: 'ES'),
+        Locale.fromSubtags(languageCode: 'pl', countryCode: 'PL'),
+      ];
+
+      resolvedLocale = LocaleMatcher.localeListResolution(
+        desiredLocales,
+        supportedLocales,
+        fallback: () => supportedLocales.firstOrNull,
+      );
+      expect(resolvedLocale.toLanguageTag(), expectedLocale.toLanguageTag());
+
+      expectedLocale = Locale.fromSubtags(languageCode: 'es', countryCode: 'EU');
+      supportedLocales = [
+        Locale.fromSubtags(languageCode: 'en', countryCode: 'UK'),
+        expectedLocale,
+      ];
+      resolvedLocale = LocaleMatcher.localeListResolution(
+        desiredLocales,
+        supportedLocales,
       );
       expect(resolvedLocale.toLanguageTag(), expectedLocale.toLanguageTag());
     });
