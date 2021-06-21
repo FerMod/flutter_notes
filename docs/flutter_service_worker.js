@@ -581,8 +581,8 @@ const RESOURCES = {
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "main.dart.js": "84a6d89af2d178ebefd6fe443ff69f13",
 "init-firebase.js": "5a14d15b3150c42de51bb496357febc4",
-"index.html": "d70149805b4eb7973c93d504f6a144fe",
-"/": "d70149805b4eb7973c93d504f6a144fe"
+"index.html": "e07cb6e3d1bfe9376777e60d6daee43b",
+"/": "e07cb6e3d1bfe9376777e60d6daee43b"
 };
 
 // The application shell files that are downloaded before a service worker can
