@@ -208,6 +208,7 @@ class _BodyWidget extends StatelessWidget {
       labelText: localizations.email,
       icon: Icon(Icons.person, color: theme.iconTheme.color),
       controller: emailController,
+      keyboardType: TextInputType.emailAddress,
       validations: [
         _validateNotEmpty(context, localizations.username),
       ],

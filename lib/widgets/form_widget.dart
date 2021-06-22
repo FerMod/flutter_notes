@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FormFields extends StatelessWidget {
   const FormFields({
@@ -36,6 +37,8 @@ class TextFormInput extends FormField<String> {
     TextInputAction? textInputAction,
     TextEditingController? controller,
     bool obscureText = false,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     this.validations = const [],
     AutovalidateMode? autovalidateMode,
   }) : super(
@@ -45,6 +48,8 @@ class TextFormInput extends FormField<String> {
             return TextFormField(
               controller: controller,
               textInputAction: textInputAction,
+              inputFormatters: inputFormatters,
+              keyboardType: keyboardType,
               validator: validator.validate,
               autovalidateMode: autovalidateMode,
               obscureText: obscureText,
