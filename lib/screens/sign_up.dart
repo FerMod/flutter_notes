@@ -66,6 +66,9 @@ class _SignUpFormState extends State<_SignUpForm> {
 
   Future _handleOnSignUp() async {
     final formState = _formKey.currentState!;
+    _emailController.value = _emailController.value.copyWith(
+      text: _emailController.text,
+    );
     if (!formState.validate()) return;
 
     try {

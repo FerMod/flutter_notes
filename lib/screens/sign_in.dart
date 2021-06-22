@@ -62,6 +62,9 @@ class _SignInFormState extends State<_SignInForm> {
 
   Future _handleOnSignIn() async {
     final formState = _formKey.currentState!;
+    _emailController.value = _emailController.value.copyWith(
+      text: _emailController.text.trim(),
+    );
     if (!formState.validate()) return;
 
     try {
@@ -204,7 +207,7 @@ class _BodyWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final usernameInput = TextFormInput(
+    final emailInput = TextFormInput(
       labelText: localizations.email,
       icon: Icon(Icons.person, color: theme.iconTheme.color),
       controller: emailController,
@@ -232,7 +235,7 @@ class _BodyWidget extends StatelessWidget {
     );
 
     final formFields = [
-      usernameInput,
+      emailInput,
       passwordInput,
       signUpButton,
       divider,
