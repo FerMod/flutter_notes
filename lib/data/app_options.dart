@@ -138,10 +138,10 @@ class AppOptions {
     return brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
   }
 
-  /// Creates the settings used in the app from a Json string.
+  /// Creates an instance of this class from a JSON object.
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
 
-  /// Creates the settings used in the app from a map.
+  /// Creates an instance of this class from a map.
   factory AppOptions.fromMap(Map<String, dynamic> map) {
     return AppOptions(
       themeMode: ThemeMode.values.firstWhere(
@@ -231,7 +231,7 @@ class AppOptions {
     AppOptions.update(context, objectCopy);
   }
 
-  /// Returns a Json string of this class.
+  /// Returns a representation of this object as a JSON object.
   String toJson() => json.encode(toMap());
 
   /// Converts this class to a [Map].
