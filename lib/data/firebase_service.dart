@@ -47,8 +47,8 @@ abstract class FirebaseAuthentication {
 /// * <https://firebase.google.com/docs/firestore/data-model#documents>
 class Document<T> extends FirebaseDocument<T> {
   /// An object that refers to a Firestore document path.
-  final DocumentReference reference;
-  final Converter<T, DocumentSnapshot> converter;
+  final DocumentReference<Map<String, dynamic>> reference;
+  final Converter<T, DocumentSnapshot<Map<String, dynamic>>> converter;
 
   /// Creates a document with the specified [reference].
   const Document({
@@ -57,7 +57,7 @@ class Document<T> extends FirebaseDocument<T> {
   });
 
   /// Creates a document with a [reference] with the specified [path].
-  factory Document.path(String path, Converter<T, DocumentSnapshot> converter) {
+  factory Document.path(String path, Converter<T, DocumentSnapshot<Map<String, dynamic>>> converter) {
     return Document(
       reference: FirebaseFirestore.instance.doc(path),
       converter: converter,
@@ -104,9 +104,9 @@ class Document<T> extends FirebaseDocument<T> {
 /// * <https://firebase.google.com/docs/firestore/data-model#collections>
 class Collection<T> extends FirebaseCollection<T> {
   /// An object that refers to a Firestore collection path.
-  final CollectionReference reference;
+  final CollectionReference<Map<String, dynamic>> reference;
 
-  final Converter<T, DocumentSnapshot> converter;
+  final Converter<T, DocumentSnapshot<Map<String, dynamic>>> converter;
 
   /// Creates a collection with the specified [reference].
   const Collection({
@@ -115,7 +115,7 @@ class Collection<T> extends FirebaseCollection<T> {
   });
 
   /// Creates a collection with a [reference] with the specified [path].
-  factory Collection.path(String path, Converter<T, DocumentSnapshot> converter) {
+  factory Collection.path(String path, Converter<T, DocumentSnapshot<Map<String, dynamic>>> converter) {
     return Collection(
       reference: FirebaseFirestore.instance.collection(path),
       converter: converter,
@@ -123,14 +123,14 @@ class Collection<T> extends FirebaseCollection<T> {
   }
 
   @override
-  Future<List<T>> data([QueryFunction<Query>? query]) async {
+  Future<List<T>> data([QueryFunction<Query<Map<String, dynamic>>>? query]) async {
     final queryFunction = query?.call(reference) ?? reference;
     final snapshots = await queryFunction.get();
     return snapshots.docs.map(converter).toList();
   }
 
   @override
-  Stream<List<T>> stream([QueryFunction<Query>? query]) {
+  Stream<List<T>> stream([QueryFunction<Query<Map<String, dynamic>>>? query]) {
     final queryFunction = query?.call(reference) ?? reference;
     return queryFunction.snapshots().map((snapshot) => snapshot.docs.map(converter).toList());
   }
@@ -235,7 +235,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     required this.collection,
   });
 
-  factory UserData.path(String path, Converter<T, DocumentSnapshot> converter) {
+  factory UserData.path(String path, Converter<T, DocumentSnapshot<Map<String, dynamic>>> converter) {
     return UserData(collection: Collection<T>.path(path, converter));
   }
 
@@ -244,7 +244,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final user = _auth.currentUser;
     if (user == null) return null;
 
-    final doc = Document<T?>.path('$collection/${user.uid}', collection.converter);
+    final doc = Document<T?>.path('${collection.reference.path}/${user.uid}', collection.converter);
     return doc.data();
   }
 
@@ -257,7 +257,7 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       }
 
       print('User is signed in!');
-      final doc = Document<T?>.path('$collection/${user.uid}', collection.converter);
+      final doc = Document<T?>.path('${collection.reference.path}/${user.uid}', collection.converter);
       return doc.stream();
     });
   }
