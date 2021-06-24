@@ -31,6 +31,7 @@ class AboutAppWidget extends StatelessWidget {
         */
 
         final data = snapshot.hasData ? snapshot.data! : defaultPackageInfo;
+        final logoAssetName = 'assets/images/flutter_notes_logo.png';
         final legalNotice = 'Copyright (C) 2021  Ferran Tudela\n'
             '\n'
             'This program is free software: you can redistribute it and/or modify '
@@ -46,11 +47,24 @@ class AboutAppWidget extends StatelessWidget {
             'You should have received a copy of the GNU General Public License '
             'along with this program.  If not, see <https://www.gnu.org/licenses/>.';
 
+        final version = StringBuffer(data.version);
+        if (data.buildNumber.isNotEmpty) {
+          version.write('(build: ${data.buildNumber})');
+        }
+
+        final iconTheme = IconTheme.of(context);
         return AboutListTile(
           icon: const Icon(Icons.info_outline),
           applicationName: data.appName,
-          applicationVersion: '${data.version} (build: ${data.buildNumber})',
-          //applicationIcon: ImageIcon(),
+          applicationVersion: '$version',
+          applicationIcon: Image(
+            image: AssetImage(logoAssetName),
+            width: iconTheme.size,
+            height: iconTheme.size,
+            color: null,
+            fit: BoxFit.scaleDown,
+            excludeFromSemantics: true,
+          ),
           applicationLegalese: legalNotice,
           child: Text(localizations.aboutApp),
         );
