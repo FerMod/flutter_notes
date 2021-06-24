@@ -244,7 +244,10 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
     final user = _auth.currentUser;
     if (user == null) return null;
 
-    final doc = Document<T?>.path('${collection.reference.path}/${user.uid}', collection.converter);
+    final doc = Document<T?>(
+      reference: collection.reference.doc(user.uid),
+      converter: collection.converter,
+    );
     return doc.data();
   }
 
@@ -257,7 +260,10 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
       }
 
       print('User is signed in!');
-      final doc = Document<T?>.path('${collection.reference.path}/${user.uid}', collection.converter);
+      final doc = Document<T?>(
+        reference: collection.reference.doc(user.uid),
+        converter: collection.converter,
+      );
       return doc.stream();
     });
   }
