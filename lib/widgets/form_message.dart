@@ -110,12 +110,11 @@ class MessageState extends State<Message> {
   }
 
   void _handleOnChange(MessageData newData) {
-    if (data != newData) {
-      setState(() {
-        data = newData;
-      });
-      widget.onChange?.call(newData);
-    }
+    if (data == newData) return;
+    setState(() {
+      data = newData;
+    });
+    widget.onChange?.call(newData);
   }
 
   void show({String? message, List<Widget>? actions}) {
