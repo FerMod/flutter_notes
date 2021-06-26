@@ -190,7 +190,7 @@ class FormMessageWidget extends StatelessWidget {
 
     Widget messageWidget = MessageWidget(
       leading: const Icon(Icons.warning_rounded),
-      title: titleWidget,
+      content: titleWidget,
       decoration: BoxDecoration(
         border: Border.all(
           width: 2.0,
