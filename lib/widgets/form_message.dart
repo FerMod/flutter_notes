@@ -82,8 +82,11 @@ class Message extends StatefulWidget {
   MessageState createState() => MessageState();
 }
 
+/// The state for a [Message] widget.
+///
+/// A reference to this class can be obtained by calling [Message.of].
 class MessageState extends State<Message> {
-  /// The data contained in the message
+  /// The data contained in the message.
   late MessageData data;
 
   @override
@@ -93,7 +96,7 @@ class MessageState extends State<Message> {
   }
 
   @override
-  void didUpdateWidget(covariant Message oldWidget) {
+  void didUpdateWidget(Message oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       data = widget.data;
@@ -131,7 +134,7 @@ class MessageState extends State<Message> {
       message: this,
       child: Column(
         children: [
-          data.isVisible ? FormMessageWidget(onChange: _handleOnChange) : SizedBox.shrink(),
+          data.isVisible ? _MessageCard(data: data) : const SizedBox.shrink(),
           Expanded(child: widget.child),
         ],
       ),
@@ -158,26 +161,25 @@ class _InheritedMessage extends InheritedWidget {
   bool updateShouldNotify(_InheritedMessage old) => message.data != old.message.data;
 }
 
-class FormMessageWidget extends StatelessWidget {
-  const FormMessageWidget({
+class _MessageCard extends StatelessWidget {
+  const _MessageCard({
     Key? key,
-    this.onChange,
+    required this.data,
   }) : super(key: key);
 
-  final ValueChanged<MessageData>? onChange;
+  final MessageData data;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final messageData = Message.of(context)!.data;
 
     Widget? titleWidget;
-    if (messageData.message != null) {
-      titleWidget = SelectableText(messageData.message!);
+    if (data.message != null) {
+      titleWidget = SelectableText(data.message!);
     }
 
     List<Widget>? actionsList;
-    if (messageData.actions.isEmpty) {
+    if (data.actions.isEmpty) {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
         TextButton(
@@ -196,7 +198,7 @@ class FormMessageWidget extends StatelessWidget {
           color: theme.colorScheme.error,
         ),
       ),
-      actions: actionsList ?? messageData.actions,
+      actions: actionsList ?? data.actions,
     );
 
     return Card(
