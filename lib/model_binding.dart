@@ -12,7 +12,7 @@ class _ModelBindingScope<T> extends InheritedWidget {
     required this.modelBindingState,
     bool updateShouldNotify = false,
     required Widget child,
-  })   : _updateShouldNotify = updateShouldNotify,
+  })  : _updateShouldNotify = updateShouldNotify,
         super(key: key, child: child);
 
   final T model;
