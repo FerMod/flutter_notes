@@ -1,9 +1,7 @@
-import 'dart:ui';
+import 'dart:ui' show Locale;
 
-class LocaleUtils {
-  const LocaleUtils._();
-
-  /// Returns a Locale from a valid Unicode BCP47 Locale Identifier. If
+extension LocaleUtils on Locale {
+  /// Creates a Locale from a valid Unicode BCP47 Locale Identifier. If
   /// [languageTag] is null or empty, it will return a locale with a language
   /// code of "und", an undefined language code.
   ///

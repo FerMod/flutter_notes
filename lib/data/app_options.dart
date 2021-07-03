@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 import '../model_binding.dart';
-import '../src/utils/locale_utils.dart';
+import '../src/extensions/locale_utils.dart';
 import 'local/app_shared_preferences.dart';
 
 /// The system-reported text scale.

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter_notes/src/utils/locale_utils.dart';
+import 'package:flutter_notes/src/extensions/locale_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
