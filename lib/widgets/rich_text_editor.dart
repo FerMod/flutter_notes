@@ -71,23 +71,20 @@ class _RichTextEditorState extends State<RichTextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // padding: EdgeInsets.zero,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-            // padding: EdgeInsets.zero,
-            alignment: Alignment.center,
-            margin: EdgeInsets.zero,
-            decoration: BoxDecoration(color: Theme.of(context).bottomAppBarColor),
-            child: _buildActionBar(),
-          ),
-          Expanded(
-            child: _buildTextField(),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Container(
+          // padding: EdgeInsets.zero,
+          alignment: Alignment.center,
+          margin: EdgeInsets.zero,
+          decoration: BoxDecoration(color: Theme.of(context).bottomAppBarColor),
+          child: _buildActionBar(),
+        ),
+        Expanded(
+          child: _buildTextField(),
+        ),
+      ],
     );
   }
 }

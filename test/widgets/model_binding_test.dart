@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:flutter_notes/model_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
@@ -542,7 +544,6 @@ void main() {
       expect(log, equals(<TestModel>[first.initialModel, second.initialModel]));
     });
 
-    // ignore: avoid_unnecessary_containers
     testWidgets('Update model when removing node', (tester) async {
       final widget = Container(
         child: ModelBinding(

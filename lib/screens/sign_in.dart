@@ -127,10 +127,8 @@ class _SignInFormState extends State<_SignInForm> {
             margin: const EdgeInsets.all(8.0),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: _NoAccount(
-                  onPressed: _handleOnSignUp,
-                ),
+              child: _NoAccount(
+                onPressed: _handleOnSignUp,
               ),
             ),
           ),
