@@ -108,7 +108,7 @@ class SettingListTile extends StatelessWidget {
 }
 
 class SettingRadioListItems<T> extends StatelessWidget {
-  SettingRadioListItems({
+  const SettingRadioListItems({
     Key? key,
     required this.selectedOption,
     required this.optionsMap,

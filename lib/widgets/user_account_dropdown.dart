@@ -342,7 +342,7 @@ class _AccountDetailsLayout extends MultiChildLayoutDelegate {
 }
 
 class _AnimatedArrow extends AnimatedWidget {
-  _AnimatedArrow({
+  const _AnimatedArrow({
     Key? key,
     this.onTap,
     this.height,
