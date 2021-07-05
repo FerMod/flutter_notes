@@ -51,7 +51,7 @@ class SignFormScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: title,
-          actions: [
+          actions: const [
             SettingsScreenButton(),
           ],
         ),

@@ -21,7 +21,7 @@ class SignUpScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return SignFormScreen(
       title: Text(localizations.signUp),
-      builder: (context) => _SignUpForm(),
+      builder: (context) => const _SignUpForm(),
     );
   }
 }

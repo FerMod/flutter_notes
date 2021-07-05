@@ -31,8 +31,8 @@ class AboutAppWidget extends StatelessWidget {
         */
 
         final data = snapshot.hasData ? snapshot.data! : defaultPackageInfo;
-        final logoAssetName = 'assets/images/flutter_notes_logo.png';
-        final legalNotice = 'Copyright (C) 2021  Ferran Tudela\n'
+        const logoAssetName = 'assets/images/flutter_notes_logo.png';
+        const legalNotice = 'Copyright (C) 2021  Ferran Tudela\n'
             '\n'
             'This program is free software: you can redistribute it and/or modify '
             'it under the terms of the GNU General Public License as published by '

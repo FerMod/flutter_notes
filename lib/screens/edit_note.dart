@@ -127,9 +127,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         const PopupMenuDivider(),
         PopupMenuItem(
           value: Commands.delete,
-          child: ListTile(leading: Icon(Icons.delete), title: Text(localizations.delete)),
+          child: ListTile(leading: const Icon(Icons.delete), title: Text(localizations.delete)),
         ),
-        PopupMenuDivider(),
+        const PopupMenuDivider(),
       ],
     );
   }
@@ -137,7 +137,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   Future<ChangesAction> _showSaveChangesDialog() async {
     final dialogResult = await showDialog<ChangesAction>(
       context: context,
-      builder: (context) => _SaveChangesAlertDialog(),
+      builder: (context) => const _SaveChangesAlertDialog(),
     );
     return dialogResult ?? ChangesAction.none;
   }
@@ -173,7 +173,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         child: CardHero(
           tag: 'note-${widget.note.id}',
           color: _color,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(4.0)),
           ),
           margin: EdgeInsets.zero,
@@ -430,19 +430,19 @@ extension PredefinedColorExtension on PredefinedColor {
   Color get color {
     switch (this) {
       case PredefinedColor.yellow:
-        return Color(0xFFE6B904);
+        return const Color(0xFFE6B904);
       case PredefinedColor.green:
-        return Color(0xFF65BA5A);
+        return const Color(0xFF65BA5A);
       case PredefinedColor.pink:
-        return Color(0xFFEA86C2);
+        return const Color(0xFFEA86C2);
       case PredefinedColor.purple:
-        return Color(0xFFC78EFF);
+        return const Color(0xFFC78EFF);
       case PredefinedColor.blue:
-        return Color(0xFF5AC0E7);
+        return const Color(0xFF5AC0E7);
       case PredefinedColor.grey:
-        return Color(0xFFAAAAAA);
+        return const Color(0xFFAAAAAA);
       case PredefinedColor.black:
-        return Color(0xFF454545);
+        return const Color(0xFF454545);
     }
   }
 }

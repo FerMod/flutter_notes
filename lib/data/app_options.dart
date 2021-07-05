@@ -40,7 +40,7 @@ List<Locale> get deviceLocales {
 List<Locale>? _lastDeviceLocales;
 
 Locale? _deviceResolvedLocale;
-Locale get deviceResolvedLocale => _deviceResolvedLocale ?? Locale.fromSubtags();
+Locale get deviceResolvedLocale => _deviceResolvedLocale ?? const Locale.fromSubtags();
 set deviceResolvedLocale(Locale locale) {
   final equalLocales = const IterableEquality<Locale>().equals(_lastDeviceLocales, deviceLocales);
   if (!equalLocales) {
@@ -116,7 +116,7 @@ class AppOptions {
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
   bool isValidLocale() {
-    return _locale != Locale.fromSubtags();
+    return _locale != const Locale.fromSubtags();
   }
 
   /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.

@@ -86,7 +86,7 @@ class DividerText extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Divider(thickness: 2.0),
+        const Divider(thickness: 2.0),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           color: color,

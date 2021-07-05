@@ -13,7 +13,7 @@ class UserModel {
     this.name,
     this.image,
     this.reference,
-  }) : id = id ?? Uuid().v4();
+  }) : id = id ?? const Uuid().v4();
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     return UserModel(

@@ -66,9 +66,9 @@ class SettingsScreen extends StatelessWidget {
       subtitleWidget = Text(user.email ?? '');
     } else {
       final localizations = AppLocalizations.of(context)!;
-      iconWidget = FittedBox(
+      iconWidget = const FittedBox(
         fit: BoxFit.contain,
-        child: const Icon(
+        child: Icon(
           Icons.account_circle,
           size: UserAvatar.alternativeImageIconSize,
         ),
@@ -114,21 +114,21 @@ class SettingsScreen extends StatelessWidget {
         icon: const Icon(Icons.translate),
         title: Text(localizations.settingsLanguage),
         onTap: () {
-          _navigateSetting(context, LocalizationSettingScreen());
+          _navigateSetting(context, const LocalizationSettingScreen());
         },
       ),
       SettingListTile(
         icon: const Icon(Icons.palette),
         title: Text(localizations.settingsTheme),
         onTap: () {
-          _navigateSetting(context, ThemeModeSettingScreen());
+          _navigateSetting(context, const ThemeModeSettingScreen());
         },
       ),
       SettingListTile(
         icon: const Icon(Icons.format_size),
         title: Text(localizations.settingsTextScale),
         onTap: () {
-          _navigateSetting(context, TextScaleSettingScreen());
+          _navigateSetting(context, const TextScaleSettingScreen());
         },
       ),
       const Divider(),
@@ -252,7 +252,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
   }
 
   bool _isSupportedLocale() {
-    return deviceResolvedLocale != Locale.fromSubtags();
+    return deviceResolvedLocale != const Locale.fromSubtags();
   }
 
   @override

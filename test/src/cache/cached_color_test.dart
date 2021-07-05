@@ -9,23 +9,23 @@ void main() {
 
     setUpAll(() {
       uniqueColors = [
-        Color(0xFFFFFFFF), // white
-        Color(0xFFE6B904), // yellow
-        Color(0xFF65BA5A), // green
-        Color(0xFFC78EFF), // purple
-        Color(0xFF5AC0E7), // blue
-        Color(0xFFFF5722), // dark orange
-        Color(0xFF3E2723), // dark brown
-        Color(0xFF000000), // black
+        const Color(0xFFFFFFFF), // white
+        const Color(0xFFE6B904), // yellow
+        const Color(0xFF65BA5A), // green
+        const Color(0xFFC78EFF), // purple
+        const Color(0xFF5AC0E7), // blue
+        const Color(0xFFFF5722), // dark orange
+        const Color(0xFF3E2723), // dark brown
+        const Color(0xFF000000), // black
       ];
 
       repeatingColors = [
-        Color(0xFFE6B904), // yellow
-        Color(0xFF000000), // black
-        Color(0xFFE6B904), // yellow
-        Color(0xFFF44336), // red
-        Color(0xFFF44336), // red
-        Color(0xFF000000), // black
+        const Color(0xFFE6B904), // yellow
+        const Color(0xFF000000), // black
+        const Color(0xFFE6B904), // yellow
+        const Color(0xFFF44336), // red
+        const Color(0xFFF44336), // red
+        const Color(0xFF000000), // black
       ];
     });
 

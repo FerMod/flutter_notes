@@ -33,7 +33,7 @@ class LocaleMatcher {
   /// to each other) into account.
   static Locale localeListResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
     var locale = _localeResolution(desiredLocales, supportedLocales);
-    if (locale != Locale.fromSubtags()) {
+    if (locale != const Locale.fromSubtags()) {
       return locale;
     }
 
@@ -72,7 +72,7 @@ class LocaleMatcher {
   /// to each other) into account.
   static Locale localeLookup(Locale desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
     final locale = _localeResolution([desiredLocale], supportedLocales);
-    if (locale != Locale.fromSubtags()) {
+    if (locale != const Locale.fromSubtags()) {
       return locale;
     }
 
@@ -103,8 +103,8 @@ class LocaleMatcher {
   static Locale _localeResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales) {
     // Set best supported the first locale, if no desired locales are found that
     // should be used as the default one.
-    // var bestSupported = supportedLocales.isNotEmpty ? supportedLocales.first : Locale.fromSubtags();
-    var bestSupported = Locale.fromSubtags();
+    // var bestSupported = supportedLocales.isNotEmpty ? supportedLocales.first : const Locale.fromSubtags();
+    var bestSupported = const Locale.fromSubtags();
     if (desiredLocales?.isEmpty ?? true) return bestSupported;
 
     var bestWeightedDistance = double.infinity;

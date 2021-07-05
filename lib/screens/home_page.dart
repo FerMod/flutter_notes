@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign In Anonymously)');
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign In)');
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign Up)');
@@ -51,7 +51,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign Out)');
@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 developer.log('Current user: ${userData.currentUser}');

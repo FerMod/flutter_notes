@@ -22,7 +22,7 @@ void main() {
     }
 
     test('returns a undefined locale if cannot parse language tag', () {
-      final languageCode = 'thisShouldBeWrong';
+      const languageCode = 'thisShouldBeWrong';
       String? scriptCode;
       String? countryCode = 'EE';
       final languageTag = createlanguageTag(
@@ -32,12 +32,12 @@ void main() {
       );
       expect(
         LocaleUtils.localeFromLanguageTag(languageTag),
-        Locale.fromSubtags(),
+        const Locale.fromSubtags(),
       );
     });
 
     test('returns a locale with the corect language code', () {
-      final languageCode = 'en';
+      const languageCode = 'en';
       String? scriptCode;
       String? countryCode;
       final languageTag = createlanguageTag(

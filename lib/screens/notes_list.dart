@@ -80,7 +80,7 @@ class NotesListScreen extends StatelessWidget {
   Future<bool> _showAlertDialog(BuildContext context) async {
     final dialogResult = await showDialog<bool>(
       context: context,
-      builder: (context) => _DeleteAlertDialog(),
+      builder: (context) => const _DeleteAlertDialog(),
     );
     return dialogResult ?? false;
   }
@@ -96,12 +96,12 @@ class NotesListScreen extends StatelessWidget {
           onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
               ? null
               : () {
-                  _navigate(context, SignInScreen());
+                  _navigate(context, const SignInScreen());
                 },
           userData: notesListModel.userData,
         ),
         titleSpacing: 0.0,
-        actions: [
+        actions: const [
           SettingsScreenButton(),
         ],
       ),

@@ -41,7 +41,7 @@ class DrawerMenu extends StatelessWidget {
       );
     } else {
       headerWidget = TitleDrawerHeader(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: ListTile(
           leading: const Icon(
             Icons.account_circle,

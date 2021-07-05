@@ -72,7 +72,7 @@ abstract class SearchScreenDelegate<T> {
           }
           return !isVisible;
         },
-        child: BackButton(),
+        child: const BackButton(),
       );
     }
     return leadingWidget;
@@ -131,7 +131,7 @@ abstract class SearchScreenDelegate<T> {
           InputDecorationTheme(
             isDense: true,
             hintStyle: searchFieldHintStyle,
-            border: UnderlineInputBorder(),
+            border: const UnderlineInputBorder(),
             enabledBorder: inputBorder,
             focusedBorder: inputBorder,
           ),
@@ -352,7 +352,7 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
           hintText: searchFieldLabel,
           isDense: true,
           suffixIcon: clearButton,
-          suffixIconConstraints: BoxConstraints(
+          suffixIconConstraints: const BoxConstraints(
             minHeight: 32.0,
             minWidth: 32.0,
           ),

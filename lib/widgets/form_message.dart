@@ -203,7 +203,7 @@ class _MessageCard extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: messageWidget,
     );
   }
