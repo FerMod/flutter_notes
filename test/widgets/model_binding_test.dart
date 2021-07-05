@@ -42,7 +42,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel(value: 1);
+        const firstModel = TestModel(value: 1);
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -51,7 +51,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 1);
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -60,7 +60,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final thirdModel = TestModel(value: 3);
+        const thirdModel = TestModel(value: 3);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -78,7 +78,7 @@ void main() {
           },
         );
 
-        TestModel? firstModel = TestModel(value: 1);
+        const firstModel = TestModel(value: 1);
         final firstWidget = ModelBinding<TestModel?>(
           initialModel: firstModel,
           child: builder,
@@ -87,7 +87,7 @@ void main() {
 
         expect(log, equals(<TestModel?>[firstModel]));
 
-        TestModel? secondModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 1);
         final secondWidget = ModelBinding<TestModel?>(
           initialModel: secondModel,
           child: builder,
@@ -96,7 +96,7 @@ void main() {
 
         expect(log, equals(<TestModel?>[firstModel]));
 
-        TestModel? thirdModel = TestModel(value: 3);
+        TestModel? thirdModel = const TestModel(value: 3);
         final thirdWidget = ModelBinding<TestModel?>(
           initialModel: thirdModel,
           child: builder,
@@ -117,7 +117,7 @@ void main() {
       testWidgets('returns correctly the model of `dynamic` type', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        final model = TestModel();
+        final model = const TestModel();
 
         ModelBinding build() {
           return ModelBinding(
@@ -144,7 +144,7 @@ void main() {
 
       testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
-        final model = TestModel();
+        const model = TestModel();
 
         ModelBinding buildOfTypeDynamic() {
           return ModelBinding(
@@ -213,8 +213,8 @@ void main() {
       testWidgets('updates correctly a model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
+        const firstModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 2);
 
         ModelBinding<TestModel> build() {
           return ModelBinding<TestModel>(
@@ -255,7 +255,7 @@ void main() {
       testWidgets('updates correctly a nullable model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        TestModel? firstModel = TestModel(value: 1);
+        TestModel? firstModel = const TestModel(value: 1);
         TestModel? secondModel;
 
         ModelBinding<TestModel?> build() {
@@ -296,7 +296,7 @@ void main() {
 
       testWidgets('throws when no ancestor is found', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
-        final model = TestModel();
+        const model = TestModel();
         await tester.pumpWidget(Container(key: globalKey));
 
         expect(
@@ -313,8 +313,8 @@ void main() {
         final globalKeyDynamic = GlobalKey(debugLabel: 'ModelBinding<dynamic> Key');
         final globalKeyObject = GlobalKey(debugLabel: 'ModelBinding<Object> Key');
 
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
+        const firstModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 2);
 
         ModelBinding<dynamic> buildOfTypeDynamic() {
           return ModelBinding<dynamic>(
@@ -375,8 +375,8 @@ void main() {
       testWidgets('updates correctly the model from `dynamic` type', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
+        const firstModel =  TestModel(value: 1);
+        const secondModel =  TestModel(value: 2);
 
         ModelBinding build() {
           return ModelBinding(
@@ -426,7 +426,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel();
+        const firstModel = TestModel();
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -436,7 +436,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel();
+        const secondModel = TestModel();
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -446,7 +446,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final thirdModel = TestModel(value: 1);
+        const thirdModel = TestModel(value: 1);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -468,7 +468,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel();
+        const firstModel = TestModel();
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -482,7 +482,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel();
+        const secondModel = TestModel();
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -496,7 +496,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel, secondModel]));
 
-        final thirdModel = TestModel(value: 1);
+        const thirdModel = TestModel(value: 1);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -518,7 +518,7 @@ void main() {
       ModelBinding<TestModel> build() {
         return ModelBinding(
           key: UniqueKey(),
-          initialModel: TestModel(),
+          initialModel: const TestModel(),
           child: Container(
             key: globalKey,
             child: Builder(
@@ -542,17 +542,18 @@ void main() {
       expect(log, equals(<TestModel>[first.initialModel, second.initialModel]));
     });
 
+    // ignore: avoid_unnecessary_containers
     testWidgets('Update model when removing node', (tester) async {
       final widget = Container(
         child: ModelBinding(
-          initialModel: TestModel(value: 1),
+          initialModel: const TestModel(value: 1),
           child: FlipWidget(
             left: Container(
               child: ModelBinding(
-                initialModel: TestModel(value: 2),
+                initialModel: const TestModel(value: 2),
                 child: Container(
                   child: ModelBinding(
-                    initialModel: TestModel(value: 3),
+                    initialModel: const TestModel(value: 3),
                     child: Container(
                       child: Builder(builder: (context) {
                         final testModel = ModelBinding.of<TestModel>(context);
@@ -566,7 +567,7 @@ void main() {
             ),
             right: Container(
               child: ModelBinding(
-                initialModel: TestModel(value: 2),
+                initialModel: const TestModel(value: 2),
                 child: Container(
                   child: Container(
                     child: Builder(builder: (context) {

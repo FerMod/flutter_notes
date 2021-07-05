@@ -88,7 +88,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
       );
     }
 
-    return load(
+    return _load(
       () => futureResult,
       notifyIsLoading: notifyIsLoading,
     );
@@ -103,7 +103,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   ///
   /// See:
   /// * [isLoading], to obtain if is currently loading.
-  Future<List<NoteModel>> load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
+  Future<List<NoteModel>> _load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
 
@@ -146,6 +146,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     );
   }
 
+  /// Returns a stream from the the result stream of the [operation] execution.
   Stream<List<NoteModel>> _pipeStream(Stream<List<NoteModel>> operation) {
     //late StreamController<List<NoteModel>> streamController;
     late StreamSubscription<List<NoteModel>> subscription;
