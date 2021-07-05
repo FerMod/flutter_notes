@@ -7,6 +7,8 @@ import '../data/models.dart';
 import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
+  HomePage({Key? key}) : super(key: key);
+
   final userData = DataProvider.userData;
 
   @override

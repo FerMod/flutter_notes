@@ -247,8 +247,9 @@ abstract class SearchScreenDelegate<T> {
 
 class SearchScreen<T> extends StatefulWidget {
   const SearchScreen({
+    Key? key,
     required this.delegate,
-  });
+  }) : super(key: key);
 
   final SearchScreenDelegate<T> delegate;
 
