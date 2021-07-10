@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+@immutable
 class Global {
-  Global._internal();
-  static final Global _instance = Global._internal();
+  const Global._internal();
+  static const Global _instance = Global._internal();
   factory Global() => _instance;
 
   /// Sets the URL strategy of the web app to use paths instead of a leading
