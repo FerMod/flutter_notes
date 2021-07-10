@@ -29,7 +29,7 @@ class AppSharedPreferences {
   ///
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
-  static Future<bool> save<T extends Object?>(String key, T content) {
+  static Future<bool> save<T extends Object?>(String key, T content) async {
     print('AppSharedPreferences.save(key: $key, value: $content)');
     if (content is bool) {
       return _sharedPreferences!.setBool(key, content);
@@ -51,7 +51,7 @@ class AppSharedPreferences {
   ///
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
-  static Future<bool> remove(String key) {
+  static Future<bool> remove(String key) async {
     print('AppSharedPreferences.remove(key: $key)');
     return _sharedPreferences!.remove(key);
   }
@@ -61,7 +61,7 @@ class AppSharedPreferences {
   ///
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
-  static Future<bool> clear() {
+  static Future<bool> clear() async {
     print('AppSharedPreferences.clear()');
     return _sharedPreferences!.clear();
   }
