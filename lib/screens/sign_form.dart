@@ -6,7 +6,7 @@ import '../widgets/drawer_menu.dart';
 import '../widgets/form_message.dart';
 import 'settings.dart';
 
-/// Signature for reporting errors throwed from the form.
+/// Signature for reporting errors thrown from the form.
 typedef FormErrorListener = void Function(Object exception, StackTrace stackTrace);
 
 class SignFormScreen extends StatelessWidget {
