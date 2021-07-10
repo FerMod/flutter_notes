@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LocaleUtils', () {
-    String createlanguageTag({
+    String createLanguageTag({
       required String languageCode,
       String? scriptCode,
       String? countryCode,
@@ -25,7 +25,7 @@ void main() {
       const languageCode = 'thisShouldBeWrong';
       String? scriptCode;
       String? countryCode = 'EE';
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -40,7 +40,7 @@ void main() {
       const languageCode = 'en';
       String? scriptCode;
       String? countryCode;
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -59,7 +59,7 @@ void main() {
       var languageCode = 'es';
       String? scriptCode;
       String? countryCode = '419';
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -78,7 +78,7 @@ void main() {
       var languageCode = 'zh';
       String? scriptCode = 'Hans';
       String? countryCode = 'CN';
-      var languageTag = createlanguageTag(
+      var languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -95,7 +95,7 @@ void main() {
       languageCode = 'hi';
       scriptCode = 'Deva';
       countryCode = 'IN';
-      languageTag = createlanguageTag(
+      languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
