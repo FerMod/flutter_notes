@@ -4,7 +4,6 @@ import 'dart:developer' as developer;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 import '../model_binding.dart';
 import '../src/extensions/locale_utils.dart';
@@ -67,11 +66,11 @@ const systemTextScaleFactorOption = -1.0;
 class AppOptions {
   /// Creates the settings used in the app.
   const AppOptions({
-    this.themeMode = ThemeMode.system,
+    ThemeMode? themeMode,
     double? textScaleFactor,
     Locale? locale,
-    this.platform,
-  })  : _textScaleFactor = textScaleFactor ?? systemTextScaleFactorOption,
+  })  : themeMode = themeMode ?? ThemeMode.system,
+        _textScaleFactor = textScaleFactor ?? systemTextScaleFactorOption,
         _locale = locale ?? systemLocaleOption;
 
   /// Describes which theme will be used.
@@ -91,9 +90,6 @@ class AppOptions {
   ///   settings is considered valid.
   double get textScaleFactor => isValidTextScale() ? _textScaleFactor : deviceTextScaleFactor;
   final double _textScaleFactor;
-
-  /// The platform that user interaction should adapt to target.
-  final TargetPlatform? platform;
 
   /// An identifier used to select a user's language and formatting preferences.
   ///
@@ -119,47 +115,22 @@ class AppOptions {
     return _locale != const Locale.fromSubtags();
   }
 
-  /// Returns a [SystemUiOverlayStyle] based on the [ThemeMode] setting.
-  /// If the theme is dark, returns light; if the theme is light, returns dark.
-  @Deprecated('Not used anywhere in the code. Already exists \'ThemeMode.system\'')
-  SystemUiOverlayStyle resolvedSystemUiOverlayStyle() {
-    Brightness brightness;
-    switch (themeMode) {
-      case ThemeMode.light:
-        brightness = Brightness.light;
-        break;
-      case ThemeMode.dark:
-        brightness = Brightness.dark;
-        break;
-      default:
-        brightness = WidgetsBinding.instance!.window.platformBrightness;
-    }
-
-    return brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
-  }
-
   /// Creates an instance of this class from a JSON object.
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
 
   /// Creates an instance of this class from a map.
   factory AppOptions.fromMap(Map<String, dynamic> map) {
     return AppOptions(
-      themeMode: ThemeMode.values.firstWhere(
+      themeMode: ThemeMode.values.firstWhereOrNull(
         (e) => describeEnum(e) == map['themeMode'],
-        orElse: () => ThemeMode.system,
       ),
       textScaleFactor: map['textScaleFactor'],
       locale: LocaleUtils.localeFromLanguageTag(map['locale']),
-      platform: TargetPlatform.values.firstWhere(
-        (e) => describeEnum(e) == map['platform'],
-        orElse: () => defaultTargetPlatform,
-      ),
     );
   }
 
   factory AppOptions.load({AppOptions defaultSettings = const AppOptions()}) {
-    final prefs = AppSharedPreferences.instance!;
-    final dataString = prefs.getString('settings');
+    final dataString = AppSharedPreferences.load<String>('settings');
     if (dataString?.isNotEmpty ?? false) {
       try {
         defaultSettings = AppOptions.fromJson(dataString!);
@@ -171,8 +142,7 @@ class AppOptions {
   }
 
   static void save(AppOptions settings) {
-    final prefs = AppSharedPreferences.instance!;
-    prefs.setString('settings', settings.toJson());
+    AppSharedPreferences.save('settings', settings.toJson());
   }
 
   /// Creates a copy of this settings object with the given fields
@@ -181,13 +151,11 @@ class AppOptions {
     ThemeMode? themeMode,
     double? textScaleFactor,
     Locale? locale,
-    TargetPlatform? platform,
   }) {
     return AppOptions(
       themeMode: themeMode ?? this.themeMode,
-      textScaleFactor: textScaleFactor ?? this.textScaleFactor,
-      locale: locale ?? this.locale,
-      platform: platform ?? this.platform,
+      textScaleFactor: textScaleFactor ?? _textScaleFactor,
+      locale: locale ?? _locale,
     );
   }
 
@@ -220,13 +188,11 @@ class AppOptions {
     ThemeMode? themeMode,
     double? textScaleFactor,
     Locale? locale,
-    TargetPlatform? platform,
   }) {
     final objectCopy = AppOptions.of(context).copyWith(
       themeMode: themeMode,
       textScaleFactor: textScaleFactor,
       locale: locale,
-      platform: platform,
     );
     AppOptions.update(context, objectCopy);
   }
@@ -240,7 +206,6 @@ class AppOptions {
       'themeMode': describeEnum(themeMode),
       'textScaleFactor': _textScaleFactor,
       'locale': _locale.toLanguageTag(),
-      'platform': describeEnum(platform!),
     };
   }
 
@@ -252,11 +217,7 @@ class AppOptions {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final AppOptions appOptions = other;
-    return appOptions.themeMode == themeMode &&
-        appOptions._textScaleFactor == _textScaleFactor &&
-        appOptions._locale == _locale &&
-        appOptions.platform == platform;
+    return other is AppOptions && other.themeMode == themeMode && other._textScaleFactor == _textScaleFactor && other._locale == _locale;
   }
 
   @override
@@ -264,9 +225,8 @@ class AppOptions {
         themeMode,
         textScaleFactor,
         locale,
-        platform,
       );
 
   @override
-  String toString() => 'AppOptions(themeMode: $themeMode, textScaleFactor: $_textScaleFactor, locale: $_locale, platform: $platform)';
+  String toString() => 'AppOptions(themeMode: $themeMode, textScaleFactor: $_textScaleFactor, locale: $_locale)';
 }

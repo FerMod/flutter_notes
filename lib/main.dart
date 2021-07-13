@@ -30,14 +30,7 @@ Future<void> main() async {
 
   runApp(
     ModelBinding(
-      initialModel: AppOptions.load(
-        defaultSettings: AppOptions(
-          themeMode: ThemeMode.system,
-          textScaleFactor: systemTextScaleFactorOption,
-          locale: systemLocaleOption,
-          platform: defaultTargetPlatform,
-        ),
-      ),
+      initialModel: AppOptions.load(),
       child: const NotesApp(),
     ),
   );
