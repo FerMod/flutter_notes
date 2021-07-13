@@ -172,8 +172,6 @@ class ModelBinding<T> extends StatefulWidget {
 }
 
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
-  final GlobalKey _modelBindingScopeKey = GlobalKey();
-
   late T _currentModel;
   T get currentModel => _currentModel;
   late bool _updateShouldNotify;
@@ -220,7 +218,6 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
   @override
   Widget build(BuildContext context) {
     return _ModelBindingScope<T>(
-      key: _modelBindingScopeKey,
       model: _currentModel,
       updateShouldNotify: _updateShouldNotify,
       modelBindingState: this,

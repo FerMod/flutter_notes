@@ -15,7 +15,7 @@ import 'data/app_options.dart';
 import 'data/local/app_shared_preferences.dart';
 import 'data/models.dart';
 import 'globals.dart';
-import 'model_binding.dart';
+import 'widgets/model_binding.dart';
 import 'routes.dart';
 import 'src/utils/locale_matching.dart';
 
