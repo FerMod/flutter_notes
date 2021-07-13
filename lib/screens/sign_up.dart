@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/routes.dart';
+import 'package:flutter_notes/src/utils/device_type.dart';
 
 import '../data/models.dart';
 import '../widgets/form_message.dart';
@@ -75,15 +76,13 @@ class _SignUpFormState extends State<_SignUpForm> {
       final credential = await _userData.signUp(
         _emailController.text,
         _passwordController.text,
-        data: {
-          'name': _usernameController.text,
-          'image': '',
-        },
+        displayName: _usernameController.text,
       );
       developer.log('$credential');
-      return Navigator.of(context).pushNamedAndRemoveUntil(
+      await Navigator.pushNamedAndRemoveUntil(
+        context,
         AppRoute.notes,
-        ModalRoute.withName('/'), // TODO: Improve routes
+        (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
       final localizations = AppLocalizations.of(context)!;
@@ -185,62 +184,66 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
+  void _handleFieldSubmitted(String value) {
+    if (DeviceType.isDesktopOrWeb) {
+      onSignUp?.call();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final usernameInput = TextFormInput(
-      labelText: localizations.username,
-      icon: Icon(Icons.person, color: theme.iconTheme.color),
-      controller: usernameController,
-      validations: [
-        _validateNotEmpty(context, localizations.username),
+    return FormFields(
+      children: [
+        TextFormInput(
+          labelText: localizations.username,
+          icon: Icon(Icons.person, color: theme.iconTheme.color),
+          controller: usernameController,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.username),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.email,
+          icon: Icon(Icons.email, color: theme.iconTheme.color),
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.email),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.password,
+          icon: Icon(Icons.lock, color: theme.iconTheme.color),
+          controller: passwordController,
+          obscureText: true,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.password),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.passwordConfirm,
+          icon: const Icon(null),
+          controller: confirmPasswordController,
+          obscureText: true,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.passwordConfirm),
+            _validateEqual(context, passwordController.text, localizations.password),
+          ]),
+        ),
+        _SignUpButton(onPressed: onSignUp),
       ],
     );
-
-    final emailInput = TextFormInput(
-      labelText: localizations.email,
-      icon: Icon(Icons.email, color: theme.iconTheme.color),
-      controller: emailController,
-      keyboardType: TextInputType.emailAddress,
-      validations: [
-        _validateNotEmpty(context, localizations.email),
-      ],
-    );
-
-    final passwordInput = TextFormInput(
-      labelText: localizations.password,
-      icon: Icon(Icons.lock, color: theme.iconTheme.color),
-      controller: passwordController,
-      obscureText: true,
-      validations: [
-        _validateNotEmpty(context, localizations.password),
-      ],
-    );
-
-    final confirmPasswordInput = TextFormInput(
-      labelText: localizations.passwordConfirm,
-      icon: const Icon(null),
-      controller: confirmPasswordController,
-      obscureText: true,
-      validations: [
-        _validateNotEmpty(context, localizations.passwordConfirm),
-        _validateEqual(context, passwordController.text, localizations.password),
-      ],
-    );
-
-    final signUpButton = _SignUpButton(onPressed: onSignUp);
-
-    final formFields = [
-      usernameInput,
-      emailInput,
-      passwordInput,
-      confirmPasswordInput,
-      signUpButton,
-    ];
-
-    return FormFields(fields: formFields);
   }
 }
 

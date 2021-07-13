@@ -5,15 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_notes/data/credential_service.dart';
+import 'package:flutter_notes/src/utils/device_type.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import '../data/models.dart';
 import '../routes.dart';
-import '../widgets/checkbox_field.dart';
 import '../widgets/form_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
-import 'sign_up.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -48,7 +48,6 @@ class _SignInFormState extends State<_SignInForm> {
     if (kDebugMode) {
       // TODO: remove initState
       _emailController.text = 'test@email.com';
-      //_emailController.text = 'a';
       _passwordController.text = 'password123';
     }
   }
@@ -60,7 +59,7 @@ class _SignInFormState extends State<_SignInForm> {
     super.dispose();
   }
 
-  Future _handleOnSignIn() async {
+  Future<void> _handleOnSignIn() async {
     final formState = _formKey.currentState!;
     _emailController.value = _emailController.value.copyWith(
       text: _emailController.text.trim(),
@@ -70,9 +69,10 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await _userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      return Navigator.of(context).pushNamedAndRemoveUntil(
+      await Navigator.pushNamedAndRemoveUntil(
+        context,
         AppRoute.notes,
-        ModalRoute.withName('/'), // TODO: Improve routes
+        (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
       final localizations = AppLocalizations.of(context)!;
@@ -146,7 +146,8 @@ class _BodyWidget extends StatelessWidget {
     this.onSignIn,
   }) : super(key: key);
 
-  final Function()? onSignIn;
+  final VoidCallback? onSignIn;
+  final Function(CredentialService credentialService)? onSignInWithCredential;
 
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -200,46 +201,48 @@ class _BodyWidget extends StatelessWidget {
     ];
   }
 
+  void _handleFieldSubmitted(String value) {
+    if (DeviceType.isDesktopOrWeb) {
+      onSignIn?.call();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final emailInput = TextFormInput(
-      labelText: localizations.email,
-      icon: Icon(Icons.person, color: theme.iconTheme.color),
-      controller: emailController,
-      keyboardType: TextInputType.emailAddress,
-      validations: [
-        _validateNotEmpty(context, localizations.username),
+    return FormFields(
+      children: [
+        TextFormInput(
+          labelText: localizations.email,
+          icon: Icon(Icons.person, color: theme.iconTheme.color),
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          onFieldSubmitted: _handleFieldSubmitted,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.email),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.password,
+          icon: Icon(Icons.lock, color: theme.iconTheme.color),
+          obscureText: true,
+          controller: passwordController,
+          onFieldSubmitted: _handleFieldSubmitted,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.password),
+          ]),
+        ),
+        _SignInButton(onPressed: onSignIn),
+        DividerText(
+          text: Text(localizations.signInOr),
+          color: theme.cardColor,
+        ),
+        // divider,
+        // ...signInMethods(context),
       ],
     );
-
-    final passwordInput = TextFormInput(
-      labelText: localizations.password,
-      icon: Icon(Icons.lock, color: theme.iconTheme.color),
-      obscureText: true,
-      controller: passwordController,
-      validations: [
-        _validateNotEmpty(context, localizations.password),
-      ],
-    );
-
-    final signUpButton = _SignInButton(onPressed: onSignIn);
-
-    final divider = DividerText(
-      text: Text(localizations.signInOr),
-      color: theme.cardColor,
-    );
-
-    final formFields = [
-      emailInput,
-      passwordInput,
-      signUpButton,
-      divider,
-      //...signInMethods(context),
-    ];
-    return FormFields(fields: formFields);
   }
 }
 
@@ -305,35 +308,5 @@ class _SignUpButton extends StatelessWidget {
         child: Text(localizations.signUp),
       ),
     );
-  }
-}
-
-class _RememberMeCheckbox extends StatelessWidget {
-  const _RememberMeCheckbox({
-    Key? key,
-    required this.onChanged,
-  }) : super(key: key);
-
-  final ValueChanged<bool?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return CheckboxFormField(
-      title: Text(localizations.signInRememberMe),
-      onChanged: onChanged,
-    );
-    // return CheckboxListTile(
-    //   value: value,
-    //   onChanged: onChanged,
-    // );
-    // return FormField(
-    //   builder: (field) {
-    //     return Checkbox(
-    //       value: value,
-    //       onChanged: onChanged,
-    //     );
-    //   },
-    // );
   }
 }
