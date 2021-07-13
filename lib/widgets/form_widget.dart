@@ -103,18 +103,16 @@ class DividerText extends StatelessWidget {
 /// * [Validation], that represents a single validation
 class FieldValidator<T> {
   /// Creates a field validator that takes a list of [validations].
-  const FieldValidator({
-    this.validations = const [],
-  });
+  const FieldValidator([this.validations = const []]);
 
   /// The list of validations.
   final List<Validation<T?>> validations;
 
-  /// The error message of the first [Validation] satisfying [test], or `null`
+  /// The error message of the first [Validation] satisfying [assertion], or `null`
   /// if there are none.
   String? validate(T? value) {
     final validation = validations.firstWhereOrNull(
-      (e) => e.test(value),
+      (e) => !e.assertion(value),
     );
     return validation?.errorMessage;
   }
@@ -125,15 +123,16 @@ class FieldValidator<T> {
 /// Normally used with [FieldValidator].
 class Validation<T> {
   /// Creates a validation that takes as parameters the [errorMessage] of this
-  /// validation that should be shown when satisfying [test].
+  /// validation that should be shown when [assertion] does not satisfy the
+  /// condition.
   const Validation({
     required this.errorMessage,
-    required this.test,
+    required this.assertion,
   });
 
   /// The message that explaining the why the validation failed.
   final String errorMessage;
 
   /// The function signature that performs the validation.
-  final bool Function(T? value) test;
+  final bool Function(T? value) assertion;
 }

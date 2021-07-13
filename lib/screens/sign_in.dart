@@ -155,7 +155,7 @@ class _BodyWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationEmpty(labelText),
-      test: (value) => value?.isEmpty ?? true,
+      assertion: (value) => value?.isNotEmpty ?? false,
     );
   }
 
