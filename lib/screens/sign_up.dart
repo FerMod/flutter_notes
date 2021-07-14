@@ -176,11 +176,11 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  Validation<String?> _validateEqual(BuildContext context, String otherValue, String labelText) {
+  Validation<String?> _validateEqual(BuildContext context, TextEditingController controller, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationNotMatching(labelText),
-      assertion: (value) => value == otherValue,
+      assertion: (value) => value == controller.text,
     );
   }
 
@@ -238,7 +238,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.passwordConfirm),
-            _validateEqual(context, passwordController.text, localizations.password),
+            _validateEqual(context, passwordController, localizations.password),
           ]),
         ),
         _SignUpButton(onPressed: onSignUp),
