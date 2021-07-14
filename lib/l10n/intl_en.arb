@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Notes App",
+  "appName": "Flutter Notes App",
   "@appName": {
     "description": "The name of the app. This should be the same name across different locale."
   },
@@ -345,12 +345,12 @@
       }
     }
   },
-  "errorSignIn": "Incorrect username or password.",
+  "errorSignIn": "Incorrect email or password.",
   "@errorSignIn": {
-    "description": "Sign in error message, when the username or the password are missing or wrong."
+    "description": "Sign in error message, when the email or the password are missing or wrong."
   },
-  "errorPasswordReset": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
-  "@errorpasswordReset": {
+  "errorUserNotFound": "That email address is not a verified primary email or is not associated with a personal user account.",
+  "@errorUserNotFound": {
     "description": "Error message when no matching email address is found."
   },
   "errorWeakPassword": "The password is too weak.",
@@ -365,7 +365,7 @@
   "@errorEmailAlreadyInUse": {
     "description": "Message text to show when a the introduced email is already in use by another account."
   },
-  "errorUserDisabled": "The user with the given email is disabled.",
+  "errorUserDisabled": "The user account with the given email is disabled.",
   "@errorUserDisabled": {
     "description": "Thrown if the user corresponding to the given email has been disabled."
   },
