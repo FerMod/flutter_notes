@@ -291,6 +291,32 @@
       }
     }
   },
+  "validationMinLengthField": "Field length must be at least {minLength} characterers.",
+  "@validationMinLengthField": {
+    "description": "Validation message to show when the field length is less than the required [minLength]. To provide a field name use [validationMinLength].",
+    "placeholders": {
+      "minLength": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "6"
+      }
+    }
+  },
+  "validationMinLength": "{fieldName} length must be at least {minLength} characterers.",
+  "@validationMinLength": {
+    "description": "Validation message to show when the field [fieldName] length is less than the required [minLength].",
+    "placeholders": {
+      "fieldName": {
+        "type": "String",
+        "example": "Password"
+      },
+      "minLength": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "6"
+      }
+    }
+  },
   "validationNotMatchingField": "Value do not match.",
   "@validationNotMatchingField": {
     "description": "Validation message to show when a field does not match with the value of other field. To provide a field name use [validationMatch]."

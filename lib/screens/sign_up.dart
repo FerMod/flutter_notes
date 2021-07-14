@@ -176,6 +176,14 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
+  Validation<String?> _validateMinLength(BuildContext context, int minLength) {
+    final localizations = AppLocalizations.of(context)!;
+    return Validation(
+      errorMessage: localizations.validationMinLength(localizations.password, minLength),
+      assertion: (value) => value != null && value.length >= minLength,
+    );
+  }
+
   Validation<String?> _validateEqual(BuildContext context, TextEditingController controller, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
@@ -227,6 +235,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.password),
+            _validateMinLength(context, 6),
           ]),
         ),
         TextFormInput(
