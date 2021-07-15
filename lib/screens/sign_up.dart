@@ -65,7 +65,7 @@ class _SignUpFormState extends State<_SignUpForm> {
     super.dispose();
   }
 
-  Future _handleOnSignUp() async {
+  Future<void> _handleOnSignUp() async {
     final formState = _formKey.currentState!;
     _emailController.value = _emailController.value.copyWith(
       text: _emailController.text,
