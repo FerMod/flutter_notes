@@ -60,11 +60,10 @@ class _SignInFormState extends State<_SignInForm> {
   }
 
   Future<void> _handleOnSignIn() async {
-    final formState = _formKey.currentState!;
     _emailController.value = _emailController.value.copyWith(
       text: _emailController.text.trim(),
     );
-    if (!formState.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     try {
       final credential = await _userData.signIn(_emailController.text, _passwordController.text);
@@ -75,22 +74,21 @@ class _SignInFormState extends State<_SignInForm> {
         (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
-      final localizations = AppLocalizations.of(context)!;
-      late String errorMessage;
+      Message.show(context, message: _errorMessage(e.code));
+    }
+  }
 
-      switch (e.code) {
-        case 'user-disabled':
-          errorMessage = localizations.errorUserDisabled;
-          break;
-        case 'invalid-email':
-        case 'user-not-found':
-        case 'wrong-password':
-          errorMessage = localizations.errorSignIn;
-          break;
-        default:
-          errorMessage = localizations.errorUnknown;
-      }
-      Message.show(context, message: errorMessage);
+  String _errorMessage(String errorCode) {
+    final localizations = AppLocalizations.of(context)!;
+    switch (errorCode) {
+      case 'user-disabled':
+        return localizations.errorUserDisabled;
+      case 'invalid-email':
+      case 'user-not-found':
+      case 'wrong-password':
+        return localizations.errorSignIn;
+      default:
+        return localizations.errorUnknown;
     }
   }
 

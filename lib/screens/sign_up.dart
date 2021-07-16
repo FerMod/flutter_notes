@@ -66,11 +66,13 @@ class _SignUpFormState extends State<_SignUpForm> {
   }
 
   Future<void> _handleOnSignUp() async {
-    final formState = _formKey.currentState!;
-    _emailController.value = _emailController.value.copyWith(
-      text: _emailController.text,
+    _usernameController.value = _usernameController.value.copyWith(
+      text: _usernameController.text.trim(),
     );
-    if (!formState.validate()) return;
+    _emailController.value = _emailController.value.copyWith(
+      text: _emailController.text.trim(),
+    );
+    if (!_formKey.currentState!.validate()) return;
 
     try {
       final credential = await _userData.signUp(
@@ -85,23 +87,22 @@ class _SignUpFormState extends State<_SignUpForm> {
         (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
-      final localizations = AppLocalizations.of(context)!;
-      late String errorMessage;
-      switch (e.code) {
-        case 'email-already-in-use':
-          errorMessage = localizations.errorEmailAlreadyInUse;
-          break;
-        case 'invalid-email':
-          errorMessage = localizations.errorInvalidEmail;
-          break;
-        case 'weak-password':
-          errorMessage = localizations.errorWeakPassword;
-          break;
-        case 'operation-not-allowed':
-        default:
-          errorMessage = localizations.errorUnknown;
-      }
-      Message.show(context, message: errorMessage);
+      Message.show(context, message: _errorMessage(e.code));
+    }
+  }
+
+  String _errorMessage(String errorCode) {
+    final localizations = AppLocalizations.of(context)!;
+    switch (errorCode) {
+      case 'email-already-in-use':
+        return localizations.errorEmailAlreadyInUse;
+      case 'invalid-email':
+        return localizations.errorInvalidEmail;
+      case 'weak-password':
+        return localizations.errorWeakPassword;
+      case 'operation-not-allowed':
+      default:
+        return localizations.errorUnknown;
     }
   }
 

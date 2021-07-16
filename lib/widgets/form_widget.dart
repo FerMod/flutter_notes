@@ -5,19 +5,21 @@ import 'package:flutter/services.dart';
 class FormFields extends StatelessWidget {
   const FormFields({
     Key? key,
-    this.fields = const <Widget>[],
+    this.separator = const SizedBox(height: 16.0),
+    this.children = const <Widget>[],
   }) : super(key: key);
 
-  final List<Widget> fields;
+  final List<Widget> children;
+  final Widget separator;
 
   Widget _buildItem(int index) {
     final itemIndex = index ~/ 2;
-    return index.isEven ? fields[itemIndex] : const SizedBox(height: 16.0);
+    return index.isEven ? children[itemIndex] : separator;
   }
 
   @override
   Widget build(BuildContext context) {
-    final _listLength = fields.length * 2 - 1;
+    final _listLength = children.length * 2 - 1;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -37,38 +39,53 @@ class TextFormInput extends FormField<String> {
     TextInputAction? textInputAction,
     TextEditingController? controller,
     bool obscureText = false,
+    bool autocorrect = true,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
-    this.validations = const [],
+    this.fieldValidator = const FieldValidator<String?>(),
     AutovalidateMode? autovalidateMode,
+    InputDecoration? decoration,
+    ValueChanged<String>? onChanged,
+    GestureTapCallback? onTap,
+    //VoidCallback? onEditingComplete,
+    ValueChanged<String>? onFieldSubmitted,
+    FormFieldSetter<String>? onSaved,
   }) : super(
           key: key,
-          builder: (state) {
-            final validator = FieldValidator<String?>(validations: validations);
-            return TextFormField(
-              controller: controller,
-              textInputAction: textInputAction,
-              inputFormatters: inputFormatters,
-              keyboardType: keyboardType,
-              validator: validator.validate,
-              autovalidateMode: autovalidateMode,
-              obscureText: obscureText,
-              decoration: InputDecoration(
-                // enabledBorder: InputBorder.none,
-                // focusedBorder: InputBorder.none,
-                icon: icon,
-                labelText: labelText,
-                errorMaxLines: 2,
-                // labelStyle: TextStyle(color: theme.hintColor),
-                contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                // suffixIcon: const Icon(Icons.check_circle),
-                filled: true,
-              ),
-            );
-          },
+          builder: (state) => TextFormField(
+            controller: controller,
+            textInputAction: textInputAction,
+            inputFormatters: inputFormatters,
+            keyboardType: keyboardType,
+            onChanged: onChanged,
+            onTap: onTap,
+            //onEditingComplete: onEditingComplete,
+            onFieldSubmitted: onFieldSubmitted,
+            onSaved: onSaved,
+            validator: fieldValidator.validate,
+            autovalidateMode: autovalidateMode,
+            obscureText: obscureText,
+            autocorrect: autocorrect,
+            decoration: decoration ??
+                InputDecoration(
+                  // enabledBorder: InputBorder.none,
+                  // focusedBorder: InputBorder.none,
+                  // errorBorder: const UnderlineInputBorder(
+                  //   borderSide: BorderSide(color: Colors.redAccent),
+                  // ),
+                  icon: icon,
+                  labelText: labelText,
+                  errorMaxLines: 2,
+                  labelStyle: TextStyle(color: Theme.of(state.context).hintColor),
+                  // errorStyle: const TextStyle(color: Colors.redAccent),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  // suffixIcon: const Icon(Icons.check_circle),
+                  filled: true,
+                ),
+          ),
         );
 
-  final List<Validation<String?>> validations;
+  final FieldValidator<String?> fieldValidator;
 }
 
 class DividerText extends StatelessWidget {
