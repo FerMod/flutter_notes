@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'dart:async';
+
 import 'package:flutter_notes/widgets/model_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ void main() {
       log = <dynamic>[];
     });
 
-    group('ModelBinding.of', () {
+    group('of', () {
       testWidgets('returns the correct model', (tester) async {
         final builder = Builder(
           builder: (context) {
@@ -108,42 +110,6 @@ void main() {
         expect(log, equals(<TestModel?>[firstModel, thirdModel]));
       });
 
-      testWidgets('returns null when no model exist', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-        await tester.pumpWidget(Container(key: globalKey));
-
-        expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext!), isNull);
-      });
-
-      /*
-      testWidgets('returns correctly the model of `dynamic` type', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-
-        final model = const TestModel();
-
-        ModelBinding build() {
-          return ModelBinding(
-            key: UniqueKey(),
-            initialModel: model,
-            child: Container(
-              key: globalKey,
-              child: Builder(
-                builder: (context) {
-                  log.add(ModelBinding.of(context));
-                  return Container();
-                },
-              ),
-            ),
-          );
-        }
-
-        final widget = build();
-        await tester.pumpWidget(widget);
-
-        expect(log, [model]);
-      });
-      */
-
       testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
         const model = TestModel();
@@ -205,13 +171,22 @@ void main() {
           throwsA(isAssertionError.having(
             (e) => e.message,
             'message',
-            contains('No ModelBinding<$TestModel> widget found.'),
+            contains('No ModelBinding<$TestModel> widget ancestor found.'),
           )),
         );
       });
     });
 
-    group('ModelBinding.update', () {
+    group('maybeOf', () {
+      testWidgets('returns null when no model exist', (tester) async {
+        final globalKey = GlobalKey(debugLabel: 'Test Key');
+        await tester.pumpWidget(Container(key: globalKey));
+
+        expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext!), isNull);
+      });
+    });
+
+    group('update', () {
       testWidgets('updates correctly a model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
@@ -306,7 +281,7 @@ void main() {
           throwsA(isAssertionError.having(
             (e) => e.message,
             'message',
-            contains('No ModelBinding<$TestModel> widget found.'),
+            contains('No ModelBinding<$TestModel> widget ancestor found.'),
           )),
         );
       });
@@ -372,50 +347,6 @@ void main() {
         // The new model should be present
         expect(log, equals(<Object>[firstModel, secondModel]));
       });
-
-      /*
-      testWidgets('updates correctly the model from `dynamic` type', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-
-        const firstModel =  TestModel(value: 1);
-        const secondModel =  TestModel(value: 2);
-
-        ModelBinding build() {
-          return ModelBinding(
-            key: UniqueKey(),
-            initialModel: firstModel,
-            child: Container(
-              child: Builder(
-                key: globalKey,
-                builder: (context) {
-                  log.add(ModelBinding.of(context));
-                  return Container();
-                },
-              ),
-            ),
-          );
-        }
-
-        final widget = build();
-        await tester.pumpWidget(widget);
-
-        // The first model is present
-        expect(log, <TestModel>[firstModel]);
-
-        log.clear();
-        await tester.pump();
-
-        // No new models added
-        expect(log, equals(<TestModel>[]));
-
-        log.clear();
-        ModelBinding.update(globalKey.currentContext, secondModel);
-        await tester.pump();
-
-        // The new model should be present
-        expect(log, equals(<TestModel>[secondModel]));
-      });
-      */
 
       testWidgets('only notifies when the model changes', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
@@ -514,8 +445,42 @@ void main() {
       });
     });
 
-    testWidgets('Update model when reparenting state', (tester) async {
-      final globalKey = GlobalKey();
+    testWidgets('throws when no child or builder is provided', (tester) async {
+      const model = TestModel();
+
+      // No builder. Creates normally.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+          child: Container(),
+        ),
+        returnsNormally,
+      );
+
+      // No child. Creates normally.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+          builder: (context, child) => Container(),
+        ),
+        returnsNormally,
+      );
+
+      // No child and builder. Throws assert error.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+        ),
+        throwsA(isAssertionError.having(
+          (e) => e.message,
+          'message',
+          contains('Must provide at least a child or a builder'),
+        )),
+      );
+    });
+
+    testWidgets('updates the model when reparenting state', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
 
       ModelBinding<TestModel> build() {
         return ModelBinding(
@@ -544,7 +509,7 @@ void main() {
       expect(log, equals(<TestModel>[first.initialModel, second.initialModel]));
     });
 
-    testWidgets('Update model when removing node', (tester) async {
+    testWidgets('updates the model when removing node', (tester) async {
       final widget = Container(
         child: ModelBinding(
           initialModel: const TestModel(value: 1),
@@ -605,6 +570,56 @@ void main() {
 
       expect(log, equals(<String>['a: 3']));
       log.clear();
+    });
+
+    testWidgets('calls dispose when model removes from tree', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
+      const testModel = TestModel();
+
+      final contextCompleter = Completer<BuildContext>();
+      final modelCompleter = Completer<TestModel>();
+
+      ModelBinding<TestModel> build() {
+        return ModelBinding(
+          key: globalKey,
+          initialModel: testModel,
+          child: Container(),
+          dispose: (context, value) {
+            contextCompleter.complete(context);
+            modelCompleter.complete(value);
+          },
+        );
+      }
+
+      await tester.pumpWidget(build());
+      expect(contextCompleter.future, completion(allOf([isNotNull, globalKey.currentContext])));
+      expect(modelCompleter.future, completion(allOf([isNotNull, testModel])));
+      await tester.pumpWidget(Container());
+    });
+  });
+
+  group('Assertion', () {
+    test('debugCheckNotOfTypeDynamic', () {
+      expect(debugCheckNotOfTypeDynamic<Object?>(), isTrue);
+      expect(() => debugCheckNotOfTypeDynamic<dynamic>(), throwsFlutterError);
+    });
+
+    testWidgets('debugCheckHasModelBinding', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
+      final childWidget = Container(key: globalKey);
+
+      Widget build() {
+        return ModelBinding<TestModel>(
+          initialModel: const TestModel(),
+          child: childWidget,
+        );
+      }
+
+      await tester.pumpWidget(build());
+      expect(debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), isTrue);
+
+      await tester.pumpWidget(childWidget);
+      expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
     });
   });
 }

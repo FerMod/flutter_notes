@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 // https://medium.com/flutter/managing-flutter-application-state-with-inheritedwidgets-1140452befe1
 // https://gist.github.com/HansMuller/a3a6d520c6a24238bf1b1b9e3d473bf5
 
+/// Signature for [ModelBinding.dispose].
+typedef Dispose<T> = void Function(BuildContext context, T value);
+
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
     Key? key,
@@ -19,9 +22,19 @@ class _ModelBindingScope<T> extends InheritedWidget {
   final _ModelBindingState<T> modelBindingState;
   final bool _updateShouldNotify;
 
+  static _ModelBindingScope<T>? of<T>(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+  }
+
   @override
   bool updateShouldNotify(_ModelBindingScope<T> old) {
     return model != old.model || _updateShouldNotify;
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<T>('model', model));
   }
 }
 
@@ -32,20 +45,38 @@ class _ModelBindingScope<T> extends InheritedWidget {
 class ModelBinding<T> extends StatefulWidget {
   /// Creates a widget that provides the [ModelBinding] model data to its
   /// descendants.
+  ///
+  /// A least a [child] or a [builder] must be provided.
   const ModelBinding({
     Key? key,
     required this.initialModel,
-    required this.child,
-  }) : super(key: key);
+    this.child,
+    this.builder,
+    this.dispose,
+  })  : assert(
+          child != null || builder != null,
+          'Must provide at least a child or a builder',
+        ),
+        super(key: key);
 
   /// Contains the model data.
   final T initialModel;
 
   /// The widget below this widget in the tree.
-  final Widget child;
+  final Widget? child;
 
-  @override
-  _ModelBindingState<T> createState() => _ModelBindingState<T>();
+  /// Called to obtain the [child] widget from this callback. This callback is
+  /// passed two arguments, the [BuildContext] (as `context`) and a [Widget]
+  /// (as `child`). If the child is null, it is the responsibility of the
+  /// [builder] to provide a valid one.
+  ///
+  /// If [builder] is null, it is as if a builder was specified that returned
+  /// the [child] directly.
+  final TransitionBuilder? builder;
+
+  /// A callback invoked when this widget is about to be removed from the tree
+  /// permanently.
+  final Dispose<T>? dispose;
 
   /// Returns the [ModelBinding] widgets [initialModel] from the closest
   /// instance of this class that encloses the given context.
@@ -84,7 +115,7 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
+    final scope = _ModelBindingScope.of<T>(context)!;
     return scope.modelBindingState.currentModel;
   }
 
@@ -125,12 +156,12 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(
       T != dynamic,
-      'Tried to call ModelBinding.of<dynamic>.\n'
+      'Tried to call ModelBinding.maybeOf<dynamic>.\n'
       'If you want to expose a variable that can be anything, consider '
       'replacing `dynamic` with `Object` instead.',
     );
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>();
+    final scope = _ModelBindingScope.of<T>(context);
     return scope?.modelBindingState.currentModel;
   }
 
@@ -159,10 +190,12 @@ class ModelBinding<T> extends StatefulWidget {
     );
     assert(debugCheckHasModelBinding<T>(context));
 
-    final scope = context.dependOnInheritedWidgetOfExactType<_ModelBindingScope<T>>()!;
-    //assert(scope != null, 'a ModelBinding<T> ancestor was not found');
+    final scope = _ModelBindingScope.of<T>(context)!;
     return scope.modelBindingState.updateModel(newModel, updateShouldNotify: updateShouldNotify);
   }
+
+  @override
+  _ModelBindingState<T> createState() => _ModelBindingState<T>();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -174,13 +207,19 @@ class ModelBinding<T> extends StatefulWidget {
 class _ModelBindingState<T> extends State<ModelBinding<T>> {
   late T _currentModel;
   T get currentModel => _currentModel;
-  late bool _updateShouldNotify;
+
+  bool _updateShouldNotify = false;
 
   @override
   void initState() {
     super.initState();
-    _updateShouldNotify = false;
     _currentModel = widget.initialModel;
+  }
+
+  @override
+  void dispose() {
+    widget.dispose?.call(context, _currentModel);
+    super.dispose();
   }
 
   @override
@@ -221,7 +260,11 @@ class _ModelBindingState<T> extends State<ModelBinding<T>> {
       model: _currentModel,
       updateShouldNotify: _updateShouldNotify,
       modelBindingState: this,
-      child: widget.child,
+      child: widget.builder != null
+          ? Builder(
+              builder: (context) => widget.builder!(context, widget.child),
+            )
+          : widget.child!,
     );
   }
 }
@@ -244,13 +287,13 @@ bool debugCheckHasModelBinding<T>(BuildContext context) {
   assert(() {
     if (context.widget is! _ModelBindingScope<T> && context.findAncestorWidgetOfExactType<_ModelBindingScope<T>>() == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('No ModelBinding<$T> widget found.'),
+        ErrorSummary('No ModelBinding<$T> widget ancestor found.'),
         ErrorDescription('${context.widget.runtimeType} widgets require a ModelBinding<$T> widget ancestor.'),
         context.describeWidget('The specific widget that could not find a ModelBinding<$T> ancestor was'),
         context.describeOwnershipChain('The ownership chain for the affected widget is'),
         ErrorHint(
           'No ModelBinding<$T> ancestor could be found starting from the context '
-          'that was passed to ModelBinding<$T>.of(). This can happen because you '
+          'that was passed to ModelBinding.of<$T>(). This can happen because you '
           'have not added a ModelBinding<$T> widget, or it can happen if the '
           'context you use comes from a widget above that widgets.',
         ),
@@ -263,7 +306,7 @@ bool debugCheckHasModelBinding<T>(BuildContext context) {
 
 /// Asserts that the type [T] is not of type `dynamic`.
 ///
-/// Used to make sure that the type is not
+/// Used by various widgets to make sure that the appropriate type is provided.
 ///
 /// To invoke this function, use the following pattern, typically in the
 /// relevant Widget's build method:
@@ -273,11 +316,12 @@ bool debugCheckHasModelBinding<T>(BuildContext context) {
 /// ```
 ///
 /// Does nothing if asserts are disabled. Always returns true.
+@Deprecated('Not used anywhere')
 bool debugCheckNotOfTypeDynamic<T>() {
   assert(() {
     if (T == dynamic) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('Use of type `dynamic` is not allowed.'),
+        ErrorSummary('Use of type `dynamic` not allowed.'),
         ErrorHint(
           'If you want to expose a variable that can be anything, consider '
           'replacing `dynamic` with `Object` instead.',
