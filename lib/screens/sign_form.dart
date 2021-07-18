@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notes/src/utils/device_type.dart';
+import 'package:flutter_notes/widgets/message.dart';
 
 import '../widgets/drawer_menu.dart';
 import '../widgets/form_message.dart';
@@ -21,37 +22,83 @@ class SignFormScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final childWidget = LayoutBuilder(
-      builder: (context, constraints) {
-        if (DeviceType.isDesktopOrWeb) {
-          final textScaleFactor = MediaQuery.textScaleFactorOf(context);
-          final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
-          constraints = constraints.copyWith(maxWidth: desktopMaxWidth);
-        }
-
-        return Center(
-          child: Container(
-            constraints: constraints,
-            child: Builder(builder: builder),
-          ),
-        );
-      },
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: title,
-        actions: const [
-          SettingsScreenButton(),
-        ],
-      ),
-      drawer: DrawerMenu(),
-      body: Message(
-        child: Scrollbar(
+    return DismissibleKeyboard(
+      child: Scaffold(
+        appBar: AppBar(
+          title: title,
+          actions: const [
+            SettingsScreenButton(),
+          ],
+        ),
+        drawer: DrawerMenu(),
+        body: Message(
+          messageBuilder: (context, message) => _MessageCard(message: message),
           child: SingleChildScrollView(
-            child: childWidget,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (DeviceType.isDesktopOrWeb) {
+                  final textScaleFactor = MediaQuery.textScaleFactorOf(context);
+                  final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
+                  constraints = constraints.copyWith(maxWidth: desktopMaxWidth);
+                }
+
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: constraints,
+                    child: Builder(builder: builder),
+                  ),
+                );
+              },
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MessageCard extends StatelessWidget {
+  const _MessageCard({
+    Key? key,
+    required this.message,
+  }) : super(key: key);
+
+  final MessageData message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final MessageData data = message;
+
+    Widget? titleWidget;
+    if (data.message != null) {
+      titleWidget = SelectableText(data.message!);
+    }
+
+    List<Widget>? actionsList;
+    if (data.actions.isEmpty) {
+      final materialLocalizations = MaterialLocalizations.of(context);
+      actionsList = [
+        TextButton(
+          onPressed: () => Message.hide(context),
+          child: Text(materialLocalizations.closeButtonLabel),
+        ),
+      ];
+    }
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.all(8.0),
+      child: MessageWidget(
+        leading: const Icon(Icons.warning_rounded),
+        content: titleWidget,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2.0,
+            color: theme.colorScheme.error,
+          ),
+        ),
+        actions: actionsList ?? data.actions,
       ),
     );
   }

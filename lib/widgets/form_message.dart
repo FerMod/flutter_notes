@@ -1,14 +1,20 @@
+import 'dart:async';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'message.dart';
+/// Signature for a function that creates a widget with a message.
+///
+/// Used by [Message.messageBuilder].
+typedef MessageWidgetBuilder = Widget Function(BuildContext context, MessageData message);
 
 @immutable
 class MessageData with Diagnosticable {
   const MessageData({
     this.isVisible = false,
     this.message,
-    this.actions = const [],
+    this.actions = const <Widget>[],
   });
 
   const factory MessageData.empty() = MessageData;
@@ -34,8 +40,9 @@ class MessageData with Diagnosticable {
     if (other.runtimeType != runtimeType) {
       return false;
     }
+    final listEquals = const DeepCollectionEquality().equals;
 
-    return other is MessageData && other.isVisible == isVisible && other.message == message && other.actions == actions;
+    return other is MessageData && other.isVisible == isVisible && other.message == message && listEquals(other.actions, actions);
   }
 
   @override
@@ -43,21 +50,32 @@ class MessageData with Diagnosticable {
     return hashValues(
       isVisible,
       message,
-      actions,
+      hashList(actions),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(FlagProperty('isVisible', value: isVisible, ifTrue: 'true', ifFalse: 'false', showName: true));
+    properties.add(StringProperty('message', message));
+    properties.add(IterableProperty<Widget>('actions', actions));
   }
 }
 
 class Message extends StatefulWidget {
   const Message({
     Key? key,
-    this.data = const MessageData.empty(),
+    MessageData data = const MessageData.empty(),
     this.onChange,
+    required this.messageBuilder,
     required this.child,
-  }) : super(key: key);
+  })  : _data = data,
+        super(key: key);
 
-  final MessageData data;
+  final MessageData _data;
   final ValueChanged<MessageData>? onChange;
+  final MessageWidgetBuilder messageBuilder;
   final Widget child;
 
   static MessageState? of(BuildContext context) {
@@ -66,16 +84,16 @@ class Message extends StatefulWidget {
   }
 
   static MessageData? dataOf(BuildContext context) {
-    final inheritedMessage = Message.of(context);
-    return inheritedMessage?.data;
+    final messageState = Message.of(context);
+    return messageState?.data;
   }
 
-  static void show(BuildContext context, {String? message, List<Widget>? actions}) {
-    Message.of(context)!.show(message: message, actions: actions);
+  static MessageController<T?> show<T extends Object?>(BuildContext context, {String? message, List<Widget>? actions}) {
+    return Message.of(context)!.show(message: message, actions: actions);
   }
 
-  static void hide(BuildContext context) {
-    Message.of(context)!.hide();
+  static void hide<T extends Object?>(BuildContext context, [T? result]) {
+    Message.of(context)!.hide(result);
   }
 
   @override
@@ -89,17 +107,19 @@ class MessageState extends State<Message> {
   /// The data contained in the message.
   late MessageData data;
 
+  MessageController? _messageController;
+
   @override
   void initState() {
     super.initState();
-    data = widget.data;
+    data = widget._data;
   }
 
   @override
   void didUpdateWidget(Message oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.data != oldWidget.data) {
-      data = widget.data;
+    if (widget._data != oldWidget._data) {
+      data = widget._data;
     }
   }
 
@@ -120,21 +140,25 @@ class MessageState extends State<Message> {
     widget.onChange?.call(newData);
   }
 
-  void show({String? message, List<Widget>? actions}) {
+  MessageController<T?> show<T extends Object?>({String? message, List<Widget>? actions}) {
+    _messageController ??= MessageController<T>._(Completer<T>(), hide);
     _update(isVisible: true, message: message, actions: actions);
+    return _messageController as MessageController<T>;
   }
 
-  void hide() {
+  void hide<T extends Object?>([T? result]) {
     _update(isVisible: false);
+    _messageController?._completer.complete(result);
   }
 
   @override
   Widget build(BuildContext context) {
     return _InheritedMessage(
       message: this,
+      data: data,
       child: Column(
         children: [
-          data.isVisible ? _MessageCard(data: data) : const SizedBox.shrink(),
+          data.isVisible ? widget.messageBuilder(context, data) : const SizedBox.shrink(),
           Expanded(child: widget.child),
         ],
       ),
@@ -144,7 +168,7 @@ class MessageState extends State<Message> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<MessageData>('data', widget.data, showName: false));
+    data.debugFillProperties(properties);
   }
 }
 
@@ -152,59 +176,27 @@ class _InheritedMessage extends InheritedWidget {
   const _InheritedMessage({
     Key? key,
     required this.message,
+    required this.data,
     required Widget child,
   }) : super(key: key, child: child);
 
   final MessageState message;
-
-  @override
-  bool updateShouldNotify(_InheritedMessage old) => message.data != old.message.data;
-}
-
-class _MessageCard extends StatelessWidget {
-  const _MessageCard({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
-
   final MessageData data;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  bool updateShouldNotify(_InheritedMessage old) => data != old.data;
+}
 
-    Widget? titleWidget;
-    if (data.message != null) {
-      titleWidget = SelectableText(data.message!);
-    }
+/// An interface for controlling a message.
+///
+/// Commonly obtained from [Message.show].
+class MessageController<T> {
+  const MessageController._(this._completer, this.close);
 
-    List<Widget>? actionsList;
-    if (data.actions.isEmpty) {
-      final materialLocalizations = MaterialLocalizations.of(context);
-      actionsList = [
-        TextButton(
-          onPressed: () => Message.hide(context),
-          child: Text(materialLocalizations.closeButtonLabel),
-        ),
-      ];
-    }
+  /// Completes when the message controlled by this object is no longer visible.
+  Future<T?> get closed => _completer.future;
+  final Completer<T?> _completer;
 
-    Widget messageWidget = MessageWidget(
-      leading: const Icon(Icons.warning_rounded),
-      content: titleWidget,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 2.0,
-          color: theme.colorScheme.error,
-        ),
-      ),
-      actions: actionsList ?? data.actions,
-    );
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.all(8.0),
-      child: messageWidget,
-    );
-  }
+  /// Remove the message.
+  final void Function(T? result) close;
 }
