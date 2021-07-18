@@ -6,9 +6,6 @@ import '../widgets/drawer_menu.dart';
 import '../widgets/form_message.dart';
 import 'settings.dart';
 
-/// Signature for reporting errors thrown from the form.
-typedef FormErrorListener = void Function(Object exception, StackTrace stackTrace);
-
 class SignFormScreen extends StatelessWidget {
   const SignFormScreen({
     Key? key,
@@ -41,29 +38,49 @@ class SignFormScreen extends StatelessWidget {
       },
     );
 
-    return GestureDetector(
-      onTap: () {
-        final currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: title,
-          actions: const [
-            SettingsScreenButton(),
-          ],
-        ),
-        drawer: DrawerMenu(),
-        body: Message(
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              child: childWidget,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: title,
+        actions: const [
+          SettingsScreenButton(),
+        ],
+      ),
+      drawer: DrawerMenu(),
+      body: Message(
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: childWidget,
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A widget that allows to remove focus by tapping outside a focusable widget.
+class DismissibleKeyboard extends StatelessWidget {
+  /// Creates a widget that allows the keyboard to be be dismissed. When a tap
+  /// is detected in a non focusable widget in the [child], unfocuses from the
+  /// last element, hiding the keyboard.
+  ///
+  /// The [child] argument is required and must not be null.
+  const DismissibleKeyboard({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: child,
     );
   }
 }
