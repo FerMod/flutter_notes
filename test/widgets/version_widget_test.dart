@@ -15,12 +15,14 @@ void main() {
         packageName: 'com.test.app',
         version: '1.2.3',
         buildNumber: '4',
+        buildSignature: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3',
       );
       emptyPackageInfo = PackageInfo(
         appName: '',
         packageName: '',
         version: '',
         buildNumber: '',
+        buildSignature: '',
       );
     });
 
@@ -30,6 +32,7 @@ void main() {
         packageName: packageInfo.packageName,
         version: packageInfo.version,
         buildNumber: packageInfo.buildNumber,
+        buildSignature: packageInfo.buildSignature,
       );
       return packageInfo;
     }
@@ -57,7 +60,6 @@ void main() {
       await tester.pumpAndSettle();
 
       final finderFilled = find.text('v${emptyPackageInfo.version}');
-
       expect(finderFilled, findsNothing);
     });
 
@@ -70,11 +72,9 @@ void main() {
       await tester.pumpWidget(versionWidget);
 
       final finderFilled = find.text('v${packageInfo.version}');
-
       expect(finderFilled, findsNothing);
 
       await tester.pumpAndSettle();
-
       expect(finderFilled, findsOneWidget);
     });
   });

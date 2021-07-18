@@ -29,6 +29,7 @@ class AboutAppWidget extends StatelessWidget {
       packageName: 'Unknown',
       version: 'Unknown',
       buildNumber: 'Unknown',
+      buildSignature: 'Unknown',
     );
 
     return FutureBuilder<PackageInfo>(
