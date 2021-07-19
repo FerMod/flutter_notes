@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/widgets/user_account_tile.dart';
 
 import '../data/firebase_service.dart';
 import '../data/models.dart';
@@ -157,7 +158,7 @@ class _AccountWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final user = userData.currentUser;
 
     Widget? imageWidget;
@@ -183,25 +184,18 @@ class _AccountWidget extends StatelessWidget {
     } else {
       imageWidget = const Icon(
         Icons.account_circle,
-        size: UserAvatar.alternativeImageIconSize,
+        size: UserAvatar.defaultRadius * 2.0,
       );
-      nameWidget = Text(localizations!.signIn);
+      nameWidget = Text(localizations.signIn);
     }
 
-    return FutureBuilder(
-      future: userData.data(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Loader();
-        }
-        return ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: imageWidget,
-          title: nameWidget,
-          subtitle: emailWidget,
-          onTap: onTap,
-        );
-      },
+    return UserAccountTile(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      image: imageWidget,
+      imageSize: const Size.fromRadius(UserAvatar.defaultRadius),
+      title: nameWidget,
+      subtitle: emailWidget,
+      onTap: onTap,
     );
   }
 }

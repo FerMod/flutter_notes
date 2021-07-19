@@ -3,6 +3,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
+import 'package:flutter_notes/widgets/drawer_header.dart';
+import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
 import '../data/app_options.dart';
@@ -70,7 +72,7 @@ class SettingsScreen extends StatelessWidget {
         fit: BoxFit.contain,
         child: Icon(
           Icons.account_circle,
-          size: UserAvatar.alternativeImageIconSize,
+          size: UserAvatar.defaultRadius * 2.0,
         ),
       );
       titleWidget = Text(localizations.signInTo(localizations.appName));
@@ -162,12 +164,12 @@ class SettingsScreen extends StatelessWidget {
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({
     Key? key,
-    this.userData,
+    required this.userData,
     this.onTap,
     this.onTapImage,
   }) : super(key: key);
 
-  final UserData<UserModel>? userData;
+  final UserData userData;
 
   final VoidCallback? onTap;
   final VoidCallback? onTapImage;
@@ -175,43 +177,40 @@ class AccountSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final userData = DataProvider.userData;
+    final user = userData.currentUser;
 
+    final userName = user?.displayName ?? '';
+    final userImage = user?.photoURL ?? '';
+    final userEmail = user?.email ?? '';
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
       body: Scrollbar(
+        showTrackOnHover: true,
+        radius: Radius.zero,
         child: ListView(
           children: [
-            // TODO: Improve user data obtention
-            FutureBuilder<UserModel?>(
-              future: userData.data(),
-              builder: (context, snapshot) {
-                final user = userData.currentUser;
-
-                final userName = snapshot.data?.name ?? user?.displayName ?? '';
-                final userImage = snapshot.data?.image ?? user?.photoURL ?? user?.photoURL;
-                final userEmail = user?.email ?? '';
-
-                return UserAccountsDrawerHeader(
-                  margin: EdgeInsets.zero,
-                  currentAccountPicture: UserAvatar(
-                    imageUrl: userImage,
-                    nameText: userName,
-                  ),
-                  accountName: Text(userName),
-                  accountEmail: Text(userEmail),
-                );
-              },
+            TitleDrawerHeader(
+              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+              child: UserAccountTile(
+                image: UserAvatar(
+                  imageUrl: userImage,
+                  nameText: userName,
+                ),
+                title: Text(userName),
+                subtitle: Text(userEmail),
+                imageSize: const Size.square(72.0),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.login),
               title: Text(localizations.signOut),
               onTap: () async {
                 await userData.signOut();
-                // TODO: Improve route navigation
-                // Navigator.of(context).popUntil((route) => route.isFirst);
-                // await Navigator.of(context).popAndPushNamed('/');
-                await Navigator.of(context).pushNamedAndRemoveUntil(AppRoute.signIn, ModalRoute.withName('/'));
+                await Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoute.signIn,
+                  (route) => route.isFirst,
+                );
               },
             ),
           ],

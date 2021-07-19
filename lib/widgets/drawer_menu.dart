@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/data/models.dart';
 import 'package:flutter_notes/routes.dart';
+import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
 import 'about_app_widget.dart';
@@ -25,29 +26,31 @@ class DrawerMenu extends StatelessWidget {
 
   Widget _buildDrawerHeader(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final userData = DataProvider.userData;
 
     Widget headerWidget;
     if (userData.isSignedIn) {
       final user = userData.currentUser!;
 
+      final userName = user.displayName ?? '';
+      final userImage = user.photoURL ?? '';
+      final userEmail = user.email ?? '';
       headerWidget = UserAccountsDrawerHeader(
         currentAccountPicture: UserAvatar(
-          imageUrl: user.photoURL,
-          nameText: user.displayName,
+          imageUrl: userImage,
+          nameText: userName,
         ),
-        accountName: Text(user.displayName ?? ''),
-        accountEmail: Text(user.email ?? ''),
+        accountName: Text(userName),
+        accountEmail: Text(userEmail),
       );
     } else {
       headerWidget = TitleDrawerHeader(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: ListTile(
-          leading: const Icon(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+        child: UserAccountTile(
+          image: const Icon(
             Icons.account_circle,
-            size: UserAvatar.alternativeImageIconSize,
           ),
           title: Text(localizations.notSignedIn),
+          imageSize: const Size.fromRadius(UserAvatar.defaultRadius),
         ),
       );
     }

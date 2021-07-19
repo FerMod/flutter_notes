@@ -7,9 +7,6 @@ import '../src/cache/cached_color.dart';
 
 /// A material design that displays the app's user avatar.
 class UserAvatar extends StatelessWidget {
-  /// Constant of the [Icon] size value that should have.
-  static const double alternativeImageIconSize = 40.0;
-
   /// Displays the image given the [imageUrl], or generates an image with one of
   /// more initials with [nameText].
   ///
@@ -24,11 +21,12 @@ class UserAvatar extends StatelessWidget {
     this.fit = BoxFit.cover,
     this.shape = BoxShape.circle,
     this.alignment = Alignment.center,
-    this.onTap,
     this.radius,
     this.minRadius,
     this.maxRadius,
-  })  : imageUrl = imageUrl ?? '', // 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg',
+    this.onTap,
+    this.onImageError,
+  })  : imageUrl = imageUrl ?? '',
         nameText = nameText ?? '',
         assert(
           radius == null || (minRadius == null && maxRadius == null),
@@ -55,13 +53,11 @@ class UserAvatar extends StatelessWidget {
   /// Align the content within the widget. Defaults to [Alignment.center].
   final AlignmentGeometry alignment;
 
-  // /// The internal padding for the widget's content.
-  // final EdgeInsets padding;
-
-  // final EdgeInsets margin;
-
   /// This function is called when the user makes tap in the avatar.
   final VoidCallback? onTap;
+
+  /// An optional error callback for errors emitted when loading [imageUrl].
+  final ImageErrorListener? onImageError;
 
   /// The size of the avatar, expressed as the radius. Default value is 20.0
   /// radius.
@@ -82,25 +78,25 @@ class UserAvatar extends StatelessWidget {
   /// If [maxRadius] is specified, then [radius] must not also be specified.
   final double? maxRadius;
 
-  // The default radius if nothing is specified.
-  static const double _defaultRadius = 20.0;
+  /// The default radius if nothing is specified.
+  static const double defaultRadius = 20.0;
 
-  // The default min if only the max is specified.
+  /// The default min if only the max is specified.
   static const double _defaultMinRadius = 0.0;
 
-  // The default max if only the min is specified.
+  /// The default max if only the min is specified.
   static const double _defaultMaxRadius = double.infinity;
 
   double get _minDiameter {
     if (radius == null && minRadius == null && maxRadius == null) {
-      return _defaultRadius * 2.0;
+      return defaultRadius * 2.0;
     }
     return 2.0 * (radius ?? minRadius ?? _defaultMinRadius);
   }
 
   double get _maxDiameter {
     if (radius == null && minRadius == null && maxRadius == null) {
-      return _defaultRadius * 2.0;
+      return defaultRadius * 2.0;
     }
     return 2.0 * (radius ?? maxRadius ?? _defaultMaxRadius);
   }
@@ -115,12 +111,12 @@ class UserAvatar extends StatelessWidget {
 
     Widget? accountWidget;
     DecorationImage? decorationImage;
-    late Color backgroundColor;
+    Color? backgroundColor;
     if (imageUrl.isNotEmpty) {
-      backgroundColor = theme.colorScheme.onPrimary;
+      backgroundColor = theme.primaryIconTheme.color;
       decorationImage = DecorationImage(
         image: NetworkImage(imageUrl),
-        //onError: onBackgroundImageError,
+        onError: onImageError,
         fit: fit,
         alignment: alignment,
       );
@@ -148,7 +144,7 @@ class UserAvatar extends StatelessWidget {
         backgroundColor = cachedColor.contrastingColor();
         accountWidget = Icon(
           Icons.account_circle,
-          size: alternativeImageIconSize,
+          size: defaultRadius * 2.0,
           color: cachedColor.value,
         );
       }
@@ -160,130 +156,29 @@ class UserAvatar extends StatelessWidget {
       shape: shape,
     );
 
-    return FittedBox(
-      fit: fit,
-      child: AnimatedContainer(
+    return Material(
+      type: MaterialType.transparency,
+      child: Ink(
         decoration: boxDecoration,
-        constraints: BoxConstraints(
-          minHeight: _minDiameter,
-          minWidth: _minDiameter,
-          maxWidth: _maxDiameter,
-          maxHeight: _maxDiameter,
-        ),
-        alignment: alignment,
-        duration: kThemeChangeDuration,
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            customBorder: ShapeDecoration.fromBoxDecoration(boxDecoration).shape,
-            onTap: onTap,
-            child: accountWidget,
+        child: InkWell(
+          customBorder: ShapeDecoration.fromBoxDecoration(boxDecoration).shape,
+          onTap: onTap,
+          child: FittedBox(
+            fit: fit,
+            child: AnimatedContainer(
+              duration: kThemeChangeDuration,
+              constraints: BoxConstraints(
+                minWidth: _minDiameter,
+                minHeight: _minDiameter,
+                maxWidth: _maxDiameter,
+                maxHeight: _maxDiameter,
+              ),
+              alignment: alignment,
+              child: accountWidget,
+            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-/// A ListTile that displays the app's user name, email and image.
-@deprecated
-class UserAccountListTile extends StatelessWidget {
-  /// Creates a material design account widget. Displays the user name and email
-  /// given [nameText] and [emailText] with a leading image loaded from the url
-  /// [imageUrl] passed as parameter.
-  ///
-  /// Requires one of its ancestors to be a [Material] widget.
-  const UserAccountListTile({
-    Key? key,
-    this.image,
-    this.name,
-    this.email,
-    this.onTap,
-    this.onTapImage,
-  }) : super(key: key);
-
-  /// A widget placed in the left that represents the current user's account
-  /// image.
-  ///
-  /// Normally an [Icon], a [UserAvatar] or a [CircleAvatar] widget.
-  final Widget? image;
-
-  /// A widget that represents the current user's account name. It is displayed
-  /// on the right of the [image], above the [email] widget.
-  final Widget? name;
-
-  /// A widget that represents the current user's account email. It is displayed
-  /// on the right of the [image], below the [name] widget.
-  final Widget? email;
-
-  final VoidCallback? onTap;
-
-  final VoidCallback? onTapImage;
-
-  Color? _iconColor(ThemeData theme) {
-    switch (theme.brightness) {
-      case Brightness.light:
-        return Colors.black45;
-      case Brightness.dark:
-      default:
-        return null; // null - use current icon theme color
-
-    }
-  }
-
-  Image _loadImage(String src) {
-    return Image.network(
-      src,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded) {
-          return child;
-        }
-        return AnimatedOpacity(
-          opacity: frame == null ? 0 : 1,
-          duration: const Duration(seconds: 1),
-          curve: Curves.easeOut,
-          child: child,
-        );
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) {
-          return child;
-        }
-        return CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        final theme = Theme.of(context);
-        final iconThemeData = IconThemeData(color: _iconColor(theme));
-
-        return IconTheme.merge(
-          data: iconThemeData,
-          child: const Icon(Icons.account_circle),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Widget? tittleWidget;
-    // if (nameText?.isNotEmpty ?? false) {
-    //   tittleWidget = Text(nameText!);
-    // }
-
-    // Widget? subtitleWidget;
-    // if (emailText?.isNotEmpty ?? false) {
-    //   subtitleWidget = Text(emailText!);
-    // }
-
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: image,
-      title: name,
-      subtitle: email,
-      onTap: onTap,
-      mouseCursor: MouseCursor.defer,
     );
   }
 }
