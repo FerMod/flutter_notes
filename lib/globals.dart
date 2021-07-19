@@ -23,7 +23,7 @@ class Global {
   static const bool useFirebaseAuthEmulator = false;
 
   /// A constant that represents if should persist the made changes.
-  static const bool persistChanges = false;
+  static const bool persistChanges = true;
 
   /// A constant that represents if should use local storage.
   static const bool localStorage = true;
