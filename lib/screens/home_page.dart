@@ -7,13 +7,13 @@ import '../data/models.dart';
 import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
-
-  final userData = DataProvider.userData;
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.homepage),

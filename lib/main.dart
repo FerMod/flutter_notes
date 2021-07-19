@@ -43,16 +43,14 @@ void _initFirestore() {
 
 void _initFirebaseFirestore() {
   if (Global.useFirebaseFirestoreEmulator) {
-    // Switch host based on platform.
-    final firebaseFirestoreHost = DeviceType.isAndroid ? '10.0.2.2:8080' : 'localhost:8080';
-
     try {
-      FirebaseFirestore.instance.settings = Settings(
-        host: firebaseFirestoreHost,
-        sslEnabled: false,
+      FirebaseFirestore.instance.settings = const Settings(
         persistenceEnabled: Global.persistChanges,
         cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
       );
+
+      // Internally Android uses '10.0.2.2' as the host.
+      FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080, sslEnabled: false);
     } catch (e) {
       // When hot reloading 'FirebaseError: [code=failed-precondition]' is
       // launched. It happens when trying to set the Firebase settings more than
@@ -69,11 +67,10 @@ void _initFirebaseFirestore() {
 
 void _initFirebaseAuth() {
   if (Global.useFirebaseAuthEmulator) {
-    // Switch host based on platform.
-    final firebaseAuthHost = DeviceType.isAndroid ? 'http://10.0.2.2:9099' : 'http://localhost:9099';
-
     try {
-      FirebaseAuth.instance.useEmulator(firebaseAuthHost);
+      // Firebase Auth emulator is not supported for web yet.
+      // Internally Android uses '10.0.2.2' as the host.
+      FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
     } catch (e) {
       print(e.toString());
     }
@@ -117,7 +114,6 @@ class NotesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userData = DataProvider.userData;
-    final userSignedIn = userData.currentUser != null;
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
