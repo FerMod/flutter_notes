@@ -12,7 +12,7 @@ import '../data/firebase_service.dart';
 import '../data/models.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
-import '../widgets/user_account.dart';
+import '../widgets/user_avatar.dart';
 
 void _navigateSetting(BuildContext context, Widget widget) {
   Navigator.of(context).push(

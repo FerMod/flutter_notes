@@ -14,7 +14,7 @@ import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/drawer_menu.dart';
 import '../widgets/loader.dart';
-import '../widgets/user_account.dart';
+import '../widgets/user_avatar.dart';
 import 'edit_note.dart';
 import 'settings.dart';
 import 'sign_in.dart';

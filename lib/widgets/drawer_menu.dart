@@ -7,7 +7,7 @@ import 'package:flutter_notes/widgets/version_widget.dart';
 
 import 'about_app_widget.dart';
 import 'drawer_header.dart';
-import 'user_account.dart';
+import 'user_avatar.dart';
 
 class DrawerMenu extends StatelessWidget {
   DrawerMenu({Key? key}) : super(key: key);
