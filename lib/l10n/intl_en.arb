@@ -291,6 +291,10 @@
       }
     }
   },
+  "validationWeakPassword": "Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.",
+  "@validationWeakPassword": {
+    "description": "Validation message to show when password is considered too weak."
+  },
   "validationMinLengthField": "Field length must be at least {minLength} characterers.",
   "@validationMinLengthField": {
     "description": "Validation message to show when the field length is less than the required [minLength]. To provide a field name use [validationMinLength].",

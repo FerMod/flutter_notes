@@ -66,6 +66,7 @@
   "passwordResetReturn": "Volver al inicio de sesión",
   "passwordResetSuccess": "Comprueba tu email para un link para restablecer tu contraseña. Si no le llega ningúno tras unos minutos, compruebe su carpeta de spam.",
   "validationEmptyField": "Por favor, rellene este campo.",
+  "validationWeakPassword": "Asegúrese de que tenga al menos 15 caracteres de logitud O al menos 8 caracteres, incluyendo un número y una letra en minúsculas.",
   "validationEmpty": "Por favor, rellene el campo {fieldName}.",
   "validationMinLengthField": "La longitud del campo tiene que ser de almenos {minLength} caracterers.",
   "validationMinLength": "La longitud de {fieldName} tiene que ser de almenos {minLength} caracterers.",

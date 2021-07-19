@@ -305,22 +305,17 @@ class UserData<T> extends FirebaseDocument<T?> implements FirebaseAuthentication
   }
 
   @override
-  Future<UserCredential> signUp(String email, String password, {Map<String, dynamic>? data}) async {
-    UserCredential userCredential;
+  Future<UserCredential> signUp(String email, String password, {String? displayName, String? photoURL}) async {
+    late UserCredential userCredential;
     try {
       userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = userCredential.user!;
 
-      data ??= {
-        'name': user.displayName ?? '',
-        'image': user.photoURL ?? '',
-      };
-      // TODO: Show message, when no it could not connect to the database
-      // ignore: unawaited_futures
-      collection.insert(data, id: user.uid);
+      final user = userCredential.user!;
+      await user.updateDisplayName(displayName);
+      await user.updatePhotoURL(photoURL);
     } on FirebaseAuthException catch (e) {
       developer.log('$e');
       rethrow;

@@ -39,8 +39,6 @@ class _SignInFormState extends State<_SignInForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final _userData = DataProvider.userData;
-
   @override
   void initState() {
     super.initState();
@@ -64,8 +62,10 @@ class _SignInFormState extends State<_SignInForm> {
     );
     if (!_formKey.currentState!.validate()) return;
 
+    final userData = DataProvider.userData;
+
     try {
-      final credential = await _userData.signIn(_emailController.text, _passwordController.text);
+      final credential = await userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
       await Navigator.pushNamedAndRemoveUntil(
         context,

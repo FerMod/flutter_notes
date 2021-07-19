@@ -177,11 +177,30 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
+  Validation<String?> _validateEmailFormat(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final regExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$");
+    return Validation(
+      errorMessage: localizations.errorInvalidEmail,
+      assertion: (value) => value != null && regExp.hasMatch(value),
+    );
+  }
+
+  @Deprecated('Replaced by _validateWeakPassword')
   Validation<String?> _validateMinLength(BuildContext context, int minLength) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationMinLength(localizations.password, minLength),
       assertion: (value) => value != null && value.length >= minLength,
+    );
+  }
+
+  Validation<String?> _validateWeakPassword(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final regExp = RegExp(r'^(?:(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}|.{15,})$');
+    return Validation(
+      errorMessage: localizations.validationWeakPassword,
+      assertion: (value) => value != null && regExp.hasMatch(value),
     );
   }
 
@@ -225,6 +244,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.email),
+            _validateEmailFormat(context),
           ]),
         ),
         TextFormInput(
@@ -236,7 +256,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.password),
-            _validateMinLength(context, 6),
+            _validateWeakPassword(context),
           ]),
         ),
         TextFormInput(
