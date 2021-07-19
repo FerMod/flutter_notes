@@ -32,11 +32,6 @@ class LocaleMatcher {
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
   static Locale localeListResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
-    var locale = _localeResolution(desiredLocales, supportedLocales);
-    if (locale != const Locale.fromSubtags()) {
-      return locale;
-    }
-
     // If the fallback function is defined, use it. If the returned value by the
     // fallback function is not null return that value. Otherwise, return the
     // first locale in the supported list. If that value is also null then
@@ -44,7 +39,11 @@ class LocaleMatcher {
     //
     // The returned values could be the one given by the fallback funtion, or
     // it could be "und", or the first value of the supported locales.
-    return fallback?.call() ?? supportedLocales.firstOrNull ?? locale;
+    return _resolveLocale(
+      desiredLocales,
+      supportedLocales,
+      fallback: fallback ?? () => supportedLocales.firstOrNull,
+    );
   }
 
   /// This algorithm will resolve to the earliest preferred locale that
@@ -70,8 +69,17 @@ class LocaleMatcher {
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
-  static Locale localeLookup(Locale desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
-    final locale = _localeResolution([desiredLocale], supportedLocales);
+  @Deprecated('Not used')
+  static Locale localeLookup(Locale? desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
+    return _resolveLocale(
+      [if (desiredLocale != null) desiredLocale],
+      supportedLocales,
+      fallback: fallback,
+    );
+  }
+
+  static Locale _resolveLocale(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
+    final locale = _localeResolution(desiredLocales, supportedLocales);
     if (locale != const Locale.fromSubtags()) {
       return locale;
     }
