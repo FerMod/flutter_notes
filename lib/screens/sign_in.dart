@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/data/credential_service.dart';
 import 'package:flutter_notes/src/utils/device_type.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
@@ -145,7 +144,6 @@ class _BodyWidget extends StatelessWidget {
   }) : super(key: key);
 
   final VoidCallback? onSignIn;
-  final Function(CredentialService credentialService)? onSignInWithCredential;
 
   final TextEditingController emailController;
   final TextEditingController passwordController;
