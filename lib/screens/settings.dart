@@ -10,7 +10,6 @@ import 'package:flutter_notes/widgets/version_widget.dart';
 import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models.dart';
-import '../data/models/user_model.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account.dart';
@@ -93,48 +92,50 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildAccountSection(BuildContext context) {
+  Widget _buildAccountSection(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    return [
-      SettingsHeader(
+    return SettingsGroup(
+      title: SettingsHeader(
         title: Text(localizations.settingsAccountHeader),
       ),
-      _buildAccountSettings(context),
-      const Divider(),
-    ];
+      children: [
+        _buildAccountSettings(context),
+        const Divider(),
+      ],
+    );
   }
 
-  List<Widget> _buildApplicationSection(BuildContext context) {
+  Widget _buildApplicationSection(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    return [
-      SettingsHeader(
+    return SettingsGroup(
+      title: SettingsHeader(
         title: Text(localizations.settingsAplicationHeader),
       ),
-      SettingListTile(
-        icon: const Icon(Icons.translate),
-        title: Text(localizations.settingsLanguage),
-        onTap: () {
-          _navigateSetting(context, const LocalizationSettingScreen());
-        },
-      ),
-      SettingListTile(
-        icon: const Icon(Icons.palette),
-        title: Text(localizations.settingsTheme),
-        onTap: () {
-          _navigateSetting(context, const ThemeModeSettingScreen());
-        },
-      ),
-      SettingListTile(
-        icon: const Icon(Icons.format_size),
-        title: Text(localizations.settingsTextScale),
-        onTap: () {
-          _navigateSetting(context, const TextScaleSettingScreen());
-        },
-      ),
-      const Divider(),
-    ];
+      children: [
+        SettingListTile(
+          icon: const Icon(Icons.translate),
+          title: Text(localizations.settingsLanguage),
+          onTap: () {
+            _navigateSetting(context, const LocalizationSettingScreen());
+          },
+        ),
+        SettingListTile(
+          icon: const Icon(Icons.palette),
+          title: Text(localizations.settingsTheme),
+          onTap: () {
+            _navigateSetting(context, const ThemeModeSettingScreen());
+          },
+        ),
+        SettingListTile(
+          icon: const Icon(Icons.format_size),
+          title: Text(localizations.settingsTextScale),
+          onTap: () {
+            _navigateSetting(context, const TextScaleSettingScreen());
+          },
+        ),
+        const Divider(),
+      ],
+    );
   }
 
   @override
@@ -146,11 +147,13 @@ class SettingsScreen extends StatelessWidget {
         title: Text(localizations.settingsTitle),
       ),
       body: Scrollbar(
+        showTrackOnHover: true,
+        radius: Radius.zero,
         child: ListView(
           //padding: const EdgeInsets.all(8.0),
           children: [
-            ..._buildAccountSection(context),
-            ..._buildApplicationSection(context),
+            _buildAccountSection(context),
+            _buildApplicationSection(context),
             const AboutAppWidget(),
             const VersionWidget(),
             // const Placeholder(fallbackHeight: 900),

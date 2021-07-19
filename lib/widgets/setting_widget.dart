@@ -46,24 +46,88 @@ class DisplayOption {
   }
 }
 
+class SettingsGroup extends StatelessWidget {
+  const SettingsGroup({
+    Key? key,
+    this.title,
+    this.children = const <Widget>[],
+  }) : super(key: key);
+
+  final Widget? title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null) title!,
+        ...children,
+      ],
+    );
+  }
+}
+
 class SettingsHeader extends StatelessWidget {
   const SettingsHeader({
     Key? key,
     required this.title,
     this.subtitle,
+    this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
   }) : super(key: key);
 
   final Widget title;
   final Widget? subtitle;
+  final EdgeInsetsGeometry padding;
+
+  Color? _textColor(ThemeData theme, ListTileTheme? tileTheme, Color? defaultColor) {
+    if (tileTheme?.textColor != null) {
+      return tileTheme!.textColor;
+    }
+    return defaultColor;
+  }
+
+  TextStyle _titleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
+    final TextStyle style = theme.textTheme.subtitle1!;
+    final Color? color = _textColor(theme, tileTheme, style.color);
+    return style.copyWith(color: color, fontSize: 13.0);
+  }
+
+  TextStyle _subtitleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
+    final TextStyle style = theme.textTheme.bodyText2!;
+    final Color? color = _textColor(theme, tileTheme, theme.textTheme.caption!.color);
+    return style.copyWith(color: color, fontSize: 12.0);
+  }
+
+  Widget _buildTextWidget(Widget child, TextStyle textStyle) {
+    return AnimatedDefaultTextStyle(
+      style: textStyle,
+      duration: kThemeChangeDuration,
+      child: child,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
-    // theme.textTheme.subtitle1,
-    return ListTile(
-      title: title,
-      subtitle: subtitle,
-      dense: true,
+    final theme = Theme.of(context);
+    final tileTheme = ListTileTheme.of(context);
+
+    final titleWidget = _buildTextWidget(title, _titleTextStyle(theme, tileTheme));
+
+    Widget? subtitleWidget;
+    if (subtitle != null) {
+      subtitleWidget = _buildTextWidget(subtitle!, _subtitleTextStyle(theme, tileTheme));
+    }
+
+    return Padding(
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleWidget,
+          if (subtitleWidget != null) subtitleWidget,
+        ],
+      ),
     );
   }
 }
