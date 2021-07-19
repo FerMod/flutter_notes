@@ -105,34 +105,10 @@ class CardHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardTheme = CardTheme.of(context);
 
-    var resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
+    Color? resolvedCardColor = backgroundColor;
     if (backgroundColor == null && theme.brightness == Brightness.light) {
       resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4)!;
-    }
-
-    Widget content = Ink(
-      decoration: decoration ??
-          BoxDecoration(
-            border: Border(
-              top: Divider.createBorderSide(
-                context,
-                color: color,
-                width: width ?? _defaultWidth,
-              ),
-            ),
-            color: resolvedCardColor,
-          ),
-      child: child,
-    );
-
-    if (onTap != null || onLongPress != null) {
-      content = InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: content,
-      );
     }
 
     return Hero(
@@ -142,7 +118,24 @@ class CardHero extends StatelessWidget {
         shape: shape,
         margin: margin,
         clipBehavior: Clip.antiAlias,
-        child: content,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Ink(
+            decoration: decoration ??
+                BoxDecoration(
+                  border: Border(
+                    top: Divider.createBorderSide(
+                      context,
+                      color: color,
+                      width: width ?? _defaultWidth,
+                    ),
+                  ),
+                  color: resolvedCardColor,
+                ),
+            child: child,
+          ),
+        ),
       ),
     );
   }
