@@ -6,29 +6,29 @@ import 'package:flutter/material.dart';
 
 /// Signature for a function that creates a widget with a message.
 ///
-/// Used by [Message.messageBuilder].
-typedef MessageWidgetBuilder = Widget Function(BuildContext context, MessageData message);
+/// Used by [BannerMessage.messageBuilder].
+typedef MessageWidgetBuilder = Widget Function(BuildContext context, BannerMessageData message);
 
 @immutable
-class MessageData with Diagnosticable {
-  const MessageData({
+class BannerMessageData with Diagnosticable {
+  const BannerMessageData({
     this.isVisible = false,
     this.message,
     this.actions = const <Widget>[],
   });
 
-  const factory MessageData.empty() = MessageData;
+  const factory BannerMessageData.empty() = BannerMessageData;
 
   final bool isVisible;
   final String? message;
   final List<Widget> actions;
 
-  MessageData copyWith({
+  BannerMessageData copyWith({
     bool? isVisible,
     String? message,
     List<Widget>? actions,
   }) {
-    return MessageData(
+    return BannerMessageData(
       isVisible: isVisible ?? this.isVisible,
       message: message ?? this.message,
       actions: actions ?? this.actions,
@@ -42,7 +42,7 @@ class MessageData with Diagnosticable {
     }
     final listEquals = const DeepCollectionEquality().equals;
 
-    return other is MessageData && other.isVisible == isVisible && other.message == message && listEquals(other.actions, actions);
+    return other is BannerMessageData && other.isVisible == isVisible && other.message == message && listEquals(other.actions, actions);
   }
 
   @override
@@ -63,49 +63,49 @@ class MessageData with Diagnosticable {
   }
 }
 
-class Message extends StatefulWidget {
-  const Message({
+class BannerMessage extends StatefulWidget {
+  const BannerMessage({
     Key? key,
-    MessageData data = const MessageData.empty(),
+    BannerMessageData data = const BannerMessageData.empty(),
     this.onChange,
     required this.messageBuilder,
     required this.child,
   })  : _data = data,
         super(key: key);
 
-  final MessageData _data;
-  final ValueChanged<MessageData>? onChange;
+  final BannerMessageData _data;
+  final ValueChanged<BannerMessageData>? onChange;
   final MessageWidgetBuilder messageBuilder;
   final Widget child;
 
-  static MessageState? of(BuildContext context) {
+  static BannerMessageState? of(BuildContext context) {
     final inheritedMessage = context.dependOnInheritedWidgetOfExactType<_InheritedMessage>();
     return inheritedMessage?.message;
   }
 
-  static MessageData? dataOf(BuildContext context) {
-    final messageState = Message.of(context);
+  static BannerMessageData? dataOf(BuildContext context) {
+    final messageState = BannerMessage.of(context);
     return messageState?.data;
   }
 
   static MessageController<T?> show<T extends Object?>(BuildContext context, {String? message, List<Widget>? actions}) {
-    return Message.of(context)!.show(message: message, actions: actions);
+    return BannerMessage.of(context)!.show(message: message, actions: actions);
   }
 
   static void hide<T extends Object?>(BuildContext context, [T? result]) {
-    Message.of(context)!.hide(result);
+    BannerMessage.of(context)!.hide(result);
   }
 
   @override
-  MessageState createState() => MessageState();
+  BannerMessageState createState() => BannerMessageState();
 }
 
-/// The state for a [Message] widget.
+/// The state for a [BannerMessage] widget.
 ///
-/// A reference to this class can be obtained by calling [Message.of].
-class MessageState extends State<Message> {
+/// A reference to this class can be obtained by calling [BannerMessage.of].
+class BannerMessageState extends State<BannerMessage> {
   /// The data contained in the message.
-  late MessageData data;
+  late BannerMessageData data;
 
   MessageController? _messageController;
 
@@ -116,7 +116,7 @@ class MessageState extends State<Message> {
   }
 
   @override
-  void didUpdateWidget(Message oldWidget) {
+  void didUpdateWidget(BannerMessage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget._data != oldWidget._data) {
       data = widget._data;
@@ -132,7 +132,7 @@ class MessageState extends State<Message> {
     _handleOnChange(newData);
   }
 
-  void _handleOnChange(MessageData newData) {
+  void _handleOnChange(BannerMessageData newData) {
     if (data == newData) return;
     setState(() {
       data = newData;
@@ -150,7 +150,6 @@ class MessageState extends State<Message> {
     _update(isVisible: false);
     _messageController?._completer.complete(result);
   }
-
   @override
   Widget build(BuildContext context) {
     return _InheritedMessage(
@@ -180,8 +179,8 @@ class _InheritedMessage extends InheritedWidget {
     required Widget child,
   }) : super(key: key, child: child);
 
-  final MessageState message;
-  final MessageData data;
+  final BannerMessageState message;
+  final BannerMessageData data;
 
   @override
   bool updateShouldNotify(_InheritedMessage old) => data != old.data;
@@ -189,7 +188,7 @@ class _InheritedMessage extends InheritedWidget {
 
 /// An interface for controlling a message.
 ///
-/// Commonly obtained from [Message.show].
+/// Commonly obtained from [BannerMessage.show].
 class MessageController<T> {
   const MessageController._(this._completer, this.close);
 

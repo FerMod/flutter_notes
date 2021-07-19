@@ -10,7 +10,7 @@ import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/src/utils/device_type.dart';
 
 import '../data/models.dart';
-import '../widgets/form_message.dart';
+import '../widgets/banner_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
 
@@ -87,7 +87,7 @@ class _SignUpFormState extends State<_SignUpForm> {
         (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
-      Message.show(context, message: _errorMessage(e.code));
+      BannerMessage.show(context, message: _errorMessage(e.code));
     }
   }
 

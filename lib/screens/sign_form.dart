@@ -4,7 +4,7 @@ import 'package:flutter_notes/src/utils/device_type.dart';
 import 'package:flutter_notes/widgets/message.dart';
 
 import '../widgets/drawer_menu.dart';
-import '../widgets/form_message.dart';
+import '../widgets/banner_message.dart';
 import 'settings.dart';
 
 class SignFormScreen extends StatelessWidget {
@@ -31,7 +31,7 @@ class SignFormScreen extends StatelessWidget {
           ],
         ),
         drawer: DrawerMenu(),
-        body: Message(
+        body: BannerMessage(
           messageBuilder: (context, message) => _MessageCard(message: message),
           child: SingleChildScrollView(
             child: LayoutBuilder(
@@ -63,12 +63,12 @@ class _MessageCard extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final MessageData message;
+  final BannerMessageData message;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final MessageData data = message;
+    final BannerMessageData data = message;
 
     Widget? titleWidget;
     if (data.message != null) {
@@ -80,7 +80,7 @@ class _MessageCard extends StatelessWidget {
       final materialLocalizations = MaterialLocalizations.of(context);
       actionsList = [
         TextButton(
-          onPressed: () => Message.hide(context),
+          onPressed: () => BannerMessage.hide(context),
           child: Text(materialLocalizations.closeButtonLabel),
         ),
       ];

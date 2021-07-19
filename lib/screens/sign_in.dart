@@ -11,7 +11,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import '../data/models.dart';
 import '../routes.dart';
-import '../widgets/form_message.dart';
+import '../widgets/banner_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
 
@@ -74,7 +74,7 @@ class _SignInFormState extends State<_SignInForm> {
         (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
-      Message.show(context, message: _errorMessage(e.code));
+      BannerMessage.show(context, message: _errorMessage(e.code));
     }
   }
 
