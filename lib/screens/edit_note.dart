@@ -99,6 +99,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   Widget _createSaveButton() {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     return TextButton(
       onPressed: () {
         if (_valuesChanged(widget.note)) {
@@ -106,6 +107,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         }
         Navigator.of(context).pop(widget.note);
       },
+      style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
       child: Text(localizations.save),
     );
   }
@@ -157,11 +159,10 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      //backgroundColor: Colors.transparent,
       appBar: AppBar(
         leading: CloseButton(
           onPressed: _handleClose,
-        ), //BackButton(onPressed: _handleSubmit),
+        ),
         title: Text(localizations.edit),
         actions: [
           _createSaveButton(),
@@ -196,11 +197,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 colors: _colorOptions,
                 onTap: _handleOnTap,
               ),
-              // _ColorButtons(
-              //   initialValue: _color,
-              //   colors: _colorOptions,
-              //   onPressed: _handleOnTap,
-              // ),
             ],
           ),
         ),
@@ -214,12 +210,14 @@ class _ColorOptionsNavBar extends StatefulWidget {
     Key? key,
     required this.selectedIndex,
     required this.colors,
+    this.backgroundColor,
     required this.onTap,
   }) : super(key: key);
 
   final int selectedIndex;
   final List<Color> colors;
   final ValueChanged<int> onTap;
+  final Color? backgroundColor;
 
   @override
   _ColorOptionsNavBarState createState() => _ColorOptionsNavBarState();
@@ -257,7 +255,7 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
     final theme = Theme.of(context);
 
     Widget bottomNavigationBar = BottomNavigationBar(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: widget.backgroundColor,
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: false,
       showUnselectedLabels: false,

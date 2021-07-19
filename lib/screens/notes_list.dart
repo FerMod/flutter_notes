@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/widgets/user_account_tile.dart';
+import 'package:intl/intl.dart';
 
 import '../data/firebase_service.dart';
 import '../data/models.dart';
@@ -51,16 +52,13 @@ class NotesListScreen extends StatelessWidget {
     );
   }
 
-  void _newNote(BuildContext context) async {
-    final user = notesListModel.userData.currentUser;
-    final note = NoteModel(userId: user?.uid);
+  void _newNote(BuildContext context, String userId) async {
+    final note = NoteModel(userId: userId);
 
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
 
-    if (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty) {
-      notesListModel.addNote(resultNote);
-    }
+    notesListModel.addNote(resultNote);
   }
 
   void _editNote(BuildContext context, NoteModel note) async {
@@ -134,7 +132,7 @@ class NotesListScreen extends StatelessWidget {
       floatingActionButton: Visibility(
         visible: userData.isSignedIn,
         child: FloatingActionButton(
-          onPressed: () => _newNote(context),
+          onPressed: () => _newNote(context, userData.currentUser!.uid),
           tooltip: localizations.addNote,
           heroTag: 'note-new',
           child: const Icon(Icons.add),
@@ -256,6 +254,7 @@ class NoteListWidget extends StatelessWidget {
   PopupMenuItem<MenuAction> _buildPopMenuItem(MenuAction action, String text, Icon icon) {
     return PopupMenuItem<MenuAction>(
       value: action,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListTile(
         leading: icon,
         title: Text(text),
@@ -270,9 +269,27 @@ class NoteListWidget extends StatelessWidget {
     );
   }
 
+  bool _isFromDayAgo(DateTime date) {
+    final now = DateTime.now();
+    final dayAgo = now.subtract(const Duration(days: 1));
+    return !dayAgo.difference(date).isNegative;
+  }
+
+  String _formatDate(String localeName, DateTime date) {
+    late final DateFormat dateFormat;
+    if (_isFromDayAgo(date)) {
+      dateFormat = DateFormat.yMd(localeName).add_Hm();
+    } else {
+      dateFormat = DateFormat.Hm(localeName);
+    }
+    return dateFormat.format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     return Scrollbar(
       controller: controller,
       showTrackOnHover: true,
@@ -285,32 +302,62 @@ class NoteListWidget extends StatelessWidget {
         itemCount: notes.length,
         itemBuilder: (context, index) {
           final note = notes[index];
+
+          Widget? titleWidget;
+          if (note.title.isNotEmpty) {
+            titleWidget = Text(
+              note.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            );
+          }
+
+          Widget? contentWidget;
+          if (note.content.isNotEmpty) {
+            contentWidget = Text(
+              note.content,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            );
+          }
+
           return CardHero(
             tag: 'note-${note.id}',
             color: note.color,
             onTap: () => onTap?.call(note),
             onLongPress: () => developer.log('Long press'),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
+              alignment: AlignmentDirectional.topEnd,
               children: [
-                Expanded(
-                  child: ListTile(
-                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                    mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
-                    title: Text(note.title),
-                    subtitle: Text(
-                      note.content,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    _formatDate(localizations.localeName, note.lastEdit),
+                    style: theme.textTheme.caption,
                   ),
                 ),
-                PopupMenuButton<MenuAction>(
-                  itemBuilder: (context) => [
-                    _buildPopMenuItem(MenuAction.delete, localizations!.delete, const Icon(Icons.delete)),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.only(left: 16.0),
+                        mouseCursor: MouseCursor.defer, // Defer the cursor choice to widgets behind
+                        title: titleWidget,
+                        subtitle: contentWidget,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: PopupMenuButton<MenuAction>(
+                        itemBuilder: (context) => [
+                          _buildPopMenuItem(MenuAction.delete, localizations.delete, const Icon(Icons.delete)),
+                        ],
+                        onSelected: (value) => onMenuTap!(note, value),
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
                   ],
-                  onSelected: (value) => onMenuTap!(note, value),
-                  padding: EdgeInsets.zero,
                 ),
               ],
             ),
