@@ -303,32 +303,3 @@ bool debugCheckHasModelBinding<T>(BuildContext context) {
   }());
   return true;
 }
-
-/// Asserts that the type [T] is not of type `dynamic`.
-///
-/// Used by various widgets to make sure that the appropriate type is provided.
-///
-/// To invoke this function, use the following pattern, typically in the
-/// relevant Widget's build method:
-///
-/// ```dart
-/// assert(debugCheckNotOfTypeDynamic<MyType>());
-/// ```
-///
-/// Does nothing if asserts are disabled. Always returns true.
-@Deprecated('Not used anywhere')
-bool debugCheckNotOfTypeDynamic<T>() {
-  assert(() {
-    if (T == dynamic) {
-      throw FlutterError.fromParts(<DiagnosticsNode>[
-        ErrorSummary('Use of type `dynamic` not allowed.'),
-        ErrorHint(
-          'If you want to expose a variable that can be anything, consider '
-          'replacing `dynamic` with `Object` instead.',
-        ),
-      ]);
-    }
-    return true;
-  }());
-  return true;
-}

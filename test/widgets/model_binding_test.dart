@@ -598,28 +598,21 @@ void main() {
     });
   });
 
-  group('Assertion', () {
-    test('debugCheckNotOfTypeDynamic', () {
-      expect(debugCheckNotOfTypeDynamic<Object?>(), isTrue);
-      expect(() => debugCheckNotOfTypeDynamic<dynamic>(), throwsFlutterError);
-    });
+  testWidgets('Assert debugCheckHasModelBinding', (tester) async {
+    final globalKey = GlobalKey(debugLabel: 'Test Key');
+    final childWidget = Container(key: globalKey);
 
-    testWidgets('debugCheckHasModelBinding', (tester) async {
-      final globalKey = GlobalKey(debugLabel: 'Test Key');
-      final childWidget = Container(key: globalKey);
+    Widget build() {
+      return ModelBinding<TestModel>(
+        initialModel: const TestModel(),
+        child: childWidget,
+      );
+    }
 
-      Widget build() {
-        return ModelBinding<TestModel>(
-          initialModel: const TestModel(),
-          child: childWidget,
-        );
-      }
+    await tester.pumpWidget(build());
+    expect(debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), isTrue);
 
-      await tester.pumpWidget(build());
-      expect(debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), isTrue);
-
-      await tester.pumpWidget(childWidget);
-      expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
-    });
+    await tester.pumpWidget(childWidget);
+    expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
   });
 }
