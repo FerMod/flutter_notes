@@ -166,7 +166,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         title: Text(localizations.edit),
         actions: [
           _createSaveButton(),
-          _createMenuButton(),
+          //_createMenuButton(),
         ],
         elevation: 0.0, // Prevents the shadow from darkening other colors
       ),
