@@ -9,38 +9,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    env:
+      channel: stable
     steps:
-      - name: Clone Flutter repository
-        uses: actions/checkout@v2
+      # Set up Flutter and add it to the path.
+      - name: Clone Flutter repository with ${{ env.channel }} channel
+        uses: subosito/flutter-action@v1.5.3
         with:
-          repository: "flutter/flutter"
-          ref: "stable"
-          path: "flutter"
-          fetch-depth: 0
-      - name: Add Flutter to PATH
-        run: echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+          channel: ${{ env.channel }}
       - name: Enable web support
         run: flutter config --enable-web
       - name: Run Flutter doctor
         run: flutter doctor -v
 
-      # Clone the repository under 'code', to avoid conflicts with 'flutter'.
+      # Clone the repository, create missing files and get required packages.
       - name: Clone the repository
         uses: actions/checkout@v2
-        with:
-          path: "code"
+      - name: Get packages for the Flutter project
+        run: |
+          flutter create .
+          flutter pub get
       - name: Create symbolic link
         run: ln -s ./build/web ./docs
-        working-directory: code
-      - name: Get packages for the Flutter project
-        run: flutter pub get
-        working-directory: code
       - name: Build project
         run: flutter build -v web --release
-        working-directory: code
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./code
+          publish_dir: ./
