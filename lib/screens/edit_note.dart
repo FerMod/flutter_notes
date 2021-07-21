@@ -18,6 +18,7 @@ enum ChangesAction {
   discard,
 }
 
+// TODO: Add class that holds editing Object, and tracks if changes where made (is dirty)
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
     Key? key,
@@ -45,7 +46,10 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   void initState() {
     super.initState();
 
-    _colorOptions = PredefinedColor.values.map((e) => e.color).toList();
+    _colorOptions = PredefinedColor.values.map((e) => e.color).toList(growable: false);
+
+    final resolvedIndex = _colorOptions.indexOf(widget.note.color);
+    _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
 
     _titleEditingController = TextEditingController(text: widget.note.title);
     _contentEditingController = TextEditingController(text: widget.note.content);
@@ -54,9 +58,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _titleEditingController.addListener(_updateLastEdit);
     _contentEditingController.addListener(_updateLastEdit);
-
-    final resolvedIndex = _colorOptions.indexOf(widget.note.color);
-    _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
   }
 
   @override
@@ -94,7 +95,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
 
     Navigator.of(context).pop(widget.note);
-    //widget.onEdit(_titleEditingController.text, _contentEditingController.text, widget.note.color);
   }
 
   Widget _createSaveButton() {
@@ -109,30 +109,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       },
       style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
       child: Text(localizations.save),
-    );
-  }
-
-  Widget _createMenuButton() {
-    final localizations = AppLocalizations.of(context)!;
-    return PopupMenuButton<Commands>(
-      tooltip: localizations.changeColor,
-      onSelected: (result) {
-        switch (result) {
-          case Commands.delete:
-            // TODO: Handle this case.
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          value: Commands.delete,
-          child: ListTile(leading: const Icon(Icons.delete), title: Text(localizations.delete)),
-        ),
-        const PopupMenuDivider(),
-      ],
     );
   }
 
@@ -166,7 +142,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         title: Text(localizations.edit),
         actions: [
           _createSaveButton(),
-          //_createMenuButton(),
         ],
         elevation: 0.0, // Prevents the shadow from darkening other colors
       ),
@@ -442,41 +417,5 @@ extension PredefinedColorExtension on PredefinedColor {
       case PredefinedColor.black:
         return const Color(0xFF454545);
     }
-  }
-}
-
-@Deprecated('Will be replaced with BottomNavigationBar')
-class _ColorButtons extends StatelessWidget {
-  const _ColorButtons({
-    Key? key,
-    required this.initialValue,
-    required this.colors,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final List<Color> colors;
-  final Color? initialValue;
-  final void Function(int index) onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return DecoratedBox(
-      // alignment: Alignment.center,
-      // margin: EdgeInsets.zero,
-      // padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
-        ),
-        //borderRadius: BorderRadius.all(Radius.zero),
-      ),
-      child: ColorToggleButtons(
-        initialValue: initialValue,
-        colors: colors,
-        onPressed: onPressed,
-      ),
-    );
   }
 }
