@@ -12,13 +12,11 @@ jobs:
     env:
       channel: stable
     steps:
-      # Set up Flutter and add it to the path.
+      # Set up Flutter.
       - name: Clone Flutter repository with ${{ env.channel }} channel
         uses: subosito/flutter-action@v1.5.3
         with:
           channel: ${{ env.channel }}
-      - name: Enable web support
-        run: flutter config --enable-web
       - name: Run Flutter doctor
         run: flutter doctor -v
 

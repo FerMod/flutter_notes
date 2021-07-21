@@ -71,7 +71,7 @@ jobs:
       fail-fast: false
     needs: draft-release
     steps:
-      # Set up Flutter and add it to the path.
+      # Set up Flutter.
       - name: Clone Flutter repository with ${{ matrix.channel }} channel
         uses: subosito/flutter-action@v1.5.3
         with:
