@@ -26,9 +26,7 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v2
       - name: Get packages for the Flutter project
-        run: |
-          flutter create .
-          flutter pub get
+        run: flutter pub get
 
       # Analyze, check formatting, and run unit tests.
       # - name: Analyze the project's Dart code
