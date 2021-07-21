@@ -1,6 +1,4 @@
-<p align="center">
-    <img width="250px" src="assets/images/repository_social_card.png">
-</p>
+![repository_social_card](assets/images/repository_social_card_wide.png)
 
 # Flutter Notes
 
