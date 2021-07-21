@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+@immutable
 class Global {
-  Global._internal();
-  static final Global _instance = Global._internal();
+  const Global._internal();
+  static const Global _instance = Global._internal();
   factory Global() => _instance;
 
   /// Sets the URL strategy of the web app to use paths instead of a leading
@@ -22,7 +23,7 @@ class Global {
   static const bool useFirebaseAuthEmulator = false;
 
   /// A constant that represents if should persist the made changes.
-  static const bool persistChanges = false;
+  static const bool persistChanges = true;
 
   /// A constant that represents if should use local storage.
   static const bool localStorage = true;

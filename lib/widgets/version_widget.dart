@@ -6,17 +6,16 @@ class VersionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder<PackageInfo>(
         future: PackageInfo.fromPlatform(),
         builder: (context, snapshot) {
-          final data = snapshot.data;
-          final version = data != null ? 'v${data.version}' : '';
+          final theme = Theme.of(context);
+          final version = snapshot.data?.version;
+          final containsVersion = version?.isNotEmpty ?? false;
           return Text(
-            version,
+            containsVersion ? 'v$version' : '',
             style: theme.textTheme.caption,
             textAlign: TextAlign.center,
           );

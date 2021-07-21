@@ -20,10 +20,10 @@ class NoteModel {
     this.color = const Color(0xFFFFFF8D),
     DateTime? lastEdit,
     this.reference,
-  })  : id = id ?? Uuid().v4(),
+  })  : id = id ?? const Uuid().v4(),
         lastEdit = lastEdit ?? DateTime.now();
 
-  factory NoteModel.fromSnapshot(DocumentSnapshot snapshot) {
+  factory NoteModel.fromSnapshot(DocumentSnapshot<Map<String, Object?>> snapshot) {
     return NoteModel(
       id: snapshot.id,
       userId: snapshot['userId'],
@@ -35,7 +35,7 @@ class NoteModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {
       // 'id': id,
       'userId': userId,

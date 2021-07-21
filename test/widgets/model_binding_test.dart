@@ -1,4 +1,8 @@
-import 'package:flutter_notes/model_binding.dart';
+// ignore_for_file: avoid_unnecessary_containers
+
+import 'dart:async';
+
+import 'package:flutter_notes/widgets/model_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +37,7 @@ void main() {
       log = <dynamic>[];
     });
 
-    group('ModelBinding.of', () {
+    group('of', () {
       testWidgets('returns the correct model', (tester) async {
         final builder = Builder(
           builder: (context) {
@@ -42,7 +46,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel(value: 1);
+        const firstModel = TestModel(value: 1);
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -51,7 +55,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 1);
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -60,7 +64,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final thirdModel = TestModel(value: 3);
+        const thirdModel = TestModel(value: 3);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -78,7 +82,7 @@ void main() {
           },
         );
 
-        TestModel? firstModel = TestModel(value: 1);
+        const firstModel = TestModel(value: 1);
         final firstWidget = ModelBinding<TestModel?>(
           initialModel: firstModel,
           child: builder,
@@ -87,7 +91,7 @@ void main() {
 
         expect(log, equals(<TestModel?>[firstModel]));
 
-        TestModel? secondModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 1);
         final secondWidget = ModelBinding<TestModel?>(
           initialModel: secondModel,
           child: builder,
@@ -96,7 +100,7 @@ void main() {
 
         expect(log, equals(<TestModel?>[firstModel]));
 
-        TestModel? thirdModel = TestModel(value: 3);
+        TestModel? thirdModel = const TestModel(value: 3);
         final thirdWidget = ModelBinding<TestModel?>(
           initialModel: thirdModel,
           child: builder,
@@ -106,45 +110,9 @@ void main() {
         expect(log, equals(<TestModel?>[firstModel, thirdModel]));
       });
 
-      testWidgets('returns null when no model exist', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-        await tester.pumpWidget(Container(key: globalKey));
-
-        expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext!), isNull);
-      });
-
-      /*
-      testWidgets('returns correctly the model of `dynamic` type', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-
-        final model = TestModel();
-
-        ModelBinding build() {
-          return ModelBinding(
-            key: UniqueKey(),
-            initialModel: model,
-            child: Container(
-              key: globalKey,
-              child: Builder(
-                builder: (context) {
-                  log.add(ModelBinding.of(context));
-                  return Container();
-                },
-              ),
-            ),
-          );
-        }
-
-        final widget = build();
-        await tester.pumpWidget(widget);
-
-        expect(log, [model]);
-      });
-      */
-
       testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
-        final model = TestModel();
+        const model = TestModel();
 
         ModelBinding buildOfTypeDynamic() {
           return ModelBinding(
@@ -203,18 +171,27 @@ void main() {
           throwsA(isAssertionError.having(
             (e) => e.message,
             'message',
-            contains('No ModelBinding<$TestModel> widget found.'),
+            contains('No ModelBinding<$TestModel> widget ancestor found.'),
           )),
         );
       });
     });
 
-    group('ModelBinding.update', () {
+    group('maybeOf', () {
+      testWidgets('returns null when no model exist', (tester) async {
+        final globalKey = GlobalKey(debugLabel: 'Test Key');
+        await tester.pumpWidget(Container(key: globalKey));
+
+        expect(ModelBinding.maybeOf<TestModel>(globalKey.currentContext!), isNull);
+      });
+    });
+
+    group('update', () {
       testWidgets('updates correctly a model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
+        const firstModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 2);
 
         ModelBinding<TestModel> build() {
           return ModelBinding<TestModel>(
@@ -255,7 +232,7 @@ void main() {
       testWidgets('updates correctly a nullable model', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
-        TestModel? firstModel = TestModel(value: 1);
+        TestModel? firstModel = const TestModel(value: 1);
         TestModel? secondModel;
 
         ModelBinding<TestModel?> build() {
@@ -296,7 +273,7 @@ void main() {
 
       testWidgets('throws when no ancestor is found', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
-        final model = TestModel();
+        const model = TestModel();
         await tester.pumpWidget(Container(key: globalKey));
 
         expect(
@@ -304,7 +281,7 @@ void main() {
           throwsA(isAssertionError.having(
             (e) => e.message,
             'message',
-            contains('No ModelBinding<$TestModel> widget found.'),
+            contains('No ModelBinding<$TestModel> widget ancestor found.'),
           )),
         );
       });
@@ -313,8 +290,8 @@ void main() {
         final globalKeyDynamic = GlobalKey(debugLabel: 'ModelBinding<dynamic> Key');
         final globalKeyObject = GlobalKey(debugLabel: 'ModelBinding<Object> Key');
 
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
+        const firstModel = TestModel(value: 1);
+        const secondModel = TestModel(value: 2);
 
         ModelBinding<dynamic> buildOfTypeDynamic() {
           return ModelBinding<dynamic>(
@@ -371,50 +348,6 @@ void main() {
         expect(log, equals(<Object>[firstModel, secondModel]));
       });
 
-      /*
-      testWidgets('updates correctly the model from `dynamic` type', (tester) async {
-        final globalKey = GlobalKey(debugLabel: 'Test Key');
-
-        final firstModel = TestModel(value: 1);
-        final secondModel = TestModel(value: 2);
-
-        ModelBinding build() {
-          return ModelBinding(
-            key: UniqueKey(),
-            initialModel: firstModel,
-            child: Container(
-              child: Builder(
-                key: globalKey,
-                builder: (context) {
-                  log.add(ModelBinding.of(context));
-                  return Container();
-                },
-              ),
-            ),
-          );
-        }
-
-        final widget = build();
-        await tester.pumpWidget(widget);
-
-        // The first model is present
-        expect(log, <TestModel>[firstModel]);
-
-        log.clear();
-        await tester.pump();
-
-        // No new models added
-        expect(log, equals(<TestModel>[]));
-
-        log.clear();
-        ModelBinding.update(globalKey.currentContext, secondModel);
-        await tester.pump();
-
-        // The new model should be present
-        expect(log, equals(<TestModel>[secondModel]));
-      });
-      */
-
       testWidgets('only notifies when the model changes', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
@@ -426,7 +359,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel();
+        const firstModel = TestModel();
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -436,7 +369,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel();
+        const secondModel = TestModel();
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -446,7 +379,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final thirdModel = TestModel(value: 1);
+        const thirdModel = TestModel(value: 1);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -468,7 +401,7 @@ void main() {
           },
         );
 
-        final firstModel = TestModel();
+        const firstModel = TestModel();
         final firstWidget = ModelBinding(
           initialModel: firstModel,
           child: builder,
@@ -482,7 +415,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel]));
 
-        final secondModel = TestModel();
+        const secondModel = TestModel();
         final secondWidget = ModelBinding(
           initialModel: secondModel,
           child: builder,
@@ -496,7 +429,7 @@ void main() {
 
         expect(log, equals(<TestModel>[firstModel, secondModel]));
 
-        final thirdModel = TestModel(value: 1);
+        const thirdModel = TestModel(value: 1);
         final thirdWidget = ModelBinding(
           initialModel: thirdModel,
           child: builder,
@@ -512,13 +445,47 @@ void main() {
       });
     });
 
-    testWidgets('Update model when reparenting state', (tester) async {
-      final globalKey = GlobalKey();
+    testWidgets('throws when no child or builder is provided', (tester) async {
+      const model = TestModel();
+
+      // No builder. Creates normally.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+          child: Container(),
+        ),
+        returnsNormally,
+      );
+
+      // No child. Creates normally.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+          builder: (context, child) => Container(),
+        ),
+        returnsNormally,
+      );
+
+      // No child and builder. Throws assert error.
+      expect(
+        () => ModelBinding(
+          initialModel: model,
+        ),
+        throwsA(isAssertionError.having(
+          (e) => e.message,
+          'message',
+          contains('Must provide at least a child or a builder'),
+        )),
+      );
+    });
+
+    testWidgets('updates the model when reparenting state', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
 
       ModelBinding<TestModel> build() {
         return ModelBinding(
           key: UniqueKey(),
-          initialModel: TestModel(),
+          initialModel: const TestModel(),
           child: Container(
             key: globalKey,
             child: Builder(
@@ -542,17 +509,17 @@ void main() {
       expect(log, equals(<TestModel>[first.initialModel, second.initialModel]));
     });
 
-    testWidgets('Update model when removing node', (tester) async {
+    testWidgets('updates the model when removing node', (tester) async {
       final widget = Container(
         child: ModelBinding(
-          initialModel: TestModel(value: 1),
+          initialModel: const TestModel(value: 1),
           child: FlipWidget(
             left: Container(
               child: ModelBinding(
-                initialModel: TestModel(value: 2),
+                initialModel: const TestModel(value: 2),
                 child: Container(
                   child: ModelBinding(
-                    initialModel: TestModel(value: 3),
+                    initialModel: const TestModel(value: 3),
                     child: Container(
                       child: Builder(builder: (context) {
                         final testModel = ModelBinding.of<TestModel>(context);
@@ -566,7 +533,7 @@ void main() {
             ),
             right: Container(
               child: ModelBinding(
-                initialModel: TestModel(value: 2),
+                initialModel: const TestModel(value: 2),
                 child: Container(
                   child: Container(
                     child: Builder(builder: (context) {
@@ -604,5 +571,48 @@ void main() {
       expect(log, equals(<String>['a: 3']));
       log.clear();
     });
+
+    testWidgets('calls dispose when model removes from tree', (tester) async {
+      final globalKey = GlobalKey(debugLabel: 'Test Key');
+      const testModel = TestModel();
+
+      final contextCompleter = Completer<BuildContext>();
+      final modelCompleter = Completer<TestModel>();
+
+      ModelBinding<TestModel> build() {
+        return ModelBinding(
+          key: globalKey,
+          initialModel: testModel,
+          child: Container(),
+          dispose: (context, value) {
+            contextCompleter.complete(context);
+            modelCompleter.complete(value);
+          },
+        );
+      }
+
+      await tester.pumpWidget(build());
+      expect(contextCompleter.future, completion(allOf([isNotNull, globalKey.currentContext])));
+      expect(modelCompleter.future, completion(allOf([isNotNull, testModel])));
+      await tester.pumpWidget(Container());
+    });
+  });
+
+  testWidgets('Assert debugCheckHasModelBinding', (tester) async {
+    final globalKey = GlobalKey(debugLabel: 'Test Key');
+    final childWidget = Container(key: globalKey);
+
+    Widget build() {
+      return ModelBinding<TestModel>(
+        initialModel: const TestModel(),
+        child: childWidget,
+      );
+    }
+
+    await tester.pumpWidget(build());
+    expect(debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), isTrue);
+
+    await tester.pumpWidget(childWidget);
+    expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
   });
 }

@@ -3,15 +3,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/widgets/about_app_widget.dart';
+import 'package:flutter_notes/widgets/drawer_header.dart';
+import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:flutter_notes/widgets/version_widget.dart';
 
 import '../data/app_options.dart';
 import '../data/firebase_service.dart';
 import '../data/models.dart';
-import '../data/models/user_model.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
-import '../widgets/user_account.dart';
+import '../widgets/user_avatar.dart';
 
 void _navigateSetting(BuildContext context, Widget widget) {
   Navigator.of(context).push(
@@ -66,11 +67,11 @@ class SettingsScreen extends StatelessWidget {
       subtitleWidget = Text(user.email ?? '');
     } else {
       final localizations = AppLocalizations.of(context)!;
-      iconWidget = FittedBox(
+      iconWidget = const FittedBox(
         fit: BoxFit.contain,
-        child: const Icon(
+        child: Icon(
           Icons.account_circle,
-          size: UserAvatar.alternativeImageIconSize,
+          size: UserAvatar.defaultRadius * 2.0,
         ),
       );
       titleWidget = Text(localizations.signInTo(localizations.appName));
@@ -91,48 +92,50 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildAccountSection(BuildContext context) {
+  Widget _buildAccountSection(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    return [
-      SettingsHeader(
+    return SettingsGroup(
+      title: SettingsHeader(
         title: Text(localizations.settingsAccountHeader),
       ),
-      _buildAccountSettings(context),
-      const Divider(),
-    ];
+      children: [
+        _buildAccountSettings(context),
+        const Divider(),
+      ],
+    );
   }
 
-  List<Widget> _buildApplicationSection(BuildContext context) {
+  Widget _buildApplicationSection(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    return [
-      SettingsHeader(
+    return SettingsGroup(
+      title: SettingsHeader(
         title: Text(localizations.settingsAplicationHeader),
       ),
-      SettingListTile(
-        icon: const Icon(Icons.translate),
-        title: Text(localizations.settingsLanguage),
-        onTap: () {
-          _navigateSetting(context, LocalizationSettingScreen());
-        },
-      ),
-      SettingListTile(
-        icon: const Icon(Icons.palette),
-        title: Text(localizations.settingsTheme),
-        onTap: () {
-          _navigateSetting(context, ThemeModeSettingScreen());
-        },
-      ),
-      SettingListTile(
-        icon: const Icon(Icons.format_size),
-        title: Text(localizations.settingsTextScale),
-        onTap: () {
-          _navigateSetting(context, TextScaleSettingScreen());
-        },
-      ),
-      const Divider(),
-    ];
+      children: [
+        SettingListTile(
+          icon: const Icon(Icons.translate),
+          title: Text(localizations.settingsLanguage),
+          onTap: () {
+            _navigateSetting(context, const LocalizationSettingScreen());
+          },
+        ),
+        SettingListTile(
+          icon: const Icon(Icons.palette),
+          title: Text(localizations.settingsTheme),
+          onTap: () {
+            _navigateSetting(context, const ThemeModeSettingScreen());
+          },
+        ),
+        SettingListTile(
+          icon: const Icon(Icons.format_size),
+          title: Text(localizations.settingsTextScale),
+          onTap: () {
+            _navigateSetting(context, const TextScaleSettingScreen());
+          },
+        ),
+        const Divider(),
+      ],
+    );
   }
 
   @override
@@ -144,11 +147,13 @@ class SettingsScreen extends StatelessWidget {
         title: Text(localizations.settingsTitle),
       ),
       body: Scrollbar(
+        showTrackOnHover: true,
+        radius: Radius.zero,
         child: ListView(
           //padding: const EdgeInsets.all(8.0),
           children: [
-            ..._buildAccountSection(context),
-            ..._buildApplicationSection(context),
+            _buildAccountSection(context),
+            _buildApplicationSection(context),
             const AboutAppWidget(),
             const VersionWidget(),
             // const Placeholder(fallbackHeight: 900),
@@ -162,12 +167,12 @@ class SettingsScreen extends StatelessWidget {
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({
     Key? key,
-    this.userData,
+    required this.userData,
     this.onTap,
     this.onTapImage,
   }) : super(key: key);
 
-  final UserData<UserModel>? userData;
+  final UserData userData;
 
   final VoidCallback? onTap;
   final VoidCallback? onTapImage;
@@ -175,43 +180,40 @@ class AccountSettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final userData = DataProvider.userData;
+    final user = userData.currentUser;
 
+    final userName = user?.displayName ?? '';
+    final userImage = user?.photoURL ?? '';
+    final userEmail = user?.email ?? '';
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
       body: Scrollbar(
+        showTrackOnHover: true,
+        radius: Radius.zero,
         child: ListView(
           children: [
-            // TODO: Improve user data obtention
-            FutureBuilder<UserModel?>(
-              future: userData.data(),
-              builder: (context, snapshot) {
-                final user = userData.currentUser;
-
-                final userName = snapshot.data?.name ?? user?.displayName ?? '';
-                final userImage = snapshot.data?.image ?? user?.photoURL ?? user?.photoURL;
-                final userEmail = user?.email ?? '';
-
-                return UserAccountsDrawerHeader(
-                  margin: EdgeInsets.zero,
-                  currentAccountPicture: UserAvatar(
-                    imageUrl: userImage,
-                    nameText: userName,
-                  ),
-                  accountName: Text(userName),
-                  accountEmail: Text(userEmail),
-                );
-              },
+            TitleDrawerHeader(
+              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+              child: UserAccountTile(
+                image: UserAvatar(
+                  imageUrl: userImage,
+                  nameText: userName,
+                ),
+                title: Text(userName),
+                subtitle: Text(userEmail),
+                imageSize: const Size.square(72.0),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.login),
               title: Text(localizations.signOut),
               onTap: () async {
                 await userData.signOut();
-                // TODO: Improve route navigation
-                // Navigator.of(context).popUntil((route) => route.isFirst);
-                // await Navigator.of(context).popAndPushNamed('/');
-                await Navigator.of(context).pushNamedAndRemoveUntil(AppRoute.signIn, ModalRoute.withName('/'));
+                await Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoute.signIn,
+                  (route) => route.isFirst,
+                );
               },
             ),
           ],
@@ -252,7 +254,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
   }
 
   bool _isSupportedLocale() {
-    return deviceResolvedLocale != Locale.fromSubtags();
+    return deviceResolvedLocale != const Locale.fromSubtags();
   }
 
   @override

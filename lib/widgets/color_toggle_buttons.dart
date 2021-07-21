@@ -108,7 +108,7 @@ class ColorButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: theme.iconTheme.color!, width: 1.0),
-        borderRadius: BorderRadius.all(Radius.circular(2.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(2.0)),
         color: color,
       ),
       child: icon ?? const Icon(null),

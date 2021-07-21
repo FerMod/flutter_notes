@@ -18,6 +18,7 @@ enum ChangesAction {
   discard,
 }
 
+// TODO: Add class that holds editing Object, and tracks if changes where made (is dirty)
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
     Key? key,
@@ -45,7 +46,10 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   void initState() {
     super.initState();
 
-    _colorOptions = PredefinedColor.values.map((e) => e.color).toList();
+    _colorOptions = PredefinedColor.values.map((e) => e.color).toList(growable: false);
+
+    final resolvedIndex = _colorOptions.indexOf(widget.note.color);
+    _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
 
     _titleEditingController = TextEditingController(text: widget.note.title);
     _contentEditingController = TextEditingController(text: widget.note.content);
@@ -54,9 +58,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _titleEditingController.addListener(_updateLastEdit);
     _contentEditingController.addListener(_updateLastEdit);
-
-    final resolvedIndex = _colorOptions.indexOf(widget.note.color);
-    _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
   }
 
   @override
@@ -94,11 +95,11 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
 
     Navigator.of(context).pop(widget.note);
-    //widget.onEdit(_titleEditingController.text, _contentEditingController.text, widget.note.color);
   }
 
   Widget _createSaveButton() {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     return TextButton(
       onPressed: () {
         if (_valuesChanged(widget.note)) {
@@ -106,38 +107,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         }
         Navigator.of(context).pop(widget.note);
       },
+      style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
       child: Text(localizations.save),
-    );
-  }
-
-  Widget _createMenuButton() {
-    final localizations = AppLocalizations.of(context)!;
-    return PopupMenuButton<Commands>(
-      tooltip: localizations.changeColor,
-      onSelected: (result) {
-        switch (result) {
-          case Commands.delete:
-            // TODO: Handle this case.
-            break;
-          default:
-            break;
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          value: Commands.delete,
-          child: ListTile(leading: Icon(Icons.delete), title: Text(localizations.delete)),
-        ),
-        PopupMenuDivider(),
-      ],
     );
   }
 
   Future<ChangesAction> _showSaveChangesDialog() async {
     final dialogResult = await showDialog<ChangesAction>(
       context: context,
-      builder: (context) => _SaveChangesAlertDialog(),
+      builder: (context) => const _SaveChangesAlertDialog(),
     );
     return dialogResult ?? ChangesAction.none;
   }
@@ -157,15 +135,13 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      //backgroundColor: Colors.transparent,
       appBar: AppBar(
         leading: CloseButton(
           onPressed: _handleClose,
-        ), //BackButton(onPressed: _handleSubmit),
+        ),
         title: Text(localizations.edit),
         actions: [
           _createSaveButton(),
-          _createMenuButton(),
         ],
         elevation: 0.0, // Prevents the shadow from darkening other colors
       ),
@@ -173,7 +149,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         child: CardHero(
           tag: 'note-${widget.note.id}',
           color: _color,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(4.0)),
           ),
           margin: EdgeInsets.zero,
@@ -196,11 +172,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 colors: _colorOptions,
                 onTap: _handleOnTap,
               ),
-              // _ColorButtons(
-              //   initialValue: _color,
-              //   colors: _colorOptions,
-              //   onPressed: _handleOnTap,
-              // ),
             ],
           ),
         ),
@@ -214,12 +185,14 @@ class _ColorOptionsNavBar extends StatefulWidget {
     Key? key,
     required this.selectedIndex,
     required this.colors,
+    this.backgroundColor,
     required this.onTap,
   }) : super(key: key);
 
   final int selectedIndex;
   final List<Color> colors;
   final ValueChanged<int> onTap;
+  final Color? backgroundColor;
 
   @override
   _ColorOptionsNavBarState createState() => _ColorOptionsNavBarState();
@@ -257,7 +230,7 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
     final theme = Theme.of(context);
 
     Widget bottomNavigationBar = BottomNavigationBar(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: widget.backgroundColor,
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: false,
       showUnselectedLabels: false,
@@ -430,55 +403,19 @@ extension PredefinedColorExtension on PredefinedColor {
   Color get color {
     switch (this) {
       case PredefinedColor.yellow:
-        return Color(0xFFE6B904);
+        return const Color(0xFFE6B904);
       case PredefinedColor.green:
-        return Color(0xFF65BA5A);
+        return const Color(0xFF65BA5A);
       case PredefinedColor.pink:
-        return Color(0xFFEA86C2);
+        return const Color(0xFFEA86C2);
       case PredefinedColor.purple:
-        return Color(0xFFC78EFF);
+        return const Color(0xFFC78EFF);
       case PredefinedColor.blue:
-        return Color(0xFF5AC0E7);
+        return const Color(0xFF5AC0E7);
       case PredefinedColor.grey:
-        return Color(0xFFAAAAAA);
+        return const Color(0xFFAAAAAA);
       case PredefinedColor.black:
-        return Color(0xFF454545);
+        return const Color(0xFF454545);
     }
-  }
-}
-
-@Deprecated('Will be replaced with BottomNavigationBar')
-class _ColorButtons extends StatelessWidget {
-  const _ColorButtons({
-    Key? key,
-    required this.initialValue,
-    required this.colors,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final List<Color> colors;
-  final Color? initialValue;
-  final void Function(int index) onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return DecoratedBox(
-      // alignment: Alignment.center,
-      // margin: EdgeInsets.zero,
-      // padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.onSurface, width: 0.2),
-        ),
-        //borderRadius: BorderRadius.all(Radius.zero),
-      ),
-      child: ColorToggleButtons(
-        initialValue: initialValue,
-        colors: colors,
-        onPressed: onPressed,
-      ),
-    );
   }
 }

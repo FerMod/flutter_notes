@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "Notes App",
+  "appName": "Flutter Notes App",
   "@appName": {
     "description": "The name of the app. This should be the same name across different locale."
   },
@@ -291,6 +291,36 @@
       }
     }
   },
+  "validationWeakPassword": "Make sure it's at least 15 characters OR at least 8 characters including a number and a lowercase letter.",
+  "@validationWeakPassword": {
+    "description": "Validation message to show when password is considered too weak."
+  },
+  "validationMinLengthField": "Field length must be at least {minLength} characterers.",
+  "@validationMinLengthField": {
+    "description": "Validation message to show when the field length is less than the required [minLength]. To provide a field name use [validationMinLength].",
+    "placeholders": {
+      "minLength": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "6"
+      }
+    }
+  },
+  "validationMinLength": "{fieldName} length must be at least {minLength} characterers.",
+  "@validationMinLength": {
+    "description": "Validation message to show when the field [fieldName] length is less than the required [minLength].",
+    "placeholders": {
+      "fieldName": {
+        "type": "String",
+        "example": "Password"
+      },
+      "minLength": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "6"
+      }
+    }
+  },
   "validationNotMatchingField": "Value do not match.",
   "@validationNotMatchingField": {
     "description": "Validation message to show when a field does not match with the value of other field. To provide a field name use [validationMatch]."
@@ -319,12 +349,12 @@
       }
     }
   },
-  "errorSignIn": "Incorrect username or password.",
+  "errorSignIn": "Incorrect email or password.",
   "@errorSignIn": {
-    "description": "Sign in error message, when the username or the password are missing or wrong."
+    "description": "Sign in error message, when the email or the password are missing or wrong."
   },
-  "errorPasswordReset": "That address is not a verified primary email or is not associated with a personal user account. Organization billing emails are only for notifications.",
-  "@errorpasswordReset": {
+  "errorUserNotFound": "That email address is not a verified primary email or is not associated with a personal user account.",
+  "@errorUserNotFound": {
     "description": "Error message when no matching email address is found."
   },
   "errorWeakPassword": "The password is too weak.",
@@ -339,7 +369,7 @@
   "@errorEmailAlreadyInUse": {
     "description": "Message text to show when a the introduced email is already in use by another account."
   },
-  "errorUserDisabled": "The user with the given email is disabled.",
+  "errorUserDisabled": "The user account with the given email is disabled.",
   "@errorUserDisabled": {
     "description": "Thrown if the user corresponding to the given email has been disabled."
   },

@@ -7,7 +7,6 @@ import 'screens/settings.dart';
 import 'screens/sign_in.dart';
 import 'screens/sign_up.dart';
 
-// ignore: avoid_classes_with_only_static_members
 class AppRoute {
   static const String notes = '/notes';
   static const String settings = '/settings';
@@ -15,12 +14,12 @@ class AppRoute {
   static const String signUp = '/signUp';
   static const String home = '/home';
 
-  static Map<String, WidgetBuilder> routes = {
+  static Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
     notes: (context) => NotesListScreen(),
     settings: (context) => const SettingsScreen(),
     signIn: (context) => const SignInScreen(),
     signUp: (context) => const SignUpScreen(),
-    home: (context) => HomePage(),
+    home: (context) => const HomePage(),
   };
 }
 
@@ -70,7 +69,7 @@ class RouteConfiguration {
     ),
     Path(
       r'^' + AppRoute.home,
-      (context, match) => HomePage(),
+      (context, match) => const HomePage(),
     ),
   ];
 
@@ -131,7 +130,7 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var begin = Offset(1.0, 0.0);
+    var begin = const Offset(1.0, 0.0);
     var end = Offset.zero;
     var curve = Curves.easeIn;
 

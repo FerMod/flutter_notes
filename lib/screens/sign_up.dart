@@ -7,9 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/routes.dart';
+import 'package:flutter_notes/src/utils/device_type.dart';
 
 import '../data/models.dart';
-import '../widgets/form_message.dart';
+import '../widgets/banner_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
 
@@ -21,7 +22,7 @@ class SignUpScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return SignFormScreen(
       title: Text(localizations.signUp),
-      builder: (context) => _SignUpForm(),
+      builder: (context) => const _SignUpForm(),
     );
   }
 }
@@ -64,42 +65,44 @@ class _SignUpFormState extends State<_SignUpForm> {
     super.dispose();
   }
 
-  Future _handleOnSignUp() async {
-    final formState = _formKey.currentState!;
-    if (!formState.validate()) return;
+  Future<void> _handleOnSignUp() async {
+    _usernameController.value = _usernameController.value.copyWith(
+      text: _usernameController.text.trim(),
+    );
+    _emailController.value = _emailController.value.copyWith(
+      text: _emailController.text.trim(),
+    );
+    if (!_formKey.currentState!.validate()) return;
 
     try {
       final credential = await _userData.signUp(
         _emailController.text,
         _passwordController.text,
-        data: {
-          'name': _usernameController.text,
-          'image': '',
-        },
+        displayName: _usernameController.text,
       );
       developer.log('$credential');
-      return Navigator.of(context).pushNamedAndRemoveUntil(
+      await Navigator.pushNamedAndRemoveUntil(
+        context,
         AppRoute.notes,
-        ModalRoute.withName('/'), // TODO: Improve routes
+        (route) => route.isFirst,
       );
     } on FirebaseAuthException catch (e) {
-      final localizations = AppLocalizations.of(context)!;
-      late String errorMessage;
-      switch (e.code) {
-        case 'email-already-in-use':
-          errorMessage = localizations.errorEmailAlreadyInUse;
-          break;
-        case 'invalid-email':
-          errorMessage = localizations.errorInvalidEmail;
-          break;
-        case 'weak-password':
-          errorMessage = localizations.errorWeakPassword;
-          break;
-        case 'operation-not-allowed':
-        default:
-          errorMessage = localizations.errorUnknown;
-      }
-      Message.show(context, message: errorMessage);
+      BannerMessage.show(context, message: _errorMessage(e.code));
+    }
+  }
+
+  String _errorMessage(String errorCode) {
+    final localizations = AppLocalizations.of(context)!;
+    switch (errorCode) {
+      case 'email-already-in-use':
+        return localizations.errorEmailAlreadyInUse;
+      case 'invalid-email':
+        return localizations.errorInvalidEmail;
+      case 'weak-password':
+        return localizations.errorWeakPassword;
+      case 'operation-not-allowed':
+      default:
+        return localizations.errorUnknown;
     }
   }
 
@@ -170,16 +173,49 @@ class _BodyWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationEmpty(labelText),
-      test: (value) => value?.isEmpty ?? true,
+      assertion: (value) => value?.isNotEmpty ?? false,
     );
   }
 
-  Validation<String?> _validateEqual(BuildContext context, String otherValue, String labelText) {
+  Validation<String?> _validateEmailFormat(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final regExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$");
+    return Validation(
+      errorMessage: localizations.errorInvalidEmail,
+      assertion: (value) => value != null && regExp.hasMatch(value),
+    );
+  }
+
+  @Deprecated('Replaced by _validateWeakPassword')
+  Validation<String?> _validateMinLength(BuildContext context, int minLength) {
+    final localizations = AppLocalizations.of(context)!;
+    return Validation(
+      errorMessage: localizations.validationMinLength(localizations.password, minLength),
+      assertion: (value) => value != null && value.length >= minLength,
+    );
+  }
+
+  Validation<String?> _validateWeakPassword(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final regExp = RegExp(r'^(?:(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}|.{15,})$');
+    return Validation(
+      errorMessage: localizations.validationWeakPassword,
+      assertion: (value) => value != null && regExp.hasMatch(value),
+    );
+  }
+
+  Validation<String?> _validateEqual(BuildContext context, TextEditingController controller, String labelText) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
       errorMessage: localizations.validationNotMatching(labelText),
-      test: (value) => value != otherValue,
+      assertion: (value) => value == controller.text,
     );
+  }
+
+  void _handleFieldSubmitted(String value) {
+    if (DeviceType.isDesktopOrWeb) {
+      onSignUp?.call();
+    }
   }
 
   @override
@@ -187,56 +223,57 @@ class _BodyWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final usernameInput = TextFormInput(
-      labelText: localizations.username,
-      icon: Icon(Icons.person, color: theme.iconTheme.color),
-      controller: usernameController,
-      validations: [
-        _validateNotEmpty(context, localizations.username),
+    return FormFields(
+      children: [
+        TextFormInput(
+          labelText: localizations.username,
+          icon: Icon(Icons.person, color: theme.iconTheme.color),
+          controller: usernameController,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.username),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.email,
+          icon: Icon(Icons.email, color: theme.iconTheme.color),
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.email),
+            _validateEmailFormat(context),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.password,
+          icon: Icon(Icons.lock, color: theme.iconTheme.color),
+          controller: passwordController,
+          obscureText: true,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.password),
+            _validateWeakPassword(context),
+          ]),
+        ),
+        TextFormInput(
+          labelText: localizations.passwordConfirm,
+          icon: const Icon(null),
+          controller: confirmPasswordController,
+          obscureText: true,
+          onFieldSubmitted: _handleFieldSubmitted,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          fieldValidator: FieldValidator([
+            _validateNotEmpty(context, localizations.passwordConfirm),
+            _validateEqual(context, passwordController, localizations.password),
+          ]),
+        ),
+        _SignUpButton(onPressed: onSignUp),
       ],
     );
-
-    final emailInput = TextFormInput(
-      labelText: localizations.email,
-      icon: Icon(Icons.email, color: theme.iconTheme.color),
-      controller: emailController,
-      validations: [
-        _validateNotEmpty(context, localizations.email),
-      ],
-    );
-
-    final passwordInput = TextFormInput(
-      labelText: localizations.password,
-      icon: Icon(Icons.lock, color: theme.iconTheme.color),
-      controller: passwordController,
-      obscureText: true,
-      validations: [
-        _validateNotEmpty(context, localizations.password),
-      ],
-    );
-
-    final confirmPasswordInput = TextFormInput(
-      labelText: localizations.passwordConfirm,
-      icon: const Icon(null),
-      controller: confirmPasswordController,
-      obscureText: true,
-      validations: [
-        _validateNotEmpty(context, localizations.passwordConfirm),
-        _validateEqual(context, passwordController.text, localizations.password),
-      ],
-    );
-
-    final signUpButton = _SignUpButton(onPressed: onSignUp);
-
-    final formFields = [
-      usernameInput,
-      emailInput,
-      passwordInput,
-      confirmPasswordInput,
-      signUpButton,
-    ];
-
-    return FormFields(fields: formFields);
   }
 }
 
