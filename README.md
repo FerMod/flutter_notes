@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="250px" src="https://repository-images.githubusercontent.com/309351227/bf04d0f5-c451-4333-8b2a-a8971c52eda4">
+    <img width="250px" src="assets/images/repository_social_card.png">
 </p>
 
 # Flutter Notes

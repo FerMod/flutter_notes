@@ -1,7 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// A message widget that displays a message, and provides actions for users to
+/// address (or dismiss the banner). A user action is required for it to be
+/// dismissed. They are persistent and non-modal, allowing the user to either
+/// ignore them or interact with them at any time.
+///
+/// The [actions] will be placed beside the [content] if there is only one.
+/// Otherwise, the [actions] will be placed below the [content]. Use
+/// [forceActionsBelow] to override this behavior.
+///
+/// If the [actions] placed below the [content], they will be laid out in a row.
+/// If there isn't sufficient room to display everything, they are laid out
+/// in a column instead.
+///
+/// An optional [leading] widget can also be provided. The [contentTextStyle] and
+/// [decoration] can be provided to customize the banner.
 class MessageWidget extends StatelessWidget {
+  /// Creates a message widget.
+  ///
   /// The `color` and `decoration` arguments cannot both be supplied, since
   /// it would potentially result in the decoration drawing over the background
   /// color. To supply a decoration with a color, use
@@ -9,7 +26,7 @@ class MessageWidget extends StatelessWidget {
   const MessageWidget({
     Key? key,
     this.leading,
-    this.title,
+    this.content,
     this.contentTextStyle,
     this.actions = const <Widget>[],
     this.color,
@@ -27,7 +44,7 @@ class MessageWidget extends StatelessWidget {
         ),
         super(key: key);
 
-  /// A widget to display before the title.
+  /// A widget to display before the content.
   ///
   /// Typically an [Icon] or a [CircleAvatar] widget.
   final Widget? leading;
@@ -35,9 +52,9 @@ class MessageWidget extends StatelessWidget {
   /// The primary content of the [MessageWidget].
   ///
   /// Typically a [Text] widget.
-  final Widget? title;
+  final Widget? content;
 
-  /// Style for the text in the [title] of the [MessageWidget].
+  /// Style for the text in the [content] of the [MessageWidget].
   ///
   /// If `null`, [MaterialBannerThemeData.contentTextStyle] is used. If that is
   /// also `null`, [TextTheme.bodyText2] of [ThemeData.textTheme] is used.
@@ -70,20 +87,20 @@ class MessageWidget extends StatelessWidget {
   final Decoration? decoration;
 
   /// The [MessageWidget]'s internal padding, the empty space to inscribe inside
-  /// the [decoration]. The [leading], [title] and [actions] widgets, are placed
+  /// the [decoration]. The [leading], [content] and [actions] widgets, are placed
   /// inside this padding.
   ///
-  /// If the [actions] are below the [title], this defaults to
+  /// If the [actions] are below the [content], this defaults to
   /// `EdgeInsetsDirectional.only(start: 16.0, top: 24.0, end: 16.0, bottom: 4.0)`.
   ///
-  /// If the [actions] are trailing the [title], this defaults to
+  /// If the [actions] are trailing the [content], this defaults to
   /// `EdgeInsetsDirectional.only(start: 16.0, top: 2.0)`.
   ///
   /// This padding is in addition to any padding inherent in the [decoration];
   /// see [Decoration.padding].
   final EdgeInsetsGeometry? contentPadding;
 
-  /// Empty space to surround the [decoration] and the [leading], [title] and
+  /// Empty space to surround the [decoration] and the [leading], [content] and
   /// [actions] widgets.
   final EdgeInsetsGeometry? margin;
 
@@ -102,12 +119,12 @@ class MessageWidget extends StatelessWidget {
   /// This defaults to a minimum height of `52.0`.
   final double minActionsHeight;
 
-  /// An override to force the [actions] to be below the [title] regardless of
+  /// An override to force the [actions] to be below the [content] regardless of
   /// how many there are.
   ///
-  /// If this is true, the [actions] will be placed below the [title]. If
+  /// If this is true, the [actions] will be placed below the [content]. If
   /// this is false, the [actions] will be placed on the trailing side of the
-  /// [title] if [actions]'s length is one and below the [title] if greater
+  /// [content] if [actions]'s length is one and below the [content] if greater
   /// than one.
   final bool forceActionsBelow;
 
@@ -170,13 +187,13 @@ class MessageWidget extends StatelessWidget {
       );
     }
 
-    Widget? titleText;
-    if (title != null) {
-      titleText = Expanded(
+    Widget? contentText;
+    if (content != null) {
+      contentText = Expanded(
         child: AnimatedDefaultTextStyle(
           style: _textStyle(theme, bannerTheme),
           duration: kThemeChangeDuration,
-          child: title!,
+          child: content!,
         ),
       );
     }
@@ -211,7 +228,7 @@ class MessageWidget extends StatelessWidget {
               child: Row(
                 children: [
                   if (leadingIcon != null) leadingIcon,
-                  if (titleText != null) titleText,
+                  if (contentText != null) contentText,
                   if (_isSingleRow) buttonBar,
                 ],
               ),

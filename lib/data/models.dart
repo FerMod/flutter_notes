@@ -15,28 +15,31 @@ import 'models/user_model.dart';
 class DataProvider {
   DataProvider._internal();
   static final DataProvider _instance = DataProvider._internal();
+  factory DataProvider() = DataProvider._internal;
 
   static UserData<UserModel> get userData => _instance._userData;
-  late final UserData<UserModel> _userData = UserData<UserModel>.path(
-    'users',
-    (snapshot) => UserModel.fromSnapshot(snapshot),
+  late final UserData<UserModel> _userData = UserData(
+    converter: (user) => UserModel.fromAuthUser(user),
   );
 
   static Collection<NoteModel> get notes => _instance._notes;
   late final Collection<NoteModel> _notes = Collection<NoteModel>.path(
     'notes',
-    (snapshot) => NoteModel.fromSnapshot(snapshot),
+    FirestoreConverter(
+      fromFirestore: (snapshot, options) => NoteModel.fromSnapshot(snapshot),
+      toFirestore: (value, options) => value.toMap(),
+    ),
   );
 }
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
+  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
+
   late final Collection<NoteModel> notesCollection = DataProvider.notes;
   late final UserData<UserModel> userData = DataProvider.userData;
 
   /// Controller used to notify of the new data entries that are added.
   StreamController<List<NoteModel>>? _controller;
-
-  NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
 
   List<NoteModel> _notes = [];
   List<NoteModel> get notes => _notes;
@@ -80,15 +83,15 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   Future<List<NoteModel>> loadData({bool notifyIsLoading = true}) {
     final user = userData.currentUser;
     late Future<List<NoteModel>> futureResult;
-    if (user == null) {
-      futureResult = Future.value(_notes);
-    } else {
+    if (userData.isSignedIn) {
       futureResult = notesCollection.data(
-        (query) => query.where('userId', isEqualTo: user.uid),
+        (query) => query.where('userId', isEqualTo: user!.uid),
       );
+    } else {
+      futureResult = Future.value(_notes);
     }
 
-    return load(
+    return _load(
       () => futureResult,
       notifyIsLoading: notifyIsLoading,
     );
@@ -103,7 +106,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   ///
   /// See:
   /// * [isLoading], to obtain if is currently loading.
-  Future<List<NoteModel>> load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
+  Future<List<NoteModel>> _load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
 
@@ -132,39 +135,43 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   Stream<List<NoteModel>> streamData() {
     final user = userData.currentUser;
     late Stream<List<NoteModel>> streamResult;
-    if (user == null) {
-      streamResult = Stream.value(_notes);
-    } else {
+    if (userData.isSignedIn) {
       streamResult = notesCollection.stream(
-        (query) => query.where('userId', isEqualTo: user.uid).orderBy('lastEdit', descending: true),
+        (query) => query.where('userId', isEqualTo: user!.uid).orderBy('lastEdit', descending: true),
       );
     }
-    return _pipeStream(
-      streamResult.asBroadcastStream(
-        onCancel: (sub) => sub.cancel(),
-      ),
-    );
+
+    return _pipeStream(streamResult);
   }
 
+  /// Returns a stream from the the result stream of the [operation] execution.
   Stream<List<NoteModel>> _pipeStream(Stream<List<NoteModel>> operation) {
+    var isDone = false;
     //late StreamController<List<NoteModel>> streamController;
     late StreamSubscription<List<NoteModel>> subscription;
     void onListen() {
-      print('StreamController onListen');
+      developer.log('StreamController onListen');
       subscription = operation.listen(
         (value) {
-          print('$value');
-          _controller!.add(value);
+          developer.log('StreamController onData');
           _notes = value;
+          _controller!.add(value);
         },
-        onError: _controller!.addError,
-        //onDone: _controller!.close,
+        onError: (error, stack) {
+          developer.log('StreamController onError');
+          _controller!.addError(error, stack);
+        },
+        onDone: () {
+          isDone = true;
+          developer.log('StreamController onDone');
+          _controller!.close();
+        },
       );
     }
 
     void onCancel() {
-      print('StreamController onCancel');
-      subscription.cancel();
+      developer.log('StreamController onCancel');
+      if (isDone) subscription.cancel();
     }
 
     _controller ??= StreamController.broadcast(
@@ -176,7 +183,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   /// Returns a stream from the the result stream of the [operation] execution.
-  @deprecated
+  @Deprecated('')
   Stream<List<NoteModel>> stream(Stream<List<NoteModel>> Function() operation) {
     _controller ??= StreamController<List<NoteModel>>.broadcast(onListen: () {
       // Listen for events of this stream and update the list content
@@ -190,7 +197,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   void addNote(NoteModel note) {
     _notes.add(note);
     if (userData.isSignedIn) {
-      notesCollection.insert(note.toMap());
+      notesCollection.insert(note);
     } else {
       _controller?.add(_notes);
     }

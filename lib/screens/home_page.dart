@@ -7,11 +7,13 @@ import '../data/models.dart';
 import '../widgets/drawer_menu.dart';
 
 class HomePage extends StatelessWidget {
-  final userData = DataProvider.userData;
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final userData = DataProvider.userData;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.homepage),
@@ -21,7 +23,7 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign In Anonymously)');
@@ -31,7 +33,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign In)');
@@ -41,7 +43,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign Up)');
@@ -51,7 +53,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 debugPrint('(Sign Out)');
@@ -61,7 +63,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
                 developer.log('Current user: ${userData.currentUser}');

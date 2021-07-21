@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:flutter_notes/src/utils/locale_utils.dart';
+import 'package:flutter_notes/src/extensions/locale_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('LocaleUtils', () {
-    String createlanguageTag({
+    String createLanguageTag({
       required String languageCode,
       String? scriptCode,
       String? countryCode,
@@ -22,25 +22,25 @@ void main() {
     }
 
     test('returns a undefined locale if cannot parse language tag', () {
-      final languageCode = 'thisShouldBeWrong';
+      const languageCode = 'thisShouldBeWrong';
       String? scriptCode;
       String? countryCode = 'EE';
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
       );
       expect(
         LocaleUtils.localeFromLanguageTag(languageTag),
-        Locale.fromSubtags(),
+        const Locale.fromSubtags(),
       );
     });
 
     test('returns a locale with the corect language code', () {
-      final languageCode = 'en';
+      const languageCode = 'en';
       String? scriptCode;
       String? countryCode;
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -59,7 +59,7 @@ void main() {
       var languageCode = 'es';
       String? scriptCode;
       String? countryCode = '419';
-      final languageTag = createlanguageTag(
+      final languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -78,7 +78,7 @@ void main() {
       var languageCode = 'zh';
       String? scriptCode = 'Hans';
       String? countryCode = 'CN';
-      var languageTag = createlanguageTag(
+      var languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,
@@ -95,7 +95,7 @@ void main() {
       languageCode = 'hi';
       scriptCode = 'Deva';
       countryCode = 'IN';
-      languageTag = createlanguageTag(
+      languageTag = createLanguageTag(
         languageCode: languageCode,
         scriptCode: scriptCode,
         countryCode: countryCode,

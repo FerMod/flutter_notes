@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 typedef FallbackLocale = Locale? Function();
@@ -31,21 +32,18 @@ class LocaleMatcher {
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
   static Locale localeListResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
-    var locale = _localeResolution(desiredLocales, supportedLocales);
-    //final locale = basicLocaleListResolution(desiredLocales, supportedLocales);
-    if (locale != Locale.fromSubtags()) {
-      return locale;
-    }
-
-    // Set the first locale in the supported list as the resolved locale
-    if (supportedLocales.isNotEmpty) {
-      locale = supportedLocales.first;
-    }
-
-    // If is defined the fallback value, use it. If the returned value is
-    // not null return that value, otherwise use the default fallback locale. It
-    // could be "und", or the first value of the supported locales.
-    return fallback?.call() ?? locale;
+    // If the fallback function is defined, use it. If the returned value by the
+    // fallback function is not null return that value. Otherwise, return the
+    // first locale in the supported list. If that value is also null then
+    // return the default resolved value.
+    //
+    // The returned values could be the one given by the fallback funtion, or
+    // it could be "und", or the first value of the supported locales.
+    return _resolveLocale(
+      desiredLocales,
+      supportedLocales,
+      fallback: fallback ?? () => supportedLocales.firstOrNull,
+    );
   }
 
   /// This algorithm will resolve to the earliest preferred locale that
@@ -66,13 +64,23 @@ class LocaleMatcher {
   /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
   /// 1. [Locale.languageCode] only.
   /// 1. If [fallback] is defined and the returned value is not null returns
-  ///    the value fallback locale. Otherwise, returns "und" locale as a fallback.
+  ///    the value fallback locale. Otherwise, returns "und" locale as a
+  ///    fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
-  static Locale localeLookup(Locale desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
-    final locale = _localeResolution([desiredLocale], supportedLocales);
-    if (locale != Locale.fromSubtags()) {
+  @Deprecated('Not used')
+  static Locale localeLookup(Locale? desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
+    return _resolveLocale(
+      [if (desiredLocale != null) desiredLocale],
+      supportedLocales,
+      fallback: fallback,
+    );
+  }
+
+  static Locale _resolveLocale(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
+    final locale = _localeResolution(desiredLocales, supportedLocales);
+    if (locale != const Locale.fromSubtags()) {
       return locale;
     }
 
@@ -103,8 +111,8 @@ class LocaleMatcher {
   static Locale _localeResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales) {
     // Set best supported the first locale, if no desired locales are found that
     // should be used as the default one.
-    // var bestSupported = supportedLocales.isNotEmpty ? supportedLocales.first : Locale.fromSubtags();
-    var bestSupported = Locale.fromSubtags();
+    // var bestSupported = supportedLocales.isNotEmpty ? supportedLocales.first : const Locale.fromSubtags();
+    var bestSupported = const Locale.fromSubtags();
     if (desiredLocales?.isEmpty ?? true) return bestSupported;
 
     var bestWeightedDistance = double.infinity;
