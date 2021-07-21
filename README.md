@@ -1,4 +1,6 @@
-![repository_social_card](assets/images/repository_social_card_wide.png)
+<p align="center">
+    <img width="250px" src="assets/images/repository_social_card.png" alt="repository_social_card">
+</p>
 
 # Flutter Notes
 
