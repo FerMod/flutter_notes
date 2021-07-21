@@ -97,13 +97,11 @@ jobs:
       - name: Run Flutter doctor
         run: flutter doctor -v
 
-      # Clone the repository, create missing files and get required packages.
+      # Clone the repository and get required packages.
       - name: Clone the repository
         uses: actions/checkout@v2
       - name: Get packages for the Flutter project
-        run: |
-          flutter create .
-          flutter pub get
+        run: flutter pub get
 
       # Build the application.
       - name: Build project
