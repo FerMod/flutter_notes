@@ -5,8 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
   group('VersionWidget', () {
-    late PackageInfo packageInfo;
-    late PackageInfo emptyPackageInfo;
+    late final PackageInfo packageInfo;
+    late final PackageInfo emptyPackageInfo;
 
     setUpAll(() {
       PackageInfo.disablePackageInfoPlatformOverride = true;
@@ -26,7 +26,7 @@ void main() {
       );
     });
 
-    PackageInfo mockPackageInfo(PackageInfo packageInfo) {
+    void mockPackageInfo(PackageInfo packageInfo) {
       PackageInfo.setMockInitialValues(
         appName: packageInfo.appName,
         packageName: packageInfo.packageName,
@@ -34,7 +34,6 @@ void main() {
         buildNumber: packageInfo.buildNumber,
         buildSignature: packageInfo.buildSignature,
       );
-      return packageInfo;
     }
 
     testWidgets('displays version correctly', (tester) async {
