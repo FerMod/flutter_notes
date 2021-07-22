@@ -36,7 +36,7 @@ void main() {
       );
     });
 
-    test('returns a locale with the corect language code', () {
+    test('returns a locale with the correct language code', () {
       const languageCode = 'en';
       String? scriptCode;
       String? countryCode;
@@ -55,7 +55,7 @@ void main() {
       );
     });
 
-    test('returns a locale with the corect script code', () {
+    test('returns a locale with the correct script code', () {
       var languageCode = 'es';
       String? scriptCode;
       String? countryCode = '419';
@@ -74,7 +74,7 @@ void main() {
       );
     });
 
-    test('returns a locale with the corect country code', () {
+    test('returns a locale with the correct country code', () {
       var languageCode = 'zh';
       String? scriptCode = 'Hans';
       String? countryCode = 'CN';
