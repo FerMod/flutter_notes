@@ -31,6 +31,21 @@ Most of them are because the project is missing auto generated files.
 
 ## Running the tests
 
+The Flutter SDK can run unit tests and widget tests in a virtual machine, without the need of a physical device or emulator. 
+To run the tests, first navigate to the project's root folder.
+
+To run all the test files in the `test/` directory run:
+
+```bash
+flutter test
+```
+
+If you want to run a particular test file, run:
+
+```bash
+flutter test test/<file_path>
+```
+
 ## Contributing
 
 Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
