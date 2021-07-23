@@ -139,6 +139,8 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
       streamResult = notesCollection.stream(
         (query) => query.where('userId', isEqualTo: user!.uid).orderBy('lastEdit', descending: true),
       );
+    } else {
+      streamResult = Stream.value(_notes);
     }
 
     return _pipeStream(streamResult);
