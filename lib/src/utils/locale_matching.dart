@@ -1,7 +1,7 @@
+import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 typedef FallbackLocale = Locale? Function();
 
@@ -141,9 +141,7 @@ class LocaleMatcher {
 
           // The more we go down the list the less the weight is
           final weightedDistance = i + matchDistance;
-          if (kDebugMode) {
-            print('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
-          }
+          developer.log('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
           if (bestWeightedDistance == 0.0) {
             // Cannot improve, is a perfect match, and the best without a doubt
             return bestSupported;
@@ -154,6 +152,7 @@ class LocaleMatcher {
         }
       }
     }
+
     return bestSupported;
   }
 
