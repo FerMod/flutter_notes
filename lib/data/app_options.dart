@@ -5,8 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/model_binding.dart';
 import '../src/extensions/locale_utils.dart';
+import '../widgets/model_binding.dart';
 import 'local/app_shared_preferences.dart';
 
 /// The system-reported text scale.

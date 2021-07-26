@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSharedPreferences {
@@ -18,7 +20,7 @@ class AppSharedPreferences {
   /// If the key is not present and [orDefault] is provided, returns the result
   /// value returned by [orDefault].
   static T? load<T extends Object?>(String key, {T? Function()? orDefault}) {
-    print('AppSharedPreferences.load(key: $key)');
+    developer.log('AppSharedPreferences.load(key: $key)');
     if (_sharedPreferences!.containsKey(key)) {
       return _sharedPreferences!.get(key) as T?;
     }
@@ -30,7 +32,7 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> save<T extends Object?>(String key, T content) async {
-    print('AppSharedPreferences.save(key: $key, value: $content)');
+    developer.log('AppSharedPreferences.save(key: $key, value: $content)');
     if (content is bool) {
       return _sharedPreferences!.setBool(key, content);
     }
@@ -52,7 +54,7 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> remove(String key) async {
-    print('AppSharedPreferences.remove(key: $key)');
+    developer.log('AppSharedPreferences.remove(key: $key)');
     return _sharedPreferences!.remove(key);
   }
 
@@ -62,7 +64,7 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> clear() async {
-    print('AppSharedPreferences.clear()');
+    developer.log('AppSharedPreferences.clear()');
     return _sharedPreferences!.clear();
   }
 }

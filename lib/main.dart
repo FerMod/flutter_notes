@@ -1,4 +1,3 @@
-// ignore: unused_import
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,9 +14,9 @@ import 'data/app_options.dart';
 import 'data/local/app_shared_preferences.dart';
 import 'data/models.dart';
 import 'globals.dart';
-import 'widgets/model_binding.dart';
 import 'routes.dart';
 import 'src/utils/locale_matching.dart';
+import 'widgets/model_binding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +54,7 @@ void _initFirebaseFirestore() {
       // When hot reloading 'FirebaseError: [code=failed-precondition]' is
       // launched. It happens when trying to set the Firebase settings more than
       // once.
-      print(e.toString());
+      developer.log(e.toString());
     }
 
     // Only for web platforms
@@ -72,7 +71,7 @@ void _initFirebaseAuth() {
       // Internally Android uses '10.0.2.2' as the host.
       FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
     } catch (e) {
-      print(e.toString());
+      developer.log(e.toString());
     }
   }
 }
@@ -95,7 +94,7 @@ class NotesApp extends StatelessWidget {
       deviceResolvedLocale = locale;
     }
 
-    print(
+    developer.log(
       'Locale resolution:\n'
       '  Desired locales: $locales\n'
       '  Supported locales: $supportedLocales\n'
