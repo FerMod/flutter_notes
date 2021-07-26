@@ -391,8 +391,8 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
 
       await user
           .sendEmailVerification(actionCodeSettings)
-          .catchError((onError) => print('Error sending email verification $onError'))
-          .then((value) => print('Successfully sent email verification'));
+          .catchError((onError) => developer.log('Error sending email verification $onError'))
+          .then((value) => developer.log('Successfully sent email verification'));
     }
   }
 
