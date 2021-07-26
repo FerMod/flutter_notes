@@ -225,7 +225,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get authStateChanges => _auth.authStateChanges().distinct();
+  Stream<User?> authStateChanges() => _auth.authStateChanges().distinct();
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out) and also token refresh events.
@@ -237,7 +237,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get idTokenChanges => _auth.idTokenChanges().distinct();
+  Stream<User?> idTokenChanges() => _auth.idTokenChanges().distinct();
 
   /// Notifies about changes to any user updates.
   ///
@@ -252,7 +252,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get userChanges => _auth.userChanges().distinct();
+  Stream<User?> userChanges() => _auth.userChanges().distinct();
 
   /// Returns the current [User] if they are currently signed-in, or `null` if
   /// not.
