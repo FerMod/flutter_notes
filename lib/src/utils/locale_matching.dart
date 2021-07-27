@@ -53,7 +53,7 @@ class LocaleMatcher {
   /// When a desired locale matches more than one supported locale, it will
   /// resolve to the first matching locale listed in the [supportedLocales].
   ///
-  /// When no match at all is found, the "und" locale will be returned. If the
+  /// When no match at all is found, the `und` locale will be returned. If the
   /// fallback locale is given with [fallback] and the returned value is not
   /// null, that locale will used instead.
   ///
@@ -64,7 +64,7 @@ class LocaleMatcher {
   /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
   /// 1. [Locale.languageCode] only.
   /// 1. If [fallback] is defined and the returned value is not null returns
-  ///    the value fallback locale. Otherwise, returns "und" locale as a
+  ///    the value fallback locale. Otherwise, returns `und` locale as a
   ///    fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
@@ -96,15 +96,15 @@ class LocaleMatcher {
   /// When a desired locale matches more than one supported locale, it will
   /// resolve to the first matching locale listed in the [supportedLocales].
   ///
-  /// When no match at all is found, the "und" locale will be returned.
+  /// When no match at all is found, the `und` locale will be returned.
   ///
   /// To summarize, the main matching priority is:
   ///
-  ///  1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
-  ///  1. [Locale.languageCode] and [Locale.countryCode] only.
-  ///  1. [Locale.languageCode] and [Locale.scriptCode] only.
-  ///  1. [Locale.languageCode] only.
-  ///  1. Returns a locale "und" as a fallback.
+  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
+  /// 1. [Locale.languageCode] and [Locale.countryCode] only.
+  /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
+  /// 1. [Locale.languageCode] only.
+  /// 1. Returns a locale `und` as a fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
@@ -132,10 +132,10 @@ class LocaleMatcher {
             // Full match, closest distance
             matchDistance = 0.0;
           } else if (supported.countryCode != null && supported.countryCode == desired.countryCode) {
-            // Language and country code match and both are not null
+            // Language and country code match, and they are not null
             matchDistance = 0.5;
           } else if (supported.scriptCode != null && supported.scriptCode == desired.scriptCode) {
-            // Language and country code match and both are not null
+            // Language and script code match, and they are not null
             matchDistance = 0.75;
           }
 

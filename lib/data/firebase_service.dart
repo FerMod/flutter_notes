@@ -29,7 +29,7 @@ abstract class FirebaseCollection<T> {
 }
 
 @immutable
-class FirestoreConverter<T extends Object?> {
+class FirestoreConverter<T> {
   const FirestoreConverter({
     required this.fromFirestore,
     required this.toFirestore,
@@ -67,8 +67,10 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
 
   /// Creates a document with a [reference] with the specified [path].
   ///
-  /// An optional [firestore] instance can also provided to access the document.
-  /// If none is provided, the default firebase instance will be used instead.
+  /// An optional [firestore] parameter can be given to provide a
+  /// FirebaseFirestore instance, used to access the document. If none is
+  /// provided, the default instance given by [FirebaseFirestore.instance] is
+  /// used instead.
   factory Document.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
     firestore ??= FirebaseFirestore.instance;
     return Document(
@@ -131,8 +133,9 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
 
   /// Creates a collection with a [reference] with the specified [path].
   ///
-  /// An optional [firestore] instance can also provided to access the
-  /// collection. If none is provided, the default firebase instance will be
+  /// An optional [firestore] parameter can be given to provide a
+  /// [FirebaseFirestore] instance, used to access the collection. If none is
+  /// provided, the default instance given by [FirebaseFirestore.instance] is
   /// used instead.
   factory Collection.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
     firestore ??= FirebaseFirestore.instance;
@@ -206,17 +209,18 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
 /// An object that represents a Firebase Auth user that is used to store user
 /// data.
 class UserData<T extends Object?> implements FirebaseAuthentication {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
   final T Function(User user) converter;
 
   /// Creates a user data access class with a [converter].
   ///
-  /// An optional Firebase [app] instance can also provided to access the
-  /// collection. If none is provided, the default firebase instance will be
-  /// used instead. Throws if the app does not exist.
+  /// An optional [auth] parameter can be given to provide a [FirebaseAuth]
+  /// instance. If none is provided, the default instance given by
+  /// [FirebaseAuth.instance] is used instead.
   UserData({
     required this.converter,
-  });
+    FirebaseAuth? auth,
+  }) : _auth = auth ?? FirebaseAuth.instance;
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out).
