@@ -151,8 +151,8 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
   @override
   Future<List<T>> data([QueryFunction<Query<T>>? query]) async {
     final queryFunction = query?.call(reference) ?? reference;
-    final snapshots = await queryFunction.get().then((value) => value.docs);
-    return snapshots.map((snapshot) => snapshot.data()).toList();
+    final snapshots = await queryFunction.get();
+    return snapshots.docs.map((snapshot) => snapshot.data()).toList();
   }
 
   @override
