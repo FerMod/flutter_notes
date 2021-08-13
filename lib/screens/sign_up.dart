@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_notes/data/firebase/auth_error_code.dart';
 import 'package:flutter_notes/routes.dart';
 import 'package:flutter_notes/src/utils/device_type.dart';
 
@@ -94,13 +95,14 @@ class _SignUpFormState extends State<_SignUpForm> {
   String _errorMessage(String errorCode) {
     final localizations = AppLocalizations.of(context)!;
     switch (errorCode) {
-      case 'email-already-in-use':
+      case AuthErrorCode.emailAlreadyInUse:
         return localizations.errorEmailAlreadyInUse;
-      case 'invalid-email':
+      case AuthErrorCode.invalidEmail:
         return localizations.errorInvalidEmail;
-      case 'weak-password':
+      case AuthErrorCode.weakPassword:
         return localizations.errorWeakPassword;
-      case 'operation-not-allowed':
+      case AuthErrorCode.operationNotAllowed:
+        return localizations.errorOperationNotAllowed;
       default:
         return localizations.errorUnknown;
     }
