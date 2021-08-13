@@ -1,25 +1,34 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// A message widget that displays a message, and provides actions for users to
-/// address (or dismiss the banner). A user action is required for it to be
-/// dismissed. They are persistent and non-modal, allowing the user to either
-/// ignore them or interact with them at any time.
+/// A message widget that displays displays an important, succinct message, and
+/// provides actions for users to address (or dismiss the banner). It requires a
+/// user action to be dismissed.
+///
+/// They are persistent and non-modal, allowing the user to either ignore them
+/// or interact with them at any time. Banners should remain until dismissed by
+/// the user, or if the state that caused the banner is resolved. Only one
+/// banner should be shown at a time.
 ///
 /// The [actions] will be placed beside the [content] if there is only one.
 /// Otherwise, the [actions] will be placed below the [content]. Use
 /// [forceActionsBelow] to override this behavior.
 ///
-/// If the [actions] placed below the [content], they will be laid out in a row.
-/// If there isn't sufficient room to display everything, they are laid out
-/// in a column instead.
+/// The [actions] placed below the [content], will be laid out in a row. If
+/// there isn't sufficient space to display everything, they are laid out in a
+/// column instead.
 ///
 /// An optional [leading] widget can also be provided. The [contentTextStyle] and
 /// [decoration] can be provided to customize the banner.
+///
+/// See also:
+///
+///  * [BannerMessage], a widget that manages the banner messages.
+///  * <https://material.io/components/banners>
 class MessageWidget extends StatelessWidget {
   /// Creates a message widget.
   ///
-  /// The `color` and `decoration` arguments cannot both be supplied, since
+  /// The [color] and [decoration] arguments cannot both be supplied, since
   /// it would potentially result in the decoration drawing over the background
   /// color. To supply a decoration with a color, use
   /// `decoration: BoxDecoration(color: color)`.
@@ -35,7 +44,7 @@ class MessageWidget extends StatelessWidget {
     this.contentPadding,
     this.actionsPadding,
     this.margin,
-    this.minActionsHeight = 52.0,
+    this.minActionsHeight = kToolbarHeight,
     this.forceActionsBelow = false,
   })  : assert(
           color == null || decoration == null,
@@ -116,7 +125,7 @@ class MessageWidget extends StatelessWidget {
 
   /// The minimum height allocated for the [actions] widgets.
   ///
-  /// This defaults to a minimum height of `52.0`.
+  /// This defaults to a minimum height of `56.0` defined by [kToolbarHeight].
   final double minActionsHeight;
 
   /// An override to force the [actions] to be below the [content] regardless of
@@ -178,6 +187,7 @@ class MessageWidget extends StatelessWidget {
     if (leading != null) {
       final iconThemeData = IconThemeData(color: _iconColor(theme));
       final resolvedLeadingPadding = leadingPadding ?? bannerTheme.leadingPadding ?? _defaultLeadingPadding;
+
       leadingIcon = Padding(
         padding: resolvedLeadingPadding,
         child: IconTheme.merge(
@@ -207,20 +217,19 @@ class MessageWidget extends StatelessWidget {
 
     final resolvedContentPadding = contentPadding ?? bannerTheme.padding ?? _defaultContentPadding;
 
-    final defaultDecoration = BoxDecoration(
-      color: color ?? _backgroundColor(theme, bannerTheme),
-      border: Border(
-        bottom: Divider.createBorderSide(
-          context,
-          width: 1.0,
-        ),
-      ),
-    );
-
     return SafeArea(
       child: Container(
         margin: margin,
-        decoration: decoration ?? defaultDecoration,
+        decoration: decoration ??
+            BoxDecoration(
+              color: color ?? _backgroundColor(theme, bannerTheme),
+              border: Border(
+                bottom: Divider.createBorderSide(
+                  context,
+                  width: 1.0,
+                ),
+              ),
+            ),
         child: Column(
           children: [
             Padding(
