@@ -63,12 +63,12 @@ class _MessageCard extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final BannerMessageData message;
+  final MessageData message;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final BannerMessageData data = message;
+    final MessageData data = message;
 
     Widget? titleWidget;
     if (data.message != null) {
