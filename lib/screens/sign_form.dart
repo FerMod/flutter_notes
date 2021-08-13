@@ -67,6 +67,8 @@ class _MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(debugCheckHasBannerMessage(context));
+
     final theme = Theme.of(context);
     final MessageData data = message;
 
@@ -78,7 +80,7 @@ class _MessageCard extends StatelessWidget {
     List<Widget>? actionsList;
     if (data.actions.isEmpty) {
       final materialLocalizations = MaterialLocalizations.of(context);
-      actionsList = [
+      actionsList = <Widget>[
         TextButton(
           onPressed: () => BannerMessage.hide(context),
           child: Text(materialLocalizations.closeButtonLabel),
