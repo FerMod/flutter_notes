@@ -60,7 +60,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.leading], the intended use for the return value of this method.
+  ///  * [AppBar.leading], the intended use for the return value of this method.
   Widget? buildLeading(BuildContext context) {
     Widget? leadingWidget;
     if (isSearchFieldVisible) {
@@ -88,7 +88,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.actions], the intended use for the return value of this method.
+  ///  * [AppBar.actions], the intended use for the return value of this method.
   List<Widget>? buildActions(BuildContext context) {
     return [
       if (!isSearchFieldVisible)
@@ -107,7 +107,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.bottom], the intended use for the return value of this method.
+  ///  * [AppBar.bottom], the intended use for the return value of this method.
   PreferredSizeWidget? buildBottom(BuildContext context) => null;
 
   /// The theme used to configure the search page.
@@ -118,8 +118,8 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBarTheme], which configures the AppBar's appearance.
-  /// * [InputDecorationTheme], which configures the appearance of the search
+  ///  * [AppBarTheme], which configures the AppBar's appearance.
+  ///  * [InputDecorationTheme], which configures the appearance of the search
   ///   text field.
   ThemeData appBarTheme(BuildContext context) {
     final theme = Theme.of(context);
