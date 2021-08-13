@@ -31,7 +31,7 @@ class TestModel {
 
 void main() {
   group('ModelBinding', () {
-    late List log;
+    late List<dynamic> log;
 
     setUp(() {
       log = <dynamic>[];
@@ -114,7 +114,7 @@ void main() {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
         const model = TestModel();
 
-        ModelBinding buildOfTypeDynamic() {
+        ModelBinding<dynamic> buildOfTypeDynamic() {
           return ModelBinding(
             key: UniqueKey(),
             initialModel: model,
@@ -592,8 +592,8 @@ void main() {
       }
 
       await tester.pumpWidget(build());
-      expect(contextCompleter.future, completion(allOf([isNotNull, globalKey.currentContext])));
-      expect(modelCompleter.future, completion(allOf([isNotNull, testModel])));
+      expect(contextCompleter.future, completion(globalKey.currentContext));
+      expect(modelCompleter.future, completion(testModel));
       await tester.pumpWidget(Container());
     });
   });
@@ -614,5 +614,14 @@ void main() {
 
     await tester.pumpWidget(childWidget);
     expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
+
+    expect(
+      () => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!),
+      throwsA(isAssertionError.having(
+        (e) => e.message,
+        'message',
+        contains('No ModelBinding<$TestModel> widget ancestor found.'),
+      )),
+    );
   });
 }
