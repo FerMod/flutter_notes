@@ -116,8 +116,9 @@ class DividerText extends StatelessWidget {
 
 /// A class to help to perform multiple validations on a single [FormField].
 ///
-/// See:
-/// * [Validation], that represents a single validation
+/// See also:
+/// 
+///  * [Validation], that represents a single validation
 class FieldValidator<T> {
   /// Creates a field validator that takes a list of [validations].
   const FieldValidator([this.validations = const []]);

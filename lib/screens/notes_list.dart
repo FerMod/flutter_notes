@@ -52,7 +52,7 @@ class NotesListScreen extends StatelessWidget {
     );
   }
 
-  void _newNote(BuildContext context, String userId) async {
+  Future<void> _newNote(BuildContext context, String userId) async {
     final note = NoteModel(userId: userId);
 
     final resultNote = await _navigateEditNote(context, note);
@@ -61,7 +61,7 @@ class NotesListScreen extends StatelessWidget {
     notesListModel.addNote(resultNote);
   }
 
-  void _editNote(BuildContext context, NoteModel note) async {
+  Future<void> _editNote(BuildContext context, NoteModel note) async {
     final lastEdit = note.lastEdit;
     final resultNote = await _navigateEditNote(context, note);
     if (resultNote == null) return;
@@ -71,7 +71,7 @@ class NotesListScreen extends StatelessWidget {
     }
   }
 
-  void _removeNote(BuildContext context, NoteModel note) async {
+  Future<void> _removeNote(BuildContext context, NoteModel note) async {
     final shouldRemove = await _showAlertDialog(context);
     if (shouldRemove) notesListModel.removeNote(note);
   }
@@ -269,14 +269,21 @@ class NoteListWidget extends StatelessWidget {
     );
   }
 
+  /// Returns true if the [date] is from a day ago.
   bool _isFromDayAgo(DateTime date) {
     final now = DateTime.now();
     final dayAgo = now.subtract(const Duration(days: 1));
     return !dayAgo.difference(date).isNegative;
   }
 
+  /// Returns a string that represents the [date] formatted in a format
+  /// according to the given [localeName].
+  ///
+  /// When the date is from less than a day, the returned value is shortened and
+  /// only returns the time of the date. Otherwise, if the date is from more
+  /// than a day, the returned value is the full date with the time.
   String _formatDate(String localeName, DateTime date) {
-    late final DateFormat dateFormat;
+    final DateFormat dateFormat;
     if (_isFromDayAgo(date)) {
       dateFormat = DateFormat.yMd(localeName).add_Hm();
     } else {
@@ -353,7 +360,7 @@ class NoteListWidget extends StatelessWidget {
                         itemBuilder: (context) => [
                           _buildPopMenuItem(MenuAction.delete, localizations.delete, const Icon(Icons.delete)),
                         ],
-                        onSelected: (value) => onMenuTap!(note, value),
+                        onSelected: (value) => onMenuTap?.call(note, value),
                         padding: EdgeInsets.zero,
                       ),
                     ),

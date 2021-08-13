@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 ///
 /// See also:
 ///
-/// * <https://en.wikipedia.org/wiki/Relative_luminance>
+///  * <https://en.wikipedia.org/wiki/Relative_luminance>
 class CachedColor {
   CachedColor._internal(this.value);
 
@@ -69,7 +69,8 @@ class CachedColor {
   /// returned color is [Colors.black], otherwise, returns [Colors.white].
   ///
   /// See also:
-  /// * [CachedColor.brightness], to obtain the estimated [Brightness] value of
+  /// 
+  ///  * [CachedColor.brightness], to obtain the estimated [Brightness] value of
   ///   the color.
   Color contrastingColor() {
     return isBright ? Colors.black : Colors.white;

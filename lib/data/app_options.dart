@@ -84,9 +84,9 @@ class AppOptions {
   /// If no text scale or an invalid one is set, returns the value selected in the
   /// device's system settings.
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [isValidTextScale], to check if the text scale factor in the app
+  ///  * [isValidTextScale], to check if the text scale factor in the app
   ///   settings is considered valid.
   double get textScaleFactor => isValidTextScale() ? _textScaleFactor : deviceTextScaleFactor;
   final double _textScaleFactor;
@@ -96,9 +96,9 @@ class AppOptions {
   /// If no locale is set or an invalid one is setor an invalid one is set, returns the supported language
   /// selected in the device's system settings.
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [isValidLocale], to check if the locale in the app settings is
+  ///  * [isValidLocale], to check if the locale in the app settings is
   ///   considered valid.
   Locale get locale => isValidLocale() ? _locale : deviceResolvedLocale;
   final Locale _locale;

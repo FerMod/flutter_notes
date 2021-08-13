@@ -13,9 +13,9 @@ class CardHero extends StatelessWidget {
     this.width,
     this.color,
     this.backgroundColor,
-    this.child,
     this.onTap,
     this.onLongPress,
+    this.child,
   }) : super(key: key);
 
   /// The identifier for this particular hero. If the tag of this hero matches
@@ -46,11 +46,11 @@ class CardHero extends StatelessWidget {
   /// )
   /// ```
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [width] to change the border width.
-  /// * [color] to change the border color.
-  /// * [backgroundColor] to change the background color.
+  ///  * [width] to change the border width.
+  ///  * [color] to change the border color.
+  ///  * [backgroundColor] to change the background color.
   final Decoration? decoration;
 
   /// The width of the the default [decoration] border.

@@ -58,8 +58,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// is set to true, it notifies that the data is loading and notifies again when
   /// is finished loading.
   ///
-  /// See:
-  /// * [isLoading], to obtain if is currently loading.
+  /// See also:
+  /// 
+  ///  * [isLoading], to obtain if is currently loading.
   ///
   /// *It should be only used for debugging*
   @visibleForTesting
@@ -103,8 +104,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// future data is requested, and notifies again when the data is resolved and
   /// completed.
   ///
-  /// See:
-  /// * [isLoading], to obtain if is currently loading.
+  /// See also:
+  /// 
+  ///  * [isLoading], to obtain if is currently loading.
   Future<List<NoteModel>> _load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
