@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class Global {
-  const Global._internal();
-  static const Global _instance = Global._internal();
-  factory Global() => _instance;
+  /// This class is not meant to be instantiated or extended.
+  /// This constructor prevents instantiation and extension.
+  const Global._();
 
   /// Sets the URL strategy of the web app to use paths instead of a leading
   /// hash.
