@@ -238,7 +238,7 @@ class SettingRadioListItems<T> extends StatelessWidget {
           onChanged: onChanged != null
               ? (value) {
                   // Can only be null if RadioListTile's `toggleable` parameter is true, but it can't be
-                  onChanged?.call(value!);
+                  onChanged?.call(value as T);
                 }
               : null,
         );
