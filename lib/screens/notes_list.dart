@@ -400,8 +400,8 @@ class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var curve = Curves.easeInOut;
-    var tween = CurveTween(curve: curve);
+    const curve = Curves.easeInOut;
+    final tween = CurveTween(curve: curve);
     return FadeTransition(
       opacity: animation.drive(tween),
       child: child,
