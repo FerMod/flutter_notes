@@ -243,7 +243,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
-    supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
+    supportedLocales = List<Locale>.of(AppLocalizations.supportedLocales, growable: false);
     supportedLocales.sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
   }
 
@@ -299,21 +299,21 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
 
     optionsMap = _buildOptionsMap(context);
     selectedOption = _isSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
-    final localeSettingList = SettingRadioListItems<Locale>(
-      selectedOption: selectedOption,
-      optionsMap: optionsMap,
-      onChanged: (value) {
-        AppOptions.update(
-          context,
-          appSettings.copyWith(locale: value),
-        );
-      },
-    );
+
     return SearchScreen(
-      delegate: SettingsSearchDelegate<Locale>(
+      delegate: SettingsSearchDelegate(
         title: Text(localizations.settingsLanguage),
         deviceDefault: optionsMap.keys.first,
-        settingList: localeSettingList,
+        settingList: SettingRadioListItems<Locale>(
+          selectedOption: selectedOption,
+          optionsMap: optionsMap,
+          onChanged: (value) {
+            AppOptions.update(
+              context,
+              appSettings.copyWith(locale: value),
+            );
+          },
+        ),
       ),
     );
   }
@@ -413,7 +413,7 @@ class TextScaleSettingScreen extends StatelessWidget {
   }
 }
 
-class SettingsSearchDelegate<T> extends SearchScreenDelegate<T?> {
+class SettingsSearchDelegate<T> extends SearchScreenDelegate<T> {
   SettingsSearchDelegate({
     Widget? title,
     this.deviceDefault,
@@ -423,22 +423,24 @@ class SettingsSearchDelegate<T> extends SearchScreenDelegate<T?> {
   final T? deviceDefault;
   final SettingRadioListItems<T> settingList;
 
-  @override
-  Widget buildResults(BuildContext context) {
-    final filteredOptions = Map<T, DisplayOption>.from(settingList.optionsMap);
-    if (query.isNotEmpty) {
-      filteredOptions.removeWhere((key, value) {
-        final regExp = RegExp('^$query', caseSensitive: false);
+  Map<T, DisplayOption> _filterMap(String query) {
+    if (query.isEmpty) return settingList.optionsMap;
 
+    final regExp = RegExp('^$query', caseSensitive: false);
+    return Map<T, DisplayOption>.of(settingList.optionsMap)
+      ..removeWhere((key, value) {
         final titleMatch = value.title.startsWith(regExp);
         final subtitleMatch = value.subtitle?.startsWith(regExp) ?? false;
         final isDeviceDefault = deviceDefault == key;
         return !titleMatch && !subtitleMatch && !isDeviceDefault;
       });
-    }
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
     return SettingRadioListItems<T>(
       selectedOption: settingList.selectedOption,
-      optionsMap: filteredOptions,
+      optionsMap: _filterMap(query),
       onChanged: settingList.onChanged,
     );
   }
