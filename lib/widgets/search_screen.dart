@@ -59,9 +59,9 @@ abstract class SearchScreenDelegate<T> {
   /// A widget to display before the current query in the [AppBar].
   ///
   /// Typically an [IconButton] configured with a [BackButtonIcon]. One can also
-  /// use an [AnimatedIcon] driven by [transitionAnimation], which animates from,
-  /// for example, a hamburger menu to the back button as the search overlay
-  /// fades in.
+  /// use an [AnimatedIcon] to animate from an icon to another. For example, an
+  /// [AnimatedIcon] that animates from a hamburger menu to the back button as
+  /// the search overlay fades in.
   ///
   /// As default, when the search field is not visible, it uses the default
   /// [AppBar.leading] widget. When the search field is visible a [BackButton]
@@ -177,8 +177,8 @@ abstract class SearchScreenDelegate<T> {
 
   /// Hides the search field, removes focus and clears the [query] content.
   void hideSearchField(BuildContext context) {
-    clearResults(context);
     _isSearchFieldVisible = false;
+    clearResults(context);
     _focusNode?.unfocus();
   }
 
@@ -238,6 +238,7 @@ abstract class SearchScreenDelegate<T> {
   /// [IconButton]s returned by [buildLeading] or [buildActions]. It can also be
   /// used to animate [IconButton]s contained within the route below the search
   /// page.
+  @Deprecated('Not used in the widget.')
   Animation<double> get transitionAnimation => _proxyAnimation;
 
   // The focus node to use for manipulating focus on the search page. This is

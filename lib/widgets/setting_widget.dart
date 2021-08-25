@@ -15,19 +15,20 @@ class DisplayOption {
   final String title;
   final String? subtitle;
 
+  final DisplayWidgetBuilder<String>? _titleBuilder;
+  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
+
   Widget? _defaultWidgetBuilder(BuildContext context, String? value) {
-    Widget? textWidget;
-    if (value != null) {
-      textWidget = Text(value);
-    }
-    return textWidget;
+    return value != null ? Text(value) : null;
   }
 
-  DisplayWidgetBuilder<String> get titleBuilder => _titleBuilder ?? _defaultWidgetBuilder;
-  final DisplayWidgetBuilder<String>? _titleBuilder;
+  Widget? buildTitle(BuildContext context) {
+    return (_titleBuilder ?? _defaultWidgetBuilder).call(context, title);
+  }
 
-  DisplayWidgetBuilder<String?> get subtitleBuilder => _subtitleBuilder ?? _defaultWidgetBuilder;
-  final DisplayWidgetBuilder<String?>? _subtitleBuilder;
+  Widget? buildSubtitle(BuildContext context) {
+    return (_subtitleBuilder ?? _defaultWidgetBuilder).call(context, subtitle);
+  }
 
   /// Creates a copy of this class object but with the given fields replaced
   /// with the new values.
@@ -40,8 +41,8 @@ class DisplayOption {
     return DisplayOption(
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
-      titleBuilder: titleBuilder ?? this.titleBuilder,
-      subtitleBuilder: subtitleBuilder ?? this.subtitleBuilder,
+      titleBuilder: titleBuilder ?? _titleBuilder,
+      subtitleBuilder: subtitleBuilder ?? _subtitleBuilder,
     );
   }
 }
@@ -220,21 +221,19 @@ class SettingRadioListItems<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _options = optionsMap.keys;
-    final _displayOptions = optionsMap.values;
-
+    final optionsList = optionsMap.entries.toList(growable: false);
     return ListView.builder(
       shrinkWrap: true,
       itemCount: optionsMap.length,
       itemBuilder: (context, index) {
-        final value = _options.elementAt(index);
-        final displayOption = _displayOptions.elementAt(index);
+        final value = optionsList[index].key;
+        final displayOption = optionsList[index].value;
 
         return RadioListTile<T>(
           value: value,
           groupValue: selectedOption,
-          title: displayOption.titleBuilder(context, displayOption.title),
-          subtitle: displayOption.subtitleBuilder(context, displayOption.subtitle),
+          title: displayOption.buildTitle(context),
+          subtitle: displayOption.buildSubtitle(context),
           onChanged: onChanged != null
               ? (value) {
                   // Can only be null if RadioListTile's `toggleable` parameter
