@@ -54,19 +54,18 @@ class NotesListScreen extends StatelessWidget {
 
   Future<void> _newNote(BuildContext context, String userId) async {
     final note = NoteModel(userId: userId);
-
     final resultNote = await _navigateEditNote(context, note);
-    if (resultNote == null) return;
 
-    notesListModel.addNote(resultNote);
+    if (resultNote != null && (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty)) {
+      notesListModel.addNote(resultNote);
+    }
   }
 
   Future<void> _editNote(BuildContext context, NoteModel note) async {
     final lastEdit = note.lastEdit;
     final resultNote = await _navigateEditNote(context, note);
-    if (resultNote == null) return;
 
-    if (lastEdit.isBefore(resultNote.lastEdit)) {
+    if (resultNote != null && lastEdit.isBefore(resultNote.lastEdit)) {
       notesListModel.updateNote(resultNote);
     }
   }
