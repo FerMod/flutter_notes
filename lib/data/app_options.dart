@@ -38,8 +38,12 @@ List<Locale> get deviceLocales {
 
 List<Locale>? _lastDeviceLocales;
 
-Locale? _deviceResolvedLocale;
+/// The resolved Locale of the device.
+/// 
+/// Each time the setter is called it compares if the device locales changed,
+/// if so, it updates with the new locale.
 Locale get deviceResolvedLocale => _deviceResolvedLocale ?? const Locale.fromSubtags();
+Locale? _deviceResolvedLocale;
 set deviceResolvedLocale(Locale locale) {
   final equalLocales = const IterableEquality<Locale>().equals(_lastDeviceLocales, deviceLocales);
   if (!equalLocales) {
@@ -88,7 +92,7 @@ class AppOptions {
   ///
   ///  * [isValidTextScale], to check if the text scale factor in the app
   ///   settings is considered valid.
-  double get textScaleFactor => isValidTextScale() ? _textScaleFactor : deviceTextScaleFactor;
+  double get textScaleFactor => isValidTextScale ? _textScaleFactor : deviceTextScaleFactor;
   final double _textScaleFactor;
 
   /// An identifier used to select a user's language and formatting preferences.
@@ -100,20 +104,16 @@ class AppOptions {
   ///
   ///  * [isValidLocale], to check if the locale in the app settings is
   ///   considered valid.
-  Locale get locale => isValidLocale() ? _locale : deviceResolvedLocale;
+  Locale get locale => isValidLocale ? _locale : deviceResolvedLocale;
   final Locale _locale;
 
   /// Returns true if the text scale stored in the app settings is considered
   /// valid.
-  bool isValidTextScale() {
-    return _textScaleFactor > 0.0;
-  }
+  bool get isValidTextScale => _textScaleFactor > 0.0;
 
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
-  bool isValidLocale() {
-    return _locale != const Locale.fromSubtags();
-  }
+  bool get isValidLocale => _locale != const Locale.fromSubtags();
 
   /// Creates an instance of this class from a JSON object.
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));

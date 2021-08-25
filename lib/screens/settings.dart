@@ -297,7 +297,11 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
 
+    // Build a map of the options of locales.
     optionsMap = _buildOptionsMap(context);
+
+    // Use the Locale saved in the settigns if the device resolved properly the
+    // locale, otherwise use a `und` locale.
     selectedOption = _isSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
 
     return SearchScreen(
@@ -395,7 +399,7 @@ class TextScaleSettingScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
     final optionsMap = _buildOptionsMap(context);
-    final selectedOption = appSettings.isValidTextScale() ? appSettings.textScaleFactor : optionsMap.keys.first;
+    final selectedOption = appSettings.isValidTextScale ? appSettings.textScaleFactor : optionsMap.keys.first;
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTextScale)),
       body: SettingRadioListItems<double>(
