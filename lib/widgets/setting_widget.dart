@@ -237,7 +237,8 @@ class SettingRadioListItems<T> extends StatelessWidget {
           subtitle: displayOption.subtitleBuilder(context, displayOption.subtitle),
           onChanged: onChanged != null
               ? (value) {
-                  // Can only be null if RadioListTile's `toggleable` parameter is true, but it can't be
+                  // Can only be null if RadioListTile's `toggleable` parameter
+                  // is true, but it can't be
                   onChanged?.call(value as T);
                 }
               : null,
