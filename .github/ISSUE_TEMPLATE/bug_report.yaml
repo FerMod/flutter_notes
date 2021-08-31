@@ -39,23 +39,6 @@ body:
   id: terms
   attributes:
     label: Code of Conduct
-    description: By submitting this issue, you agree to follow our [Code of Conduct](name: Feature Request
-description: Suggest a new feature or enhancemets for this project
-labels: [enhancement]
-body:
-- type: textarea
-  id: feature-description
-  attributes:
-    label: Description
-    description: |
-      Describe the new feature or enhancements you'd like to see.
-    placeholder: Feature or enhancement description...
-  validations:
-    required: true
-- type: checkboxes
-  id: terms
-  attributes:
-    label: Code of Conduct
     description: By submitting this issue, you agree to follow our [Code of Conduct](../blob/main/CODE_OF_CONDUCT.md).
     options:
       - label: I agree to follow this project's Code of Conduct
