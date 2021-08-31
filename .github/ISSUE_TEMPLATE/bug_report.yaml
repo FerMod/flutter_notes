@@ -11,7 +11,7 @@ body:
 - type: textarea
   id: bug-description
   attributes:
-    label: Describe the bug
+    label: Describe the Bug
     description: A clear and concise description of what the bug is.
     placeholder: Description...
   validations:
@@ -19,7 +19,7 @@ body:
 - type: textarea
   id: reproduction-steps
   attributes:
-    label: Reproduction steps
+    label: Reproduction Steps
     description: Steps to reproduce the behavior. Please walk us through it step by step.
     placeholder: |
       1. In this environment...
@@ -29,7 +29,7 @@ body:
 - type: textarea
   id: aditional-info
   attributes:
-    label: Aditional info
+    label: Aditional Info
     description: |
       Links? References? Anything that will give us more context about the issue you are encountering!
       
