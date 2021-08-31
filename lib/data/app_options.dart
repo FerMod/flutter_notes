@@ -38,10 +38,13 @@ List<Locale> get deviceLocales {
 
 List<Locale>? _lastDeviceLocales;
 
-/// The resolved Locale of the device.
-/// 
-/// Each time the setter is called it compares if the device locales changed,
-/// if so, it updates with the new locale.
+/// The locale resolved from the full system-reported supported locales of the
+/// device. If no locale is resolved successfully, it returns a `und` locale.
+///
+/// Each time the setter is called it compares if the device locales have
+/// changed, if so, it updates with the new locale. If the device locales did
+/// not change, the [deviceResolvedLocale] value does not change, and keeps the
+/// previous value.
 Locale get deviceResolvedLocale => _deviceResolvedLocale ?? const Locale.fromSubtags();
 Locale? _deviceResolvedLocale;
 set deviceResolvedLocale(Locale locale) {
@@ -52,7 +55,7 @@ set deviceResolvedLocale(Locale locale) {
   }
 }
 
-/// Fake locale to represent the system Locale option.
+/// Fake locale to represent the system [Locale] option.
 ///
 /// This locale does not exist, therefore is invalid and should be only used to
 /// indicate that the locale to try to use, is the one resolved from the system
