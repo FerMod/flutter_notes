@@ -1,9 +1,12 @@
 <!--- 
-First of all. Thank you for sending the PR!
+First of all, thank you for your pull request.
 
-Provide a general summary of your changes in the Title above.
-Describe here your changes in detail. Why is this change required? What problem does it solve?
-If it fixes an open issue, please reference the issue. Consider including before/after screenshots.
+Please provide a general summary of your changes in the Title above.
+
+Provide a description in detail below of the your changes.
+Why is this change required? What problem does it solve?
+If it fixes an open issue, please reference the issue.
+Consider including screenshots, if it helps to explain your point.
 -->
 
 ## Types of Changes

@@ -13,9 +13,15 @@ body:
   attributes:
     label: Describe the Bug
     description: A clear and concise description of what the bug is.
-    placeholder: Description...
+    placeholder: Describe the bug...
   validations:
     required: true
+- type: textarea
+  id: expected-behavior
+  attributes:
+    label: Expected Behavior
+    description: A clear and concise description of what you expected to happen.
+    placeholder: Describe the expected behavior...
 - type: textarea
   id: reproduction-steps
   attributes:
