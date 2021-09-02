@@ -6,5 +6,6 @@ template-arb-file: intl_en.arb
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 untranslated-messages-file: lib/l10n/untranslated_messages.json
+use-deferred-loading: true
 preferred-supported-locales:
   - en
