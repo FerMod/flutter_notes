@@ -419,14 +419,6 @@
   "@und": {
     "description": "Name of the 'und' locale. The undefined locale."
   },
-  "en": "English",
-  "@en": {
-    "description": "Name of the 'en' locale."
-  },
-  "es": "Spanish",
-  "@es": {
-    "description": "Name of the 'es' locale."
-  },
   "colorsRed": "Red",
   "@colorsRed": {
     "description": "Color name of red."
