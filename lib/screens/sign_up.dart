@@ -188,7 +188,7 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  @Deprecated('Replaced by _validateWeakPassword')
+  @Deprecated('Replaced by _validateStrongPassword')
   Validation<String?> _validateMinLength(BuildContext context, int minLength) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
@@ -197,7 +197,7 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  Validation<String?> _validateWeakPassword(BuildContext context) {
+  Validation<String?> _validateStrongPassword(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final regExp = RegExp(r'^(?:(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}|.{15,})$');
     return Validation(
@@ -258,7 +258,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.password),
-            _validateWeakPassword(context),
+            _validateStrongPassword(context),
           ]),
         ),
         TextFormInput(
