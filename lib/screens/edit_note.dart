@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/src/cache/cached_color.dart';
 
 import '../data/models/note_model.dart';
+import '../src/cache/cached_color.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/color_toggle_buttons.dart';
 

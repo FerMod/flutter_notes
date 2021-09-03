@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
 
 import 'screens/home_page.dart';
 import 'screens/notes_list.dart';
 import 'screens/settings.dart';
 import 'screens/sign_in.dart';
 import 'screens/sign_up.dart';
+import 'src/utils/device_type.dart';
 
 class AppRoute {
   static const String notes = '/notes';

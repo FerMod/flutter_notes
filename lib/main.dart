@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'data/app_options.dart';
@@ -15,6 +14,7 @@ import 'data/local/app_shared_preferences.dart';
 import 'data/models.dart';
 import 'globals.dart';
 import 'routes.dart';
+import 'src/utils/device_type.dart';
 import 'src/utils/locale_matching.dart';
 import 'widgets/model_binding.dart';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
-import 'package:flutter_notes/widgets/message.dart';
 
-import '../widgets/drawer_menu.dart';
+import '../src/utils/device_type.dart';
 import '../widgets/banner_message.dart';
+import '../widgets/drawer_menu.dart';
+import '../widgets/message.dart';
 import 'settings.dart';
 
 class SignFormScreen extends StatelessWidget {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/data/models.dart';
-import 'package:flutter_notes/routes.dart';
-import 'package:flutter_notes/widgets/user_account_tile.dart';
-import 'package:flutter_notes/widgets/version_widget.dart';
 
+import '../data/models.dart';
+import '../routes.dart';
 import 'about_app_widget.dart';
 import 'drawer_header.dart';
+import 'user_account_tile.dart';
 import 'user_avatar.dart';
+import 'version_widget.dart';
 
 class DrawerMenu extends StatelessWidget {
   DrawerMenu({Key? key}) : super(key: key);
