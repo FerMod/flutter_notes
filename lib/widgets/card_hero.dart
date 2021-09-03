@@ -76,9 +76,9 @@ class CardHero extends StatelessWidget {
   ///
   /// Defines the card's [Material.elevation].
   ///
-  /// If this property is null then the default elevation of 8.0 is used.
+  /// If this property is null then the default elevation of 4.0 is used.
   final double? elevation;
-  static const double _defaultElevation = 8.0;
+  static const double _defaultElevation = 4.0;
 
   /// The empty space that surrounds the card.
   ///
@@ -122,7 +122,6 @@ class CardHero extends StatelessWidget {
                 width: width ?? _defaultWidth,
               ),
             ),
-            color: resolvedCardColor,
           ),
       child: child,
     );
@@ -141,6 +140,7 @@ class CardHero extends StatelessWidget {
         elevation: elevation ?? _defaultElevation,
         shape: shape,
         margin: margin,
+        color: resolvedCardColor,
         clipBehavior: Clip.antiAlias,
         child: content,
       ),
