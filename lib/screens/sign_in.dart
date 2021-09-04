@@ -234,10 +234,7 @@ class _BodyWidget extends StatelessWidget {
           ]),
         ),
         _SignInButton(onPressed: onSignIn),
-        DividerText(
-          text: Text(localizations.signInOr),
-          color: theme.cardColor,
-        ),
+        DividerText(child: Text(localizations.signInOr)),
         // divider,
         // ...signInMethods(context),
       ],

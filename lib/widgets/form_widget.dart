@@ -88,27 +88,41 @@ class TextFormInput extends FormField<String> {
   final FieldValidator<String?> fieldValidator;
 }
 
+/// A widget that creates two [Dividers] with another widget positioned between
+/// them.
+///
+/// The [Dividers] can be at most as large as the available space, but is allowed
+/// to be smaller.
 class DividerText extends StatelessWidget {
+  /// Creates two [Divider]s with the given [child] positioned in the middle.
   const DividerText({
     Key? key,
-    required this.text,
-    required this.color,
+    required this.child,
   }) : super(key: key);
 
-  final Widget text;
-  final Color color;
+  /// The widget placed between the two [Divider]. Normally a [Text] widget.
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Divider(thickness: 2.0),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          color: color,
-          child: text,
+        const Flexible(
+          child: Divider(
+            thickness: 2.0,
+            indent: 0.0,
+            endIndent: 8.0,
+          ),
         ),
+        child,
+        const Flexible(
+          child: Divider(
+            thickness: 2.0,
+            indent: 8.0,
+            endIndent: 0.0,
+          ),
+        )
       ],
     );
   }
