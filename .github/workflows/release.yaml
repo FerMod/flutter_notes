@@ -139,7 +139,7 @@ jobs:
         working-directory: ${{ matrix.build_path }}
       - name: Rename build for Android
         if: matrix.build_target == 'apk' || matrix.build_target == 'appbundle'
-        run: mv app*${{ matrix.asset_extension }} ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        run: mv app-release${{ matrix.asset_extension }} ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
 
       # Upload the build.
