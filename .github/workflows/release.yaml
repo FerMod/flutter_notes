@@ -28,15 +28,24 @@ jobs:
   build:
     name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
+    env:
+      REPOSITORY_NAME: ${{ github.event.repository.name }}
     strategy:
       matrix:
         target: [Android, Web] # [Android, iOS, Linux, macOS, Windows, Web]
         include:
+         # - os: ubuntu-20.04
+         #   target: Android
+         #   build_target: apk
+         #   build_path: build/app/outputs/apk/release
+         #   asset_extension: .apk
+         #   asset_content_type: application/vnd.android.package-archive
+         #   channel: stable
           - os: ubuntu-20.04
             target: Android
-            build_target: apk
-            build_path: build/app/outputs/apk/release
-            asset_extension: .apk
+            build_target: appbundle
+            build_path: build/app/outputs/bundle/release
+            asset_extension: .aab
             asset_content_type: application/vnd.android.package-archive
             channel: stable
           # - os: ubuntu-20.04
@@ -118,19 +127,19 @@ jobs:
       # Compress build.
       - name: Compress build for Windows
         if: matrix.build_target == 'windows'
-        run: compress-archive -Path * -DestinationPath ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        run: compress-archive -Path * -DestinationPath ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
       - name: Compress build for Linux
         if: matrix.build_target == 'linux' || matrix.build_target == 'web'
-        run: tar czf ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }} *
+        run: tar czf ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }} *
         working-directory: ${{ matrix.build_path }}
       - name: Compress build for macOS
         if: matrix.build_target == 'macos'
-        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Notes.app ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        run: ditto -c -k --sequesterRsrc --keepParent '*.app' ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
       - name: Rename build for Android
-        if: matrix.build_target == 'apk'
-        run: mv app-release${{ matrix.asset_extension }} ./flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
+        if: matrix.build_target == 'apk' || matrix.build_target == 'appbundle'
+        run: mv app*${{ matrix.asset_extension }} ./${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
         working-directory: ${{ matrix.build_path }}
 
       # Upload the build.
@@ -143,6 +152,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.draft-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.build_path }}/flutter_notes_${{ matrix.build_target }}${{ matrix.asset_extension }}
-          asset_name: flutter_notes_${{ matrix.build_target }}_${{ env.RELEASE_TAG }}${{ matrix.asset_extension }}
+          asset_path: ./${{ matrix.build_path }}/${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}${{ matrix.asset_extension }}
+          asset_name: ${{ env.REPOSITORY_NAME }}_${{ matrix.build_target }}_${{ env.RELEASE_TAG }}${{ matrix.asset_extension }}
           asset_content_type: ${{ matrix.asset_content_type }}
