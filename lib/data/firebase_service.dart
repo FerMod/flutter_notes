@@ -21,8 +21,8 @@ abstract class FirebaseDocument<T> {
 abstract class FirebaseCollection<T> {
   const FirebaseCollection();
 
-  Future<List<T>?> data();
-  Stream<List<T>?> stream();
+  Future<List<T>> data();
+  Stream<List<T>> stream();
   Future<FirebaseDocument<T>> insert(T data, {String? id, bool merge = false});
   Future<void> update(String id, Map<String, dynamic> data);
   Future<void> delete(String id);
@@ -55,7 +55,7 @@ abstract class FirebaseAuthentication {
 /// See also:
 ///
 ///  * <https://firebase.google.com/docs/firestore/data-model#documents>
-class Document<T extends Object?> extends FirebaseDocument<T> {
+class Document<T> extends FirebaseDocument<T> {
   /// An object that refers to a Firestore document path.
   final DocumentReference<T> reference;
   final FirestoreConverter<T> converter;
@@ -83,14 +83,18 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
     );
   }
 
-  @override
-  Future<T?> data() async {
-    return reference.get().then<T?>((snapshot) => snapshot.data());
+  T parseSnapshot(DocumentSnapshot<T> snapshot) {
+    return snapshot.data() as T;
   }
 
   @override
-  Stream<T?> stream() {
-    return reference.snapshots().map((snapshot) => snapshot.data());
+  Future<T> data() async {
+    return reference.get().then(parseSnapshot);
+  }
+
+  @override
+  Stream<T> stream() {
+    return reference.snapshots().map(parseSnapshot);
   }
 
   /// Updates data on the document. The data will be merged with any existing
@@ -122,7 +126,7 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
 /// See also:
 ///
 ///  * <https://firebase.google.com/docs/firestore/data-model#collections>
-class Collection<T extends Object?> extends FirebaseCollection<T> {
+class Collection<T> extends FirebaseCollection<T> {
   /// An object that refers to a Firestore collection path.
   final CollectionReference<T> reference;
   final FirestoreConverter<T> converter;
@@ -150,17 +154,20 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
     );
   }
 
+  List<T> parseSnapshot(QuerySnapshot<T> snapshot) {
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   @override
   Future<List<T>> data([QueryFunction<Query<T>>? query]) async {
     final queryFunction = query?.call(reference) ?? reference;
-    final snapshots = await queryFunction.get();
-    return snapshots.docs.map((snapshot) => snapshot.data()).toList();
+    return queryFunction.get().then(parseSnapshot);
   }
 
   @override
   Stream<List<T>> stream([QueryFunction<Query<T>>? query]) {
     final queryFunction = query?.call(reference) ?? reference;
-    return queryFunction.snapshots().map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+    return queryFunction.snapshots().map(parseSnapshot);
   }
 
   /// Returns a `DocumentReference` after populating it with the provided [data].
@@ -175,7 +182,7 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  Future<Document<T>> insert(T data, {String? id, bool merge = false}) async {
+  Future<FirebaseDocument<T>> insert(T data, {String? id, bool merge = false}) async {
     final newDocument = reference.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
     return Document<T>(
@@ -210,7 +217,7 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
 
 /// An object that represents a Firebase Auth user that is used to store user
 /// data.
-class UserData<T extends Object?> implements FirebaseAuthentication {
+class UserData<T> implements FirebaseAuthentication {
   final FirebaseAuth _auth;
   final T Function(User user) converter;
 
