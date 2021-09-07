@@ -125,6 +125,10 @@
   "@saveButton": {
     "description": "Save button text."
   },
+  "discardButton": "DISCARD",
+  "@discardButton": {
+    "description": "Discard button text."
+  },
   "deleteButton": "DELETE",
   "@deleteButton": {
     "description": "Delete button text."
@@ -157,9 +161,13 @@
   "@changeColor": {
     "description": "Change color of the note."
   },
-  "saveChangesDialogContent": "Your changes have not been saved",
+  "saveChangesDialogTitle": "Save Changes?",
+  "@saveChangesDialogTitle": {
+    "description": "Title of dialog that shows when the changes have been not saved."
+  },
+  "saveChangesDialogContent": "Your changes have not been saved.",
   "@saveChangesDialogContent": {
-    "description": "Dialog text to show when the changes have been not saved."
+    "description": "Content of dialog that shows when the changes have been not saved."
   },
   "email": "Email",
   "@email": {

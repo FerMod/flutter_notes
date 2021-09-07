@@ -108,7 +108,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         Navigator.of(context).pop(widget.note);
       },
       style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
-      child: Text(localizations.save),
+      child: Text(localizations.saveButton),
     );
   }
 
@@ -371,6 +371,7 @@ class _SaveChangesAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
+      title: Text(localizations.saveChangesDialogTitle),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
@@ -379,8 +380,8 @@ class _SaveChangesAlertDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        _createButton(context, localizations.discard, ChangesAction.discard),
-        _createButton(context, localizations.save, ChangesAction.save),
+        _createButton(context, localizations.discardButton, ChangesAction.discard),
+        _createButton(context, localizations.saveButton, ChangesAction.save),
       ],
     );
   }
