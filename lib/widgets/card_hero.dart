@@ -107,9 +107,9 @@ class CardHero extends StatelessWidget {
     final theme = Theme.of(context);
     final cardTheme = CardTheme.of(context);
 
-    var resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
+    Color? resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
     if (backgroundColor == null && theme.brightness == Brightness.light) {
-      resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4)!;
+      resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4);
     }
 
     Widget content = Ink(
