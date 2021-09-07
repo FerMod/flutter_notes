@@ -27,3 +27,8 @@ linter:
   rules:
     avoid_print: true
     prefer_single_quotes: true
+    prefer_relative_imports: true
+
+    # Experimental lints
+    null_check_on_nullable_type_parameter: true
+    invariant_booleans: true
