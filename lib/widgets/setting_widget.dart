@@ -45,6 +45,11 @@ class DisplayOption {
       subtitleBuilder: subtitleBuilder ?? _subtitleBuilder,
     );
   }
+
+  @override
+  String toString() {
+    return '$DisplayOption(title: $title, subtitle: $subtitle)';
+  }
 }
 
 class SettingsGroup extends StatelessWidget {
