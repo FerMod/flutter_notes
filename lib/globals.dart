@@ -8,13 +8,7 @@ class Global {
 
   /// Sets the URL strategy of the web app to use paths instead of a leading
   /// hash.
-  static const bool usePathUrlStrategy = false;
-
-  /// A constant that is true if the application was compiled in debug mode.
-  static const bool isDebugMode = kDebugMode;
-
-  /// A constant that is true if the application was compiled in release mode.
-  static const bool isReleaseMode = kReleaseMode;
+  static const bool usePathUrlStrategy = true;
 
   /// A constant that represents if should use the firebase firestore emulator.
   static const bool useFirebaseFirestoreEmulator = false;

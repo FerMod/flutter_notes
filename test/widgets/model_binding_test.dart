@@ -572,7 +572,7 @@ void main() {
       log.clear();
     });
 
-    testWidgets('calls dispose when model removes from tree', (tester) async {
+    testWidgets('calls dispose when is removed from tree', (tester) async {
       final globalKey = GlobalKey(debugLabel: 'Test Key');
       const testModel = TestModel();
 
