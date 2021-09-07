@@ -40,7 +40,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Controller used to notify of the new data entries that are added.
   StreamController<List<NoteModel>>? _controller;
 
-  List<NoteModel> _notes = [];
+  List<NoteModel> _notes;
   List<NoteModel> get notes => _notes;
   set notes(List<NoteModel> notes) {
     _notes = notes;
@@ -59,7 +59,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// is finished loading.
   ///
   /// See also:
-  /// 
+  ///
   ///  * [isLoading], to obtain if is currently loading.
   ///
   /// *It should be only used for debugging*
@@ -105,7 +105,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// completed.
   ///
   /// See also:
-  /// 
+  ///
   ///  * [isLoading], to obtain if is currently loading.
   Future<List<NoteModel>> _load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
@@ -208,8 +208,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   void updateNote(NoteModel note) {
-    // ignore: unnecessary_null_comparison
-    assert(note.id != null);
+    assert(_notes.isNotEmpty);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
     _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
     if (userData.isSignedIn) {
@@ -234,6 +233,12 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return _notes.firstWhereOrNull(
       (element) => element.id == id,
     );
+  }
+
+  @override
+  void dispose() {
+    _controller?.close();
+    super.dispose();
   }
 
   @override

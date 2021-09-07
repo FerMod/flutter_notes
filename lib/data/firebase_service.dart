@@ -53,7 +53,7 @@ abstract class FirebaseAuthentication {
 /// An object that represents a Firebase document.
 ///
 /// See also:
-/// 
+///
 ///  * <https://firebase.google.com/docs/firestore/data-model#documents>
 class Document<T extends Object?> extends FirebaseDocument<T> {
   /// An object that refers to a Firestore document path.
@@ -120,7 +120,7 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
 /// An object that represents a Firebase collection.
 ///
 /// See also:
-/// 
+///
 ///  * <https://firebase.google.com/docs/firestore/data-model#collections>
 class Collection<T extends Object?> extends FirebaseCollection<T> {
   /// An object that refers to a Firestore collection path.
