@@ -72,7 +72,7 @@ class Document<T> extends FirebaseDocument<T> {
   /// FirebaseFirestore instance, used to access the document. If none is
   /// provided, the default instance given by [FirebaseFirestore.instance] is
   /// used instead.
-  factory Document.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
+  factory Document.path(String path, {required FirestoreConverter<T> converter, FirebaseFirestore? firestore}) {
     firestore ??= FirebaseFirestore.instance;
     return Document(
       reference: firestore.doc(path).withConverter<T>(
@@ -143,7 +143,7 @@ class Collection<T> extends FirebaseCollection<T> {
   /// [FirebaseFirestore] instance, used to access the collection. If none is
   /// provided, the default instance given by [FirebaseFirestore.instance] is
   /// used instead.
-  factory Collection.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
+  factory Collection.path(String path, {required FirestoreConverter<T> converter, FirebaseFirestore? firestore}) {
     firestore ??= FirebaseFirestore.instance;
     return Collection(
       reference: firestore.collection(path).withConverter<T>(

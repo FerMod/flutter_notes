@@ -24,7 +24,7 @@ class DataProvider {
   static Collection<NoteModel> get notes => _instance._notes;
   late final Collection<NoteModel> _notes = Collection<NoteModel>.path(
     'notes',
-    FirestoreConverter(
+    converter: FirestoreConverter(
       fromFirestore: (snapshot, options) => NoteModel.fromSnapshot(snapshot),
       toFirestore: (value, options) => value.toMap(),
     ),
