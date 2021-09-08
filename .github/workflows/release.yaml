@@ -28,8 +28,6 @@ jobs:
   build:
     name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
-    env:
-      REPOSITORY_NAME: ${{ github.event.repository.name }}
     strategy:
       matrix:
         target: [Android, Web] # [Android, iOS, Linux, macOS, Windows, Web]
