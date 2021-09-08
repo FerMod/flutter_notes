@@ -109,7 +109,7 @@ jobs:
       - name: Enable web support
         if: matrix.build_target == 'web'
         run: flutter config --enable-web
-      - name: Enable ${{ matrix.target }} desktop support
+      - name: Enable desktop support
         if: matrix.build_target == 'linux' || matrix.build_target == 'windows' || matrix.build_target == 'macos'
         run: flutter config --enable-${{ matrix.build_target }}-desktop
       - name: Run Flutter doctor
