@@ -97,20 +97,20 @@ jobs:
 
       # Set up required dependencies.
       - name: Install Linux dependencies
-        if: matrix.build_target == 'linux'
+        if: matrix.target == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev
       - name: Install Android dependencies
-        if: matrix.build_target == 'android'
+        if: matrix.target == 'android'
         uses: actions/setup-java@v1
         with:
           java-version: "12.x"
       - name: Enable web support
-        if: matrix.build_target == 'web'
+        if: matrix.target == 'web'
         run: flutter config --enable-web
       - name: Enable desktop support
-        if: matrix.build_target == 'linux' || matrix.build_target == 'windows' || matrix.build_target == 'macos'
+        if: matrix.target == 'linux' || matrix.target == 'windows' || matrix.target == 'macos'
         run: flutter config --enable-${{ matrix.build_target }}-desktop
       - name: Run Flutter doctor
         run: flutter doctor -v
@@ -127,7 +127,7 @@ jobs:
 
       # Prepare release build package.
       - name: Copy VC redistributables to release directory for Windows
-        if: matrix.build_target == 'windows'
+        if: matrix.target == 'windows'
         run: |
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
@@ -135,19 +135,19 @@ jobs:
 
       # Compress build.
       - name: Compress build for Windows
-        if: matrix.build_target == 'windows'
+        if: matrix.target == 'windows'
         run: compress-archive -Path * -DestinationPath ./${{ env.BUILD_ASSET_NAME }}
         working-directory: ${{ matrix.build_path }}
       - name: Compress build for Linux
-        if: matrix.build_target == 'linux' || matrix.build_target == 'web'
+        if: matrix.target == 'linux' || matrix.target == 'web'
         run: tar czf ./${{ env.BUILD_ASSET_NAME }} *
         working-directory: ${{ matrix.build_path }}
       - name: Compress build for macOS
-        if: matrix.build_target == 'macos'
+        if: matrix.target == 'macos'
         run: ditto -c -k --sequesterRsrc --keepParent '*.app' ./${{ env.BUILD_ASSET_NAME }}
         working-directory: ${{ matrix.build_path }}
       - name: Rename build for Android
-        if: matrix.build_target == 'apk' || matrix.build_target == 'appbundle'
+        if: matrix.target == 'android'
         run: mv app-release${{ matrix.asset_extension }} ./${{ env.BUILD_ASSET_NAME }}
         working-directory: ${{ matrix.build_path }}
 
