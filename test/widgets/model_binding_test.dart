@@ -110,7 +110,7 @@ void main() {
         expect(log, equals(<TestModel?>[firstModel, thirdModel]));
       });
 
-      testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
+      testWidgets('throws when retrieving a model of type "dynamic"', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
         const model = TestModel();
 
@@ -286,7 +286,7 @@ void main() {
         );
       });
 
-      testWidgets('throws when updating a model of type `dynamic`', (tester) async {
+      testWidgets('throws when updating a model of type "dynamic"', (tester) async {
         final globalKeyDynamic = GlobalKey(debugLabel: 'ModelBinding<dynamic> Key');
         final globalKeyObject = GlobalKey(debugLabel: 'ModelBinding<Object> Key');
 
@@ -390,7 +390,7 @@ void main() {
         expect(log, equals(<TestModel>[firstModel, thirdModel]));
       });
 
-      testWidgets('alwaws notify when \'updateShouldNotify\' is true', (tester) async {
+      testWidgets('always notify when "updateShouldNotify" is true', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
         final builder = Builder(

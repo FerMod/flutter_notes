@@ -65,10 +65,12 @@ class ModelBinding<T> extends StatefulWidget {
   /// The widget below this widget in the tree.
   final Widget? child;
 
-  /// Called to obtain the [child] widget from this callback. This callback is
-  /// passed two arguments, the [BuildContext] (as `context`) and a [Widget]
-  /// (as `child`). If the child is null, it is the responsibility of the
-  /// [builder] to provide a valid one.
+  /// Called to obtain the [child] widget from this callback, every time the
+  /// [initialModel] value changes.
+  /// 
+  /// This builder builds a widget given a [BuildContext] (as `context`) and a
+  /// [Widget] (as `child`). If the child is `null`, it is the responsibility of
+  /// the [builder] to provide a valid one.
   ///
   /// If [builder] is null, it is as if a builder was specified that returned
   /// the [child] directly.
