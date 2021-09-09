@@ -77,18 +77,7 @@ jobs:
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
     needs: draft-release
-    steps:
-      # Set environment variables.
-      - name: Get release tag version
-        run: echo "RELEASE_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Create build asset name
-        env:
-          REPOSITORY_NAME: ${{ github.event.repository.name }}
-          MATRIX_TARGET: ${{ matrix.target }}
-        run: |
-          export RELEASE_TARGET=$(echo "${MATRIX_TARGET,,}")
-          echo "BUILD_ASSET_NAME=${{ env.REPOSITORY_NAME }}_${RELEASE_TARGET}_${{ env.RELEASE_TAG }}${{ matrix.asset_extension }}" >> $GITHUB_ENV
-
+    steps:     
       # Set up Flutter.
       - name: Clone Flutter repository with ${{ matrix.channel }} channel
         uses: subosito/flutter-action@v1.5.3
@@ -105,7 +94,7 @@ jobs:
         if: matrix.target == 'android'
         uses: actions/setup-java@v1
         with:
-          java-version: "12.x"
+          java-version: '12.x'
       - name: Enable web support
         if: matrix.target == 'web'
         run: flutter config --enable-web
@@ -118,6 +107,37 @@ jobs:
       # Clone the repository and get required packages.
       - name: Clone the repository
         uses: actions/checkout@v2
+
+      # Cache required files.
+      - name: Cache Gradle packages
+        if: matrix.target == 'android'
+        uses: actions/cache@v2
+        env:
+          CACHE_NAME: cache-gradle
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: build-${{ env.CACHE_NAME }}-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            build-${{ env.CACHE_NAME }}-${{ runner.os }}-
+            build-${{ env.CACHE_NAME }}-
+
+      - name: Cache pubspec dependencies
+        uses: actions/cache@v2
+        env:
+          CACHE_NAME: cache-pubspec
+        with:
+          path: |
+            ${{ env.PUB_CACHE }}
+            ${{ env.FLUTTER_ROOT }}/bin
+            **/.dart_tool
+            **/.packages
+          key: build-${{ env.CACHE_NAME }}-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            build-${{ env.CACHE_NAME }}-${{ runner.os }}-
+            build-${{ env.CACHE_NAME }}-
+
       - name: Get packages for the Flutter project
         run: flutter pub get
 
@@ -126,12 +146,23 @@ jobs:
         run: flutter build -v ${{ matrix.build_target }} --release
 
       # Prepare release build package.
-      - name: Copy VC redistributables to release directory for Windows
+      - name: Copy VC redistributables for Windows to release directory
         if: matrix.target == 'windows'
         run: |
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
           Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
+        
+      # Set environment variables.       
+      - name: Get release tag version
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Create build asset name
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          MATRIX_TARGET: ${{ matrix.target }}
+        run: |
+          export RELEASE_TARGET=$(echo "${MATRIX_TARGET,,}")
+          echo "BUILD_ASSET_NAME=${{ env.REPOSITORY_NAME }}_${RELEASE_TARGET}_${{ env.RELEASE_TAG }}${{ matrix.asset_extension }}" >> $GITHUB_ENV
 
       # Compress build.
       - name: Compress build for Windows
