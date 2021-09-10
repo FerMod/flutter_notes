@@ -154,7 +154,7 @@ jobs:
 
       # Build the application.
       - name: Build project
-        run: flutter build -v ${{ matrix.build_target }} --release
+        run: flutter build -v ${{ matrix.build_target }}
 
       # Prepare release build package.
       - name: Copy VC redistributables to release directory for Windows
