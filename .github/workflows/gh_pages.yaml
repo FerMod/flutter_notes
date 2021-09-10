@@ -30,7 +30,7 @@ jobs:
       - name: Create symbolic link
         run: ln -s ./build/web ./docs
       - name: Build project
-        run: flutter build -v web --release --base-href "/flutter_notes/"
+        run: flutter build -v web --base-href "/flutter_notes/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
