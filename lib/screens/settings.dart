@@ -3,11 +3,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
 import '../data/app_options.dart';
+import '../data/data_provider.dart';
 import '../data/firebase/firebase_service.dart';
 import '../routes.dart';
 import '../widgets/about_app_widget.dart';
 import '../widgets/drawer_header.dart';
-import '../data/models.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
 import '../widgets/user_account_tile.dart';

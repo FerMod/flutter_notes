@@ -10,8 +10,8 @@ import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'data/app_options.dart';
+import 'data/data_provider.dart';
 import 'data/local/app_shared_preferences.dart';
-import 'data/models.dart';
 import 'globals.dart';
 import 'routes.dart';
 import 'src/utils/device_type.dart';

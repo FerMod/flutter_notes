@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../data/models.dart';
+import '../data/data_provider.dart';
 import '../routes.dart';
 import 'about_app_widget.dart';
 import 'drawer_header.dart';

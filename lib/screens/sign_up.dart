@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../data/data_provider.dart';
 import '../data/firebase/auth_error_code.dart';
-import '../data/models.dart';
 import '../routes.dart';
 import '../src/utils/device_type.dart';
 import '../widgets/banner_message.dart';
