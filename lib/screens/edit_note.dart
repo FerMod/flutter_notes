@@ -139,7 +139,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
               Expanded(
                 child: Theme(
                   // Set overscroll color same as the note border
-                  data: theme.copyWith(accentColor: _color),
+                  data: theme.copyWith(
+                    colorScheme: theme.colorScheme.copyWith(secondary: note.color),
+                  ),
                   child: _ScrollableContent(
                     scrollController: _scrollController,
                     titleEditingController: noteEditingController.titleController,
