@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:google_sign_in/google_sign_in.dart';
 
 typedef QueryFunction<T> = T Function(T query);
@@ -276,6 +274,13 @@ class UserData<T> implements FirebaseAuthentication {
   User? get currentUser => _auth.currentUser;
 
   /// Whether there is currently a [User] signed-in.
+  ///
+  /// Returns `true` if [currentUser] is not `null`, therefore, a user is
+  /// currently signed-in.
+  ///
+  /// See also:
+  ///
+  ///  * [currentUser] to obtain the current signed-in user.
   bool get isSignedIn => _auth.currentUser != null;
 
   /// Update the user's display name.
