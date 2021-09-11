@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,23 +41,22 @@ void _initFirestore() {
 void _initFirebaseFirestore() {
   if (Global.useFirebaseFirestoreEmulator) {
     try {
-      FirebaseFirestore.instance.settings = const Settings(
-        persistenceEnabled: Global.persistChanges,
-        cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-      );
+      FirebaseFirestore.instance
+        ..settings = const Settings(
+          persistenceEnabled: Global.persistChanges,
+          cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+        )
+        // Internally Android uses '10.0.2.2' as the host.
+        ..useFirestoreEmulator('localhost', 8080, sslEnabled: false);
 
-      // Internally Android uses '10.0.2.2' as the host.
-      FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080, sslEnabled: false);
-    } catch (e) {
-      // When hot reloading 'FirebaseError: [code=failed-precondition]' is
-      // launched. It happens when trying to set the Firebase settings more than
-      // once.
-      developer.log(e.toString());
-    }
-
-    // Only for web platforms
-    if (Global.persistChanges && DeviceType.isWeb) {
-      FirebaseFirestore.instance.enablePersistence();
+      // Only for web platforms
+      if (Global.persistChanges && DeviceType.isWeb) {
+        FirebaseFirestore.instance.enablePersistence();
+      }
+    } catch (e, s) {
+      // When hot reloading in web, a exception is thrown when trying to set the
+      // Firebase settings more than once.
+      debugPrint('Exception thrown when initializing FirebaseFirestore:\n$e\n$s');
     }
   }
 }
@@ -70,8 +67,10 @@ void _initFirebaseAuth() {
       // Firebase Auth emulator is not supported for web yet.
       // Internally Android uses '10.0.2.2' as the host.
       FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    } catch (e) {
-      developer.log(e.toString());
+    } catch (e, s) {
+      // When hot reloading in web, a exception is thrown when trying to set the
+      // Firebase settings more than once.
+      debugPrint('Exception thrown when initializing FirebaseAuth:\n$e\n$s');
     }
   }
 }
@@ -87,6 +86,8 @@ class NotesApp extends StatelessWidget {
   Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
     var locale = deviceResolvedLocale;
     if (locales?.first != systemLocaleOption) {
+      // Resolve best locale from desired and supported locale list. If none is
+      // resolved, we use the first locale from the application supported list.
       locale = LocaleMatcher.localeListResolution(
         locales,
         supportedLocales,
@@ -94,13 +95,15 @@ class NotesApp extends StatelessWidget {
       deviceResolvedLocale = locale;
     }
 
-    developer.log(
-      'Locale resolution:\n'
-      '  Desired locales: $locales\n'
-      '  Supported locales: $supportedLocales\n'
-      '  Resolved locale: $locale\n'
-      '  Device resolved locale: $deviceResolvedLocale',
-    );
+    if (kDebugMode) {
+      debugPrint(
+        'Locale resolution:\n'
+        '  Desired locales: $locales\n'
+        '  Supported locales: $supportedLocales\n'
+        '  Resolved locale: $locale\n'
+        '  Device resolved locale: $deviceResolvedLocale',
+      );
+    }
     return _localeResolution(locale, supportedLocales);
   }
 
