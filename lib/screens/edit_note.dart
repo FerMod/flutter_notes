@@ -5,12 +5,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/models/note_model.dart';
 import '../src/cache/cached_color.dart';
+import '../src/restorable_state.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/color_toggle_buttons.dart';
-
-enum Commands {
-  delete,
-}
 
 enum ChangesAction {
   none,
@@ -18,7 +15,6 @@ enum ChangesAction {
   discard,
 }
 
-// TODO: Add class that holds editing Object, and tracks if changes where made (is dirty)
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
     Key? key,
@@ -34,13 +30,9 @@ class EditNoteScreen extends StatefulWidget {
 class _EditNoteScreenState extends State<EditNoteScreen> {
   final ScrollController _scrollController = ScrollController();
 
-  late TextEditingController _titleEditingController;
-  late TextEditingController _contentEditingController;
-  late Color _color;
-  late DateTime _lastEdit;
-
-  int _currentIndex = 0;
   late List<Color> _colorOptions;
+  late NoteEditingController noteEditingController;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -51,62 +43,51 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final resolvedIndex = _colorOptions.indexOf(widget.note.color);
     _currentIndex = resolvedIndex != -1 ? resolvedIndex : 0;
 
-    _titleEditingController = TextEditingController(text: widget.note.title);
-    _contentEditingController = TextEditingController(text: widget.note.content);
-    _color = widget.note.color;
-    _lastEdit = widget.note.lastEdit;
-
-    _titleEditingController.addListener(_updateLastEdit);
-    _contentEditingController.addListener(_updateLastEdit);
+    noteEditingController = NoteEditingController(widget.note);
   }
 
   @override
   void dispose() {
-    _titleEditingController.dispose();
-    _contentEditingController.dispose();
+    noteEditingController.dispose();
     super.dispose();
   }
 
-  void _updateLastEdit() {
-    _lastEdit = DateTime.now();
-  }
-
-  void _saveChanges() {
-    widget.note
-      ..title = _titleEditingController.text
-      ..content = _contentEditingController.text
-      ..color = _color
-      ..lastEdit = _lastEdit;
-  }
-
-  bool _valuesChanged(NoteModel note) {
-    return note.title != _titleEditingController.text || note.content != _contentEditingController.text || note.color != _color;
-  }
-
   Future<void> _handleClose() async {
-    if (_valuesChanged(widget.note)) {
-      FocusScope.of(context).unfocus(); // Hide the keyboard
-      final saveChangesAction = await _showSaveChangesDialog();
-      if (saveChangesAction == ChangesAction.none) return;
-
-      if (saveChangesAction == ChangesAction.save) {
-        _saveChanges();
-      }
+    // Is not dirty and it can close without losing data.
+    if (!noteEditingController.dirty) {
+      return Navigator.pop(context);
     }
 
-    Navigator.of(context).pop(widget.note);
+    // Hide the keyboard. This prevents keyboard and dialog overlapping issues.
+    FocusScope.of(context).unfocus();
+
+    var changesAction = await _showSaveChangesDialog();
+    if (changesAction == ChangesAction.save) {
+      noteEditingController.save();
+    } else if (changesAction == ChangesAction.discard) {
+      noteEditingController.restore();
+    }
+
+    // Check if the user did not dismissed the dialog.
+    if (changesAction != ChangesAction.none) {
+      // In this section the NoteEditingController should contain clean data.
+      assert(!noteEditingController.dirty);
+      Navigator.pop(context, noteEditingController.value);
+    }
+  }
+
+  void _handleSave() {
+    if (noteEditingController.dirty) {
+      noteEditingController.save();
+    }
+    Navigator.pop(context, noteEditingController.value);
   }
 
   Widget _createSaveButton() {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return TextButton(
-      onPressed: () {
-        if (_valuesChanged(widget.note)) {
-          _saveChanges();
-        }
-        Navigator.of(context).pop(widget.note);
-      },
+      onPressed: _handleSave,
       style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
       child: Text(localizations.saveButton),
     );
@@ -124,15 +105,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     if (_currentIndex == index) return;
     setState(() {
       _currentIndex = index;
-      _color = _colorOptions[index];
     });
-    _updateLastEdit();
+    noteEditingController.updateWith(color: _colorOptions[index]);
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final note = noteEditingController.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -143,12 +124,11 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         actions: [
           _createSaveButton(),
         ],
-        elevation: 0.0, // Prevents the shadow from darkening other colors
       ),
       body: SafeArea(
         child: CardHero(
-          tag: 'note-${widget.note.id}',
-          color: _color,
+          tag: 'note-${note.id}',
+          color: note.color,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(4.0)),
           ),
@@ -162,8 +142,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   data: theme.copyWith(accentColor: _color),
                   child: _ScrollableContent(
                     scrollController: _scrollController,
-                    titleEditingController: _titleEditingController,
-                    contentEditingController: _contentEditingController,
+                    titleEditingController: noteEditingController.titleController,
+                    contentEditingController: noteEditingController.contentController,
                   ),
                 ),
               ),
@@ -177,6 +157,54 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         ),
       ),
     );
+  }
+}
+
+class NoteEditingController extends DataStateNotifier<NoteModel> {
+  NoteEditingController(NoteModel value)
+      : titleController = TextEditingController(text: value.title),
+        contentController = TextEditingController(text: value.content),
+        super(value) {
+    titleController.addListener(_onTitleChanged);
+    contentController.addListener(_onContentChanged);
+  }
+
+  final TextEditingController titleController;
+  final TextEditingController contentController;
+
+  void _onTitleChanged() {
+    updateWith(title: titleController.text);
+  }
+
+  void _onContentChanged() {
+    updateWith(content: contentController.text);
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
+  }
+
+  /// Updates this object with the given fields replaced with the new values.
+  void updateWith({
+    String? title,
+    String? content,
+    Color? color,
+  }) {
+    var newTitle = title ?? value.title;
+    var newContent = content ?? value.content;
+    var newColor = color ?? value.color;
+
+    if (newTitle != value.title || newContent != value.content || newColor != value.color) {
+      value = value.copyWith(
+        title: title,
+        content: content,
+        color: color,
+        lastEdit: DateTime.now(),
+      );
+    }
   }
 }
 
@@ -204,24 +232,27 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
   @override
   void initState() {
     super.initState();
-    _bottomNavBarItems = _buildNavBarItems(widget.colors);
+    _bottomNavBarItems = _buildNavBarItemsList(widget.colors);
   }
 
-  List<BottomNavigationBarItem> _buildNavBarItems(List<Color> values) {
+  List<BottomNavigationBarItem> _buildNavBarItemsList(List<Color> values) {
     return List.generate(
       values.length,
-      (index) {
-        final cachedColor = CachedColor(values[index]);
-        return BottomNavigationBarItem(
-          icon: ColorButton(color: cachedColor.value),
-          activeIcon: ColorButton(
-            color: cachedColor.value,
-            icon: Icon(Icons.check, color: cachedColor.contrastingColor()),
-          ),
-          label: '', // Prevents tooltip from displaying
-          tooltip: '', // Prevents tooltip from displaying
-        );
-      },
+      (index) => _buildNavBarItem(values[index]),
+      growable: false,
+    );
+  }
+
+  BottomNavigationBarItem _buildNavBarItem(Color color) {
+    final cachedColor = CachedColor(color);
+    return BottomNavigationBarItem(
+      icon: ColorButton(color: cachedColor.value),
+      activeIcon: ColorButton(
+        color: cachedColor.value,
+        icon: Icon(Icons.check, color: cachedColor.contrastingColor()),
+      ),
+      label: '', // Prevents tooltip from displaying.
+      tooltip: '', // Prevents tooltip from displaying.
     );
   }
 
@@ -229,26 +260,22 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget bottomNavigationBar = BottomNavigationBar(
-      backgroundColor: widget.backgroundColor,
-      type: BottomNavigationBarType.fixed,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      currentIndex: widget.selectedIndex,
-      onTap: widget.onTap,
-      items: _bottomNavBarItems,
-    );
-
-    bottomNavigationBar = DecoratedBox(
+    return DecoratedBox(
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(color: theme.colorScheme.onSurface, width: 0.3),
         ),
       ),
-      child: bottomNavigationBar,
+      child: BottomNavigationBar(
+        backgroundColor: widget.backgroundColor,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        currentIndex: widget.selectedIndex,
+        onTap: widget.onTap,
+        items: _bottomNavBarItems,
+      ),
     );
-
-    return bottomNavigationBar;
   }
 }
 
