@@ -78,10 +78,14 @@ void _initFirebaseAuth() {
 class NotesApp extends StatelessWidget {
   const NotesApp({
     Key? key,
-    this.initialRoute,
+    this.useBaselineMaterialTheme = true,
   }) : super(key: key);
 
-  final String? initialRoute;
+  /// Use the light and dark themes based on the ones given by Material Design,
+  /// that have colors that meet accessibility standards. Theese themes uses a
+  /// color scheme that matches the
+  /// [baseline Material color scheme](https://material.io/design/color/the-color-system.html#color-theme-creation)
+  final bool useBaselineMaterialTheme;
 
   Locale? _localeListResolution(List<Locale>? locales, Iterable<Locale> supportedLocales) {
     var locale = deviceResolvedLocale;
@@ -127,11 +131,12 @@ class NotesApp extends StatelessWidget {
       locale: AppOptions.of(context).locale,
       localeListResolutionCallback: _localeListResolution,
       localeResolutionCallback: _localeResolution,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: useBaselineMaterialTheme ? ThemeData.from(colorScheme: const ColorScheme.light()) : ThemeData.light(),
+      darkTheme: useBaselineMaterialTheme ? ThemeData.from(colorScheme: const ColorScheme.dark()) : ThemeData.dark(),
       themeMode: AppOptions.of(context).themeMode,
       initialRoute: userData.isSignedIn ? AppRoute.notes : AppRoute.signIn,
       onGenerateRoute: RouteConfiguration.onGenerateRoute,
+      debugShowCheckedModeBanner: false,
       builder: (context, child) {
         assert(child != null); // Child should not be null
 
