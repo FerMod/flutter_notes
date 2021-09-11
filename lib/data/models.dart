@@ -130,23 +130,22 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Returns a stream from the the result stream of the [operation] execution.
   Stream<List<NoteModel>> _pipeStream(Stream<List<NoteModel>> operation) {
     var isDone = false;
-    //late StreamController<List<NoteModel>> streamController;
     late StreamSubscription<List<NoteModel>> subscription;
     void onListen() {
       developer.log('StreamController onListen');
       subscription = operation.listen(
         (value) {
-          developer.log('StreamController onData');
-          _notes = value;
-          _controller!.add(value);
+          developer.log('StreamController operation.onData');
+          _notes = [...value];
+          _controller!.add(_notes);
         },
         onError: (error, stack) {
-          developer.log('StreamController onError');
+          developer.log('StreamController operation.onError');
           _controller!.addError(error, stack);
         },
         onDone: () {
           isDone = true;
-          developer.log('StreamController onDone');
+          developer.log('StreamController operation.onDone');
           _controller!.close();
         },
       );
@@ -190,7 +189,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   void updateNote(NoteModel note) {
     assert(_notes.isNotEmpty);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
-    _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
+    _notes[replaceIndex] = note;
     if (userData.isSignedIn) {
       notesCollection.update(note.id, note.toMap());
     } else {
