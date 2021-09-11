@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
 import '../data/app_options.dart';
-import '../data/firebase_service.dart';
+import '../data/firebase/firebase_service.dart';
 import '../routes.dart';
 import '../widgets/about_app_widget.dart';
 import '../widgets/drawer_header.dart';

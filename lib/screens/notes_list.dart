@@ -9,7 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:intl/intl.dart';
 
-import '../data/firebase_service.dart';
+import '../data/firebase/firebase_service.dart';
 import '../data/models.dart';
 import '../data/models/note_model.dart';
 import '../widgets/card_hero.dart';

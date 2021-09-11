@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'firebase_service.dart';
+import 'firebase/firebase_service.dart';
 import 'models/note_model.dart';
 import 'models/user_model.dart';
 
