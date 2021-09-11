@@ -6,20 +6,20 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:intl/intl.dart';
 
 import '../data/data_provider.dart';
 import '../data/firebase/firebase_service.dart';
 import '../data/models.dart';
 import '../data/models/note_model.dart';
+import '../routes.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/drawer_menu.dart';
 import '../widgets/loader.dart';
+import '../widgets/user_account_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_note.dart';
 import 'settings.dart';
-import 'sign_in.dart';
 
 enum MenuAction {
   // share,
@@ -42,15 +42,6 @@ class NotesListScreen extends StatelessWidget {
     );
     developer.log('Edit note result: $result');
     return result;
-  }
-
-  void _navigate(BuildContext context, Widget widget) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => widget,
-      ),
-    );
   }
 
   Future<void> _newNote(BuildContext context, String userId) async {
@@ -95,7 +86,7 @@ class NotesListScreen extends StatelessWidget {
           onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
               ? null
               : () {
-                  _navigate(context, const SignInScreen());
+                  Navigator.pushNamed(context, AppRoute.signIn);
                 },
           userData: notesListModel.userData,
         ),
@@ -156,7 +147,6 @@ class _AccountWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
     final user = userData.currentUser;
 
     Widget? imageWidget;
@@ -180,6 +170,7 @@ class _AccountWidget extends StatelessWidget {
         onTap: onTapImage,
       );
     } else {
+      final localizations = AppLocalizations.of(context)!;
       imageWidget = const Icon(
         Icons.account_circle,
         size: UserAvatar.defaultRadius * 2.0,
