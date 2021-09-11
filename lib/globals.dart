@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
 class Global {
@@ -10,15 +10,12 @@ class Global {
   /// hash.
   static const bool usePathUrlStrategy = true;
 
-  /// A constant that represents if should use the firebase firestore emulator.
+  /// A constant that configures the use of the firebase firestore emulator.
   static const bool useFirebaseFirestoreEmulator = false;
 
-  /// A constant that represents if should use the firebase auth emulator.
+  /// A constant that configures the use of the firebase auth emulator.
   static const bool useFirebaseAuthEmulator = false;
 
-  /// A constant that represents if should persist the made changes.
+  /// A constant that configures if the made changes should persist.
   static const bool persistChanges = true;
-
-  /// A constant that represents if should use local storage.
-  static const bool localStorage = true;
 }
