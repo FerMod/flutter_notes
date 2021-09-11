@@ -36,6 +36,7 @@ List<Locale> get deviceLocales {
   return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.locales;
 }
 
+/// The previous list of locales of [deviceLocales].
 List<Locale>? _lastDeviceLocales;
 
 /// The locale resolved from the full system-reported supported locales of the
@@ -51,7 +52,7 @@ set deviceResolvedLocale(Locale locale) {
   final equalLocales = const IterableEquality<Locale>().equals(_lastDeviceLocales, deviceLocales);
   if (!equalLocales) {
     _deviceResolvedLocale = locale;
-    _lastDeviceLocales = deviceLocales;
+    _lastDeviceLocales = List.unmodifiable(deviceLocales);
   }
 }
 

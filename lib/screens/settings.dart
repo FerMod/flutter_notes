@@ -233,18 +233,31 @@ class LocalizationSettingScreen extends StatefulWidget {
 }
 
 class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> with WidgetsBindingObserver {
-  final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
+  static final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
+
+  /// A odered non-growable list of supported locales, created from the list of
+  /// [AppLocalizations.supportedLocales].
+  ///
+  /// This list is intended to provide a list of locale always in the same
+  /// order, independent of in which order the locales where added to the list.
+  /// The locales are ordered in alphabetical descendant order using their
+  /// Unicode BCP47 Locale Identifier defined in
+  /// <https://www.unicode.org/reports/tr35/>.
+  static final List<Locale> supportedLocales = _initSupportedLocales();
+  static List<Locale> _initSupportedLocales() {
+    return List<Locale>.of(
+      AppLocalizations.supportedLocales,
+      growable: false,
+    )..sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
+  }
 
   late Locale selectedOption;
   late Map<Locale, DisplayOption> optionsMap;
-  late List<Locale> supportedLocales;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
-    supportedLocales = List<Locale>.of(AppLocalizations.supportedLocales, growable: false);
-    supportedLocales.sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
   }
 
   @override
@@ -253,19 +266,15 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     super.dispose();
   }
 
-  bool _isSupportedLocale() {
-    return deviceResolvedLocale != const Locale.fromSubtags();
-  }
-
   @override
   void didChangeLocales(List<Locale>? locales) {
-    if (selectedOption != systemLocaleOption && optionsMap.containsKey(systemLocaleOption)) {
-      final subtitle = _capitalize(nativeLocaleNames[deviceResolvedLocale.toString()]);
-      final systemOption = optionsMap[systemLocaleOption]!.copyWith(subtitle: subtitle);
-      setState(() {
-        optionsMap[systemLocaleOption] = systemOption;
-      });
-    }
+    setState(() {
+      // Rebuild ourselves because device locale has changed.
+    });
+  }
+
+  bool _hasSupportedLocale() {
+    return deviceResolvedLocale != const Locale.fromSubtags();
   }
 
   String? _capitalize(String? value) {
@@ -277,9 +286,9 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     final localizations = AppLocalizations.of(context)!;
     final localeNames = LocaleNames.of(context)!;
 
-    // We assume there is at least one supported locale.
     return {
-      if (_isSupportedLocale())
+      // The device might not have any supported locale.
+      if (_hasSupportedLocale())
         systemLocaleOption: DisplayOption(
           title: localizations.settingsSystemDefault,
           subtitle: _capitalize(nativeLocaleNames[deviceResolvedLocale.toString()]),
@@ -300,9 +309,13 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     // Build a map of the options of locales.
     optionsMap = _buildOptionsMap(context);
 
-    // Use the Locale saved in the settigns if the device resolved properly the
-    // locale, otherwise use a `und` locale.
-    selectedOption = _isSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
+    // Use the locale saved in the settings if the device has resolved
+    // succesfully a supported locale. Because, in case of the locale value
+    // stored in settings, being the fake locale with the language tag "system",
+    // it would select an invalid locale. In that case, don't select any option
+    // by setting the selected option to a undefined locale (using the language
+    // tag "und").
+    selectedOption = _hasSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
 
     return SearchScreen(
       delegate: SettingsSearchDelegate(
