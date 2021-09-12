@@ -6,16 +6,23 @@ class Global {
   /// This constructor prevents instantiation and extension.
   const Global._();
 
-  /// Sets the URL strategy of the web app to use paths instead of a leading
-  /// hash.
+  /// A constant that sets the URL strategy of the web app to use paths instead
+  /// of a leading hash.
   static const bool usePathUrlStrategy = true;
 
-  /// A constant that configures the use of the firebase firestore emulator.
-  static const bool useFirebaseFirestoreEmulator = false;
+  /// A constant that configures the use of the Firebase Firestore emulator.
+  static const bool useFirestoreEmulator = false;
 
-  /// A constant that configures the use of the firebase auth emulator.
-  static const bool useFirebaseAuthEmulator = false;
+  /// A constant that configures if the made changes while offline should
+  /// persist.
+  ///
+  /// When reading and writing data, Firestore uses a local database which
+  /// automatically synchronizes with the server. Cloud Firestore functionality
+  /// continues offline, and automatically handles data synchronization when
+  /// connectivity is regained.
+  static const bool enableOfflineFirestore = true;
 
-  /// A constant that configures if the made changes should persist.
-  static const bool persistChanges = true;
+  /// A constant that configures the use of the Firebase Authentication
+  /// emulator.
+  static const bool useAuthEmulator = false;
 }

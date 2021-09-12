@@ -19,7 +19,7 @@ import 'widgets/model_binding.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  _initFirestore();
+  await _configureFirebase();
   await AppSharedPreferences.initialize();
 
   // Set the URL strategy for the web app
@@ -33,44 +33,46 @@ Future<void> main() async {
   );
 }
 
-void _initFirestore() {
-  _initFirebaseFirestore();
-  _initFirebaseAuth();
+Future<void> _configureFirebase() async {
+  await _initFirebaseFirestore();
+  await _initFirebaseAuth();
 }
 
-void _initFirebaseFirestore() {
-  if (Global.useFirebaseFirestoreEmulator) {
+Future<void> _initFirebaseFirestore() async {
+  if (Global.useFirestoreEmulator) {
     try {
       FirebaseFirestore.instance
         ..settings = const Settings(
-          persistenceEnabled: Global.persistChanges,
+          persistenceEnabled: Global.enableOfflineFirestore,
           cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
         )
         // Internally Android uses '10.0.2.2' as the host.
-        ..useFirestoreEmulator('localhost', 8080, sslEnabled: false);
+        ..useFirestoreEmulator('localhost', 8080);
 
-      // Only for web platforms
-      if (Global.persistChanges && DeviceType.isWeb) {
-        FirebaseFirestore.instance.enablePersistence();
+      // Only for web platforms.
+      if (Global.enableOfflineFirestore && DeviceType.isWeb) {
+        await FirebaseFirestore.instance.enablePersistence();
       }
-    } catch (e, s) {
-      // When hot reloading in web, a exception is thrown when trying to set the
-      // Firebase settings more than once.
-      debugPrint('Exception thrown when initializing FirebaseFirestore:\n$e\n$s');
+    } catch (e) {
+      // When performing a hot reload in web version of Firestore, it throws a
+      // 'FirebaseError: [code=failed-precondition]' exception. This happens
+      // because is trying to set the Firebase settings more than once.
+      debugPrint(e.toString());
     }
   }
 }
 
-void _initFirebaseAuth() {
-  if (Global.useFirebaseAuthEmulator) {
+Future<void> _initFirebaseAuth() async {
+  if (Global.useAuthEmulator) {
     try {
       // Firebase Auth emulator is not supported for web yet.
       // Internally Android uses '10.0.2.2' as the host.
-      FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    } catch (e, s) {
-      // When hot reloading in web, a exception is thrown when trying to set the
-      // Firebase settings more than once.
-      debugPrint('Exception thrown when initializing FirebaseAuth:\n$e\n$s');
+      await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+    } catch (e) {
+      // When performing a hot reload in web version of Firestore, it throws a
+      // 'FirebaseError: [code=failed-precondition]' exception. This happens
+      // because is trying to set the Firebase settings more than once.
+      debugPrint(e.toString());
     }
   }
 }
