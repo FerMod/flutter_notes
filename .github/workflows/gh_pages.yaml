@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: ubuntu-20.04
     env:
       channel: stable
@@ -30,7 +31,7 @@ jobs:
       - name: Create symbolic link
         run: |
           ln -s ./build/web ./docs
-          ln -s ./docs/index.html ./docs/404.html
+          ln -s ./build/web/index.html ./build/web/404.html
       - name: Build project
         run: flutter build -v web --base-href "/flutter_notes/"
 
