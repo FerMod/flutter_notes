@@ -12,8 +12,8 @@ const RESOURCES = {
 "icons/Icon-512.png": "fbac52a9065ad56c9e5790a2875ddb9f",
 "icons/Icon-maskable-192.png": "87e9adaf8efca886be6c5f037dd53c3d",
 "icons/Icon-192.png": "37fcf2f7463ce40d1d3b87621cb772af",
-"index.html": "06a84ade66e8bb86fb78d8f9dad0fa77",
-"/": "06a84ade66e8bb86fb78d8f9dad0fa77",
+"index.html": "87caf239ed5def58e4ded01bf5c075e6",
+"/": "87caf239ed5def58e4ded01bf5c075e6",
 "main.dart.js_1.part.js": "2784d966ad7078ac72a31a6b44113a1b",
 "assets/NOTICES": "f563d9e96dfa9a80da2dd9d4032ce108",
 "assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
@@ -599,7 +599,8 @@ const RESOURCES = {
 "favicon.png": "0491246a51ddf4a3a6e54d3cdcf8c7c8",
 "main.dart.js_3.part.js": "aedfde975cb675124efb71fb0db2ad63",
 "main.dart.js_2.part.js": "a2b22eff71592be6d8a21be69e0643ed",
-"init-firebase.js": "186020dfa6be5c7a795fc6e64953cb79"
+"init-firebase.js": "186020dfa6be5c7a795fc6e64953cb79",
+"404.html": "e2e0bbec1284a27637445255c75a4bc2"
 };
 
 // The application shell files that are downloaded before a service worker can
