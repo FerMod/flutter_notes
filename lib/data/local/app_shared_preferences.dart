@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSharedPreferences {
@@ -27,7 +26,6 @@ class AppSharedPreferences {
   /// If the key is not present and [orDefault] is provided, returns the result
   /// value returned by [orDefault].
   static T? load<T extends Object?>(String key, {T? Function()? orDefault}) {
-    debugPrint('AppSharedPreferences.load(key: $key)');
     if (instance!.containsKey(key)) {
       return instance!.get(key) as T?;
     }
@@ -39,7 +37,6 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> save<T extends Object>(String key, T content) async {
-    debugPrint('AppSharedPreferences.save(key: $key, value: $content)');
     if (content is bool) {
       return instance!.setBool(key, content);
     }
@@ -61,7 +58,6 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> remove(String key) async {
-    debugPrint('AppSharedPreferences.remove(key: $key)');
     return instance!.remove(key);
   }
 
@@ -71,7 +67,6 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> clear() async {
-    debugPrint('AppSharedPreferences.clear()');
     return instance!.clear();
   }
 }

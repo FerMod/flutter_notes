@@ -110,6 +110,7 @@ class NotesApp extends StatelessWidget {
         '  Device resolved locale: $deviceResolvedLocale',
       );
     }
+
     return _localeResolution(locale, supportedLocales);
   }
 
