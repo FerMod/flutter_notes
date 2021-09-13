@@ -8,23 +8,6 @@ on:
       - "*" # Push events that match "*". For example: "1.0", "20.15.10"
 
 jobs:
-  draft-release:
-    name: Create draft release
-    runs-on: ubuntu-20.04
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Draft release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Flutter Notes v${{ github.ref }}
-          draft: true
-          prerelease: false
-
   build:
     name: Create ${{ matrix.target }} build
     runs-on: ${{ matrix.os }}
@@ -186,7 +169,7 @@ jobs:
         id: upload_release_asset
         uses: softprops/action-gh-release@v1
         with:
-          name: Flutter Test v${{ env.RELEASE_TAG }}
+          name: Flutter Notes v${{ env.RELEASE_TAG }}
           draft: true
           prerelease: false
           files: |
