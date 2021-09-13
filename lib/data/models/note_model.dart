@@ -26,7 +26,7 @@ class NoteModel {
   })  : id = id ?? const Uuid().v4(),
         lastEdit = lastEdit ?? DateTime.now();
 
-  factory NoteModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  factory NoteModel.fromSnapshot(DocumentSnapshot<Map<String, Object?>> snapshot) {
     return NoteModel(
       id: snapshot.id,
       userId: snapshot['userId'],

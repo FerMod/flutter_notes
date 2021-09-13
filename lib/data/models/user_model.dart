@@ -29,7 +29,7 @@ class UserModel {
 
   bool get isAnonymous => email == null;
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {
       // 'id': id,
       'email': email,
