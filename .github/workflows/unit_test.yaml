@@ -5,7 +5,8 @@ on:
       - main
       - FerMod*
   pull_request:
-
+      branches:
+        - main
 jobs:
   test:
     name: Test on ${{ matrix.os }}

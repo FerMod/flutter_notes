@@ -31,7 +31,7 @@ class TestModel {
 
 void main() {
   group('ModelBinding', () {
-    late List log;
+    late List<dynamic> log;
 
     setUp(() {
       log = <dynamic>[];
@@ -110,11 +110,11 @@ void main() {
         expect(log, equals(<TestModel?>[firstModel, thirdModel]));
       });
 
-      testWidgets('throws when retrieving a model of type `dynamic`', (tester) async {
+      testWidgets('throws when retrieving a model of type "dynamic"', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
         const model = TestModel();
 
-        ModelBinding buildOfTypeDynamic() {
+        ModelBinding<dynamic> buildOfTypeDynamic() {
           return ModelBinding(
             key: UniqueKey(),
             initialModel: model,
@@ -286,7 +286,7 @@ void main() {
         );
       });
 
-      testWidgets('throws when updating a model of type `dynamic`', (tester) async {
+      testWidgets('throws when updating a model of type "dynamic"', (tester) async {
         final globalKeyDynamic = GlobalKey(debugLabel: 'ModelBinding<dynamic> Key');
         final globalKeyObject = GlobalKey(debugLabel: 'ModelBinding<Object> Key');
 
@@ -390,7 +390,7 @@ void main() {
         expect(log, equals(<TestModel>[firstModel, thirdModel]));
       });
 
-      testWidgets('alwaws notify when \'updateShouldNotify\' is true', (tester) async {
+      testWidgets('always notify when "updateShouldNotify" is true', (tester) async {
         final globalKey = GlobalKey(debugLabel: 'Test Key');
 
         final builder = Builder(
@@ -572,7 +572,7 @@ void main() {
       log.clear();
     });
 
-    testWidgets('calls dispose when model removes from tree', (tester) async {
+    testWidgets('calls dispose when is removed from tree', (tester) async {
       final globalKey = GlobalKey(debugLabel: 'Test Key');
       const testModel = TestModel();
 
@@ -592,8 +592,8 @@ void main() {
       }
 
       await tester.pumpWidget(build());
-      expect(contextCompleter.future, completion(allOf([isNotNull, globalKey.currentContext])));
-      expect(modelCompleter.future, completion(allOf([isNotNull, testModel])));
+      expect(contextCompleter.future, completion(globalKey.currentContext));
+      expect(modelCompleter.future, completion(testModel));
       await tester.pumpWidget(Container());
     });
   });
@@ -614,5 +614,14 @@ void main() {
 
     await tester.pumpWidget(childWidget);
     expect(() => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!), throwsFlutterError);
+
+    expect(
+      () => debugCheckHasModelBinding<TestModel>(globalKey.currentContext!),
+      throwsA(isAssertionError.having(
+        (e) => e.message,
+        'message',
+        contains('No ModelBinding<$TestModel> widget ancestor found.'),
+      )),
+    );
   });
 }

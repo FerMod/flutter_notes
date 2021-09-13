@@ -88,27 +88,41 @@ class TextFormInput extends FormField<String> {
   final FieldValidator<String?> fieldValidator;
 }
 
+/// A widget that creates two [Dividers] with another widget positioned between
+/// them.
+///
+/// The [Dividers] can be at most as large as the available space, but is allowed
+/// to be smaller.
 class DividerText extends StatelessWidget {
+  /// Creates two [Divider]s with the given [child] positioned in the middle.
   const DividerText({
     Key? key,
-    required this.text,
-    required this.color,
+    required this.child,
   }) : super(key: key);
 
-  final Widget text;
-  final Color color;
+  /// The widget placed between the two [Divider]. Normally a [Text] widget.
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Divider(thickness: 2.0),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          color: color,
-          child: text,
+        const Flexible(
+          child: Divider(
+            thickness: 2.0,
+            indent: 0.0,
+            endIndent: 8.0,
+          ),
         ),
+        child,
+        const Flexible(
+          child: Divider(
+            thickness: 2.0,
+            indent: 8.0,
+            endIndent: 0.0,
+          ),
+        )
       ],
     );
   }
@@ -116,24 +130,41 @@ class DividerText extends StatelessWidget {
 
 /// A class to help to perform multiple validations on a single [FormField].
 ///
-/// See:
-/// * [Validation], that represents a single validation
+/// See also:
+///
+///  * [Validation], a class that represents a single validation.
 class FieldValidator<T> {
   /// Creates a field validator that takes a list of [validations].
+  /// the order in which the validations are defined matters, since it runs each
+  /// validation in iteration order.
   const FieldValidator([this.validations = const []]);
 
-  /// The list of validations.
-  final List<Validation<T?>> validations;
+  /// The collection of validations to perform.
+  final List<Validation<T>> validations;
 
-  /// The error message of the first [Validation] satisfying [assertion], or `null`
-  /// if there are none.
-  String? validate(T? value) {
+  /// Returns the error message of the first [Validation] that does not satisfy
+  /// the assertion, or `null` if there are none.
+  ///
+  /// This function iterates over each element defined in the [validations]
+  /// collection and calls another function that asserts the given [value]. For
+  /// each element, if the result of the [Validation.isValid] expression
+  /// defined in [Validation] is `true`, the assertion succeeds and execution
+  /// continues. If it’s false, the assertion fails and returns the error
+  /// message defined in [Validation.errorMessage]. If all the assertions are
+  /// resolved as `true`, the returned value is `null`.
+  ///
+  /// If there are no [validations] to run, then this function validation always
+  /// succeeds, and as a consecuence always returns `null`.
+  String? validate(T value) {
     final validation = validations.firstWhereOrNull(
-      (e) => !e.assertion(value),
+      (e) => e.isNotValid(value),
     );
     return validation?.errorMessage;
   }
 }
+
+/// The function signature that runs a validation over [value].
+typedef _Assertion<T> = bool Function(T value);
 
 /// Represents a [FormField] validation.
 ///
@@ -144,12 +175,44 @@ class Validation<T> {
   /// condition.
   const Validation({
     required this.errorMessage,
-    required this.assertion,
-  });
+    required _Assertion<T?> assertion,
+  }) : _assertion = assertion;
 
   /// The message that explaining the why the validation failed.
   final String errorMessage;
 
-  /// The function signature that performs the validation.
-  final bool Function(T? value) assertion;
+  /// The function that contains the validation assertion, invoked when calling
+  /// the function [isValid].
+  final _Assertion<T?> _assertion;
+
+  /// Whether the [value] is valid.
+  ///
+  /// This function executes the validation over the given [value]. The
+  /// validation can be any expression that resolves to a boolean value.
+  ///
+  /// See also:
+  ///
+  ///  * [isNotValid], whether the [value] is considered as not valid.
+  bool isValid(T? value) => _assertion(value);
+
+  /// Whether the [value] is not valid.
+  ///
+  /// This function executes the validation over the given [value]. The
+  /// validation can be any expression that resolves to a boolean value.
+  ///
+  /// See also:
+  ///
+  ///  * [isValid], whether the [value] is considered valid.
+  bool isNotValid(T? value) => !isValid(value);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is Validation<T> && other.errorMessage == errorMessage && other._assertion == _assertion;
+  }
+
+  @override
+  int get hashCode => hashValues(errorMessage, _assertion);
 }

@@ -6,25 +6,27 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
+    
+    // True if is authenticated and auth uid matches userUid
+    function hasAccess(userUid) {
+      return isSignedIn() && request.auth.uid == userUid;
+    }
 
     // Users:
+    // If authenticated and userId matches.
     //   - Authenticated user can read
-    //   - Authenticated user can write (create, update and delete) if userId matches
+    //   - Authenticated user can write (create, update and delete)
     match /users/{userId} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn()
-                   && request.auth.uid == userId;
+      allow read, write: if hasAccess(userId);
     }
 
     // Notes:
-    //   - Authenticated user can read
-    //	 - Authenticated user can write (create, update and delete) if userId matches
+    // If authenticated and userId matches.
+    //	 - Authenticated user can read
+    //	 - Authenticated user can write (create, update and delete)
     match /notes/{noteId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn()
-                    && request.auth.uid == request.resource.data.userId;
-      allow update, delete: if isSignedIn()
-                            && request.auth.uid == resource.data.userId;
+      allow read, update, delete: if hasAccess(resource.data.userId);
+      allow create: if hasAccess(request.resource.data.userId);
     }
     
   }

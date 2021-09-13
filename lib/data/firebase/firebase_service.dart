@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:google_sign_in/google_sign_in.dart';
 
 typedef QueryFunction<T> = T Function(T query);
@@ -21,15 +19,15 @@ abstract class FirebaseDocument<T> {
 abstract class FirebaseCollection<T> {
   const FirebaseCollection();
 
-  Future<List<T>?> data();
-  Stream<List<T>?> stream();
+  Future<List<T>> data();
+  Stream<List<T>> stream();
   Future<FirebaseDocument<T>> insert(T data, {String? id, bool merge = false});
   Future<void> update(String id, Map<String, dynamic> data);
   Future<void> delete(String id);
 }
 
 @immutable
-class FirestoreConverter<T extends Object?> {
+class FirestoreConverter<T> {
   const FirestoreConverter({
     required this.fromFirestore,
     required this.toFirestore,
@@ -52,9 +50,10 @@ abstract class FirebaseAuthentication {
 
 /// An object that represents a Firebase document.
 ///
-/// See:
-/// * <https://firebase.google.com/docs/firestore/data-model#documents>
-class Document<T extends Object?> extends FirebaseDocument<T> {
+/// See also:
+///
+///  * <https://firebase.google.com/docs/firestore/data-model#documents>
+class Document<T> extends FirebaseDocument<T> {
   /// An object that refers to a Firestore document path.
   final DocumentReference<T> reference;
   final FirestoreConverter<T> converter;
@@ -67,9 +66,11 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
 
   /// Creates a document with a [reference] with the specified [path].
   ///
-  /// An optional [firestore] instance can also provided to access the document.
-  /// If none is provided, the default firebase instance will be used instead.
-  factory Document.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
+  /// An optional [firestore] parameter can be given to provide a
+  /// FirebaseFirestore instance, used to access the document. If none is
+  /// provided, the default instance given by [FirebaseFirestore.instance] is
+  /// used instead.
+  factory Document.path(String path, {required FirestoreConverter<T> converter, FirebaseFirestore? firestore}) {
     firestore ??= FirebaseFirestore.instance;
     return Document(
       reference: firestore.doc(path).withConverter<T>(
@@ -80,14 +81,18 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
     );
   }
 
-  @override
-  Future<T?> data() async {
-    return reference.get().then<T?>((snapshot) => snapshot.data());
+  T parseSnapshot(DocumentSnapshot<T> snapshot) {
+    return snapshot.data() as T;
   }
 
   @override
-  Stream<T?> stream() {
-    return reference.snapshots().map((snapshot) => snapshot.data());
+  Future<T> data() async {
+    return reference.get().then(parseSnapshot);
+  }
+
+  @override
+  Stream<T> stream() {
+    return reference.snapshots().map(parseSnapshot);
   }
 
   /// Updates data on the document. The data will be merged with any existing
@@ -116,9 +121,10 @@ class Document<T extends Object?> extends FirebaseDocument<T> {
 
 /// An object that represents a Firebase collection.
 ///
-/// See:
-/// * <https://firebase.google.com/docs/firestore/data-model#collections>
-class Collection<T extends Object?> extends FirebaseCollection<T> {
+/// See also:
+///
+///  * <https://firebase.google.com/docs/firestore/data-model#collections>
+class Collection<T> extends FirebaseCollection<T> {
   /// An object that refers to a Firestore collection path.
   final CollectionReference<T> reference;
   final FirestoreConverter<T> converter;
@@ -131,10 +137,11 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
 
   /// Creates a collection with a [reference] with the specified [path].
   ///
-  /// An optional [firestore] instance can also provided to access the
-  /// collection. If none is provided, the default firebase instance will be
+  /// An optional [firestore] parameter can be given to provide a
+  /// [FirebaseFirestore] instance, used to access the collection. If none is
+  /// provided, the default instance given by [FirebaseFirestore.instance] is
   /// used instead.
-  factory Collection.path(String path, FirestoreConverter<T> converter, [FirebaseFirestore? firestore]) {
+  factory Collection.path(String path, {required FirestoreConverter<T> converter, FirebaseFirestore? firestore}) {
     firestore ??= FirebaseFirestore.instance;
     return Collection(
       reference: firestore.collection(path).withConverter<T>(
@@ -145,17 +152,20 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
     );
   }
 
+  List<T> parseSnapshot(QuerySnapshot<T> snapshot) {
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   @override
   Future<List<T>> data([QueryFunction<Query<T>>? query]) async {
     final queryFunction = query?.call(reference) ?? reference;
-    final snapshots = await queryFunction.get().then((value) => value.docs);
-    return snapshots.map((snapshot) => snapshot.data()).toList();
+    return queryFunction.get().then(parseSnapshot);
   }
 
   @override
   Stream<List<T>> stream([QueryFunction<Query<T>>? query]) {
     final queryFunction = query?.call(reference) ?? reference;
-    return queryFunction.snapshots().map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+    return queryFunction.snapshots().map(parseSnapshot);
   }
 
   /// Returns a `DocumentReference` after populating it with the provided [data].
@@ -170,7 +180,7 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  Future<Document<T>> insert(T data, {String? id, bool merge = false}) async {
+  Future<FirebaseDocument<T>> insert(T data, {String? id, bool merge = false}) async {
     final newDocument = reference.doc(id);
     await newDocument.set(data, SetOptions(merge: merge));
     return Document<T>(
@@ -205,18 +215,19 @@ class Collection<T extends Object?> extends FirebaseCollection<T> {
 
 /// An object that represents a Firebase Auth user that is used to store user
 /// data.
-class UserData<T extends Object?> implements FirebaseAuthentication {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class UserData<T> implements FirebaseAuthentication {
+  final FirebaseAuth _auth;
   final T Function(User user) converter;
 
   /// Creates a user data access class with a [converter].
   ///
-  /// An optional Firebase [app] instance can also provided to access the
-  /// collection. If none is provided, the default firebase instance will be
-  /// used instead. Throws if the app does not exist.
+  /// An optional [auth] parameter can be given to provide a [FirebaseAuth]
+  /// instance. If none is provided, the default instance given by
+  /// [FirebaseAuth.instance] is used instead.
   UserData({
     required this.converter,
-  });
+    FirebaseAuth? auth,
+  }) : _auth = auth ?? FirebaseAuth.instance;
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out).
@@ -225,7 +236,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get authStateChanges => _auth.authStateChanges().distinct();
+  Stream<User?> authStateChanges() => _auth.authStateChanges().distinct();
 
   /// Notifies about changes to the user's sign-in state (such as sign-in or
   /// sign-out) and also token refresh events.
@@ -237,7 +248,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get idTokenChanges => _auth.idTokenChanges().distinct();
+  Stream<User?> idTokenChanges() => _auth.idTokenChanges().distinct();
 
   /// Notifies about changes to any user updates.
   ///
@@ -252,7 +263,7 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   /// equal. Errors are passed through to the returned stream, and data events
   /// are passed through if they are distinct from the most recently emitted
   /// data event.
-  Stream<User?> get userChanges => _auth.userChanges().distinct();
+  Stream<User?> userChanges() => _auth.userChanges().distinct();
 
   /// Returns the current [User] if they are currently signed-in, or `null` if
   /// not.
@@ -263,6 +274,13 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
   User? get currentUser => _auth.currentUser;
 
   /// Whether there is currently a [User] signed-in.
+  ///
+  /// Returns `true` if [currentUser] is not `null`, therefore, a user is
+  /// currently signed-in.
+  ///
+  /// See also:
+  ///
+  ///  * [currentUser] to obtain the current signed-in user.
   bool get isSignedIn => _auth.currentUser != null;
 
   /// Update the user's display name.
@@ -391,8 +409,8 @@ class UserData<T extends Object?> implements FirebaseAuthentication {
 
       await user
           .sendEmailVerification(actionCodeSettings)
-          .catchError((onError) => print('Error sending email verification $onError'))
-          .then((value) => print('Successfully sent email verification'));
+          .catchError((onError) => developer.log('Error sending email verification $onError'))
+          .then((value) => developer.log('Successfully sent email verification'));
     }
   }
 

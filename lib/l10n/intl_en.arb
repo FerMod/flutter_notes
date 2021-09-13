@@ -125,6 +125,10 @@
   "@saveButton": {
     "description": "Save button text."
   },
+  "discardButton": "DISCARD",
+  "@discardButton": {
+    "description": "Discard button text."
+  },
   "deleteButton": "DELETE",
   "@deleteButton": {
     "description": "Delete button text."
@@ -157,9 +161,13 @@
   "@changeColor": {
     "description": "Change color of the note."
   },
-  "saveChangesDialogContent": "Your changes have not been saved",
+  "saveChangesDialogTitle": "Save Changes?",
+  "@saveChangesDialogTitle": {
+    "description": "Title of dialog that shows when the changes have been not saved."
+  },
+  "saveChangesDialogContent": "Your changes have not been saved.",
   "@saveChangesDialogContent": {
-    "description": "Dialog text to show when the changes have been not saved."
+    "description": "Content of dialog that shows when the changes have been not saved."
   },
   "email": "Email",
   "@email": {
@@ -373,6 +381,30 @@
   "@errorUserDisabled": {
     "description": "Thrown if the user corresponding to the given email has been disabled."
   },
+  "errorAccountExistsWithDifferentCredential": "There already exists an account with the email address asserted by the credential.",
+  "@errorAccountExistsWithDifferentCredential": {
+    "description": "Thrown when there already exists an account with the email address asserted by the credential. This should be resolved asking the user the sign in method."
+  },
+  "errorTooManyRequests": "Too many request from the same device made. Try again later.",
+  "@errorTooManyRequests": {
+    "description": "Thrown when request to a Firebase service has been blocked due to having received too many consecutive requests from the same device. Retry the request later to resolve."
+  },
+  "errorInvalidCredential": "The credential is malformed or has expired.",
+  "@errorInvalidCredential": {
+    "description": "Message text to show when the credential is malformed or has expired."
+  },
+  "errorInvalidVerificationCode": "The verification code of the credential is not valid",
+  "@errorInvalidVerificationCode": {
+    "description": "Message text to show when the verification code of the credential is not valid."
+  },
+  "errorInvalidVerificationId": "The verification ID of the credential is not valid",
+  "@errorInvalidVerificationId": {
+    "description": "Message text to show when the verification ID of the credential is not valid."
+  },
+  "errorOperationNotAllowed": "The type of account corresponding to the credential is not enabled.",
+  "@errorOperationNotAllowed": {
+    "description": "Message text to show when the type of account corresponding to the credential is not enabled. To prevent this error enable the account type in the Firebase Console, under the Auth tab."
+  },
   "errorUnknown": "An unknown error happened.",
   "@errorUnknown": {
     "description": "Message text to show when an unknown error happens."
@@ -394,14 +426,6 @@
   "und": "Undefined",
   "@und": {
     "description": "Name of the 'und' locale. The undefined locale."
-  },
-  "en": "English",
-  "@en": {
-    "description": "Name of the 'en' locale."
-  },
-  "es": "Spanish",
-  "@es": {
-    "description": "Name of the 'es' locale."
   },
   "colorsRed": "Red",
   "@colorsRed": {

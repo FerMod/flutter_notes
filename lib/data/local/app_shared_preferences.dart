@@ -1,15 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSharedPreferences {
-  const AppSharedPreferences._internal();
-  static const AppSharedPreferences _instance = AppSharedPreferences._internal();
-  factory AppSharedPreferences() => _instance;
+  AppSharedPreferences._internal();
+  static late final AppSharedPreferences _instance = AppSharedPreferences._internal();
 
-  static SharedPreferences? _sharedPreferences;
-  static SharedPreferences? get instance => _sharedPreferences;
+  /// The current [SharedPreferences] instance, if one has been created.
+  ///
+  /// Is safe to assume the value to be not `null`, if the function [initialize]
+  /// is called at least once, otherwhise, this will return `null`.
+  ///
+  /// See also:
+  ///
+  ///  * [SharedPreferences], a class that provides persistent storage for
+  ///    simple data.
+  static SharedPreferences? get instance => _instance._sharedPreferences;
+  SharedPreferences? _sharedPreferences;
 
   static Future<SharedPreferences> initialize() async {
-    return _sharedPreferences ??= await SharedPreferences.getInstance();
+    return _instance._sharedPreferences ??= await SharedPreferences.getInstance();
   }
 
   /// Reads the value from persistent storage for the given [key], or `null` if
@@ -18,9 +27,9 @@ class AppSharedPreferences {
   /// If the key is not present and [orDefault] is provided, returns the result
   /// value returned by [orDefault].
   static T? load<T extends Object?>(String key, {T? Function()? orDefault}) {
-    print('AppSharedPreferences.load(key: $key)');
-    if (_sharedPreferences!.containsKey(key)) {
-      return _sharedPreferences!.get(key) as T?;
+    debugPrint('AppSharedPreferences.load(key: $key)');
+    if (instance!.containsKey(key)) {
+      return instance!.get(key) as T?;
     }
     return orDefault?.call();
   }
@@ -29,22 +38,22 @@ class AppSharedPreferences {
   ///
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
-  static Future<bool> save<T extends Object?>(String key, T content) async {
-    print('AppSharedPreferences.save(key: $key, value: $content)');
+  static Future<bool> save<T extends Object>(String key, T content) async {
+    debugPrint('AppSharedPreferences.save(key: $key, value: $content)');
     if (content is bool) {
-      return _sharedPreferences!.setBool(key, content);
+      return instance!.setBool(key, content);
     }
     if (content is int) {
-      return _sharedPreferences!.setInt(key, content);
+      return instance!.setInt(key, content);
     }
     if (content is double) {
-      return _sharedPreferences!.setDouble(key, content);
+      return instance!.setDouble(key, content);
     }
     if (content is List<String>) {
-      return _sharedPreferences!.setStringList(key, content);
+      return instance!.setStringList(key, content);
     }
 
-    return _sharedPreferences!.setString(key, content.toString());
+    return instance!.setString(key, content as String);
   }
 
   /// Removes from persistent storage the value associated with the [key].
@@ -52,8 +61,8 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> remove(String key) async {
-    print('AppSharedPreferences.remove(key: $key)');
-    return _sharedPreferences!.remove(key);
+    debugPrint('AppSharedPreferences.remove(key: $key)');
+    return instance!.remove(key);
   }
 
   /// Removes all preferences from presistent storage. Ater this, the persistent
@@ -62,7 +71,7 @@ class AppSharedPreferences {
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
   static Future<bool> clear() async {
-    print('AppSharedPreferences.clear()');
-    return _sharedPreferences!.clear();
+    debugPrint('AppSharedPreferences.clear()');
+    return instance!.clear();
   }
 }

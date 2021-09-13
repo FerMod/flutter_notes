@@ -5,11 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
-import '../data/models.dart';
+import '../data/data_provider.dart';
+import '../data/firebase/auth_error_code.dart';
 import '../routes.dart';
+import '../src/utils/device_type.dart';
 import '../widgets/banner_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
@@ -80,12 +81,14 @@ class _SignInFormState extends State<_SignInForm> {
   String _errorMessage(String errorCode) {
     final localizations = AppLocalizations.of(context)!;
     switch (errorCode) {
-      case 'user-disabled':
+      case AuthErrorCode.userDisabled:
         return localizations.errorUserDisabled;
-      case 'invalid-email':
-      case 'user-not-found':
-      case 'wrong-password':
+      case AuthErrorCode.invalidEmail:
+      case AuthErrorCode.userNotFound:
+      case AuthErrorCode.wrongPassword:
         return localizations.errorSignIn;
+      case AuthErrorCode.operationNotAllowed:
+        return localizations.errorOperationNotAllowed;
       default:
         return localizations.errorUnknown;
     }
@@ -231,10 +234,7 @@ class _BodyWidget extends StatelessWidget {
           ]),
         ),
         _SignInButton(onPressed: onSignIn),
-        DividerText(
-          text: Text(localizations.signInOr),
-          color: theme.cardColor,
-        ),
+        DividerText(child: Text(localizations.signInOr)),
         // divider,
         // ...signInMethods(context),
       ],

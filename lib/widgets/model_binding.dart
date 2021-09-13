@@ -65,10 +65,12 @@ class ModelBinding<T> extends StatefulWidget {
   /// The widget below this widget in the tree.
   final Widget? child;
 
-  /// Called to obtain the [child] widget from this callback. This callback is
-  /// passed two arguments, the [BuildContext] (as `context`) and a [Widget]
-  /// (as `child`). If the child is null, it is the responsibility of the
-  /// [builder] to provide a valid one.
+  /// Called to obtain the [child] widget from this callback, every time the
+  /// [initialModel] value changes.
+  /// 
+  /// This builder builds a widget given a [BuildContext] (as `context`) and a
+  /// [Widget] (as `child`). If the child is `null`, it is the responsibility of
+  /// the [builder] to provide a valid one.
   ///
   /// If [builder] is null, it is as if a builder was specified that returned
   /// the [child] directly.
@@ -91,14 +93,15 @@ class ModelBinding<T> extends StatefulWidget {
   /// T model = ModelBinding.of<T>(context);
   /// ```
   ///
-  /// If there is no [ModelBinding] in scope, this will throw a [TypeError]
-  /// exception in release builds, and throw a descriptive [FlutterError] in
-  /// debug builds.
+  /// If there is no [ModelBinding] in scope, then this will assert in
+  /// debug mode, and throw an exception in release mode.
   ///
   /// See also:
   ///
-  ///  * [maybeOf], which doesn't throw or assert if it doesn't find a
-  ///    [ModelBinding] ancestor, it returns null instead.
+  ///  * [maybeOf], which is a similar function but will return null instead of
+  ///    throwing if there is no [ModelBinding] ancestor.
+  ///  * [debugCheckHasModelBinding], which asserts that the given context
+  ///    has a [ModelBinding] ancestor.
   static T of<T>(BuildContext context) {
     assert(
       // ignore: unnecessary_null_comparison
@@ -144,8 +147,8 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// See also:
   ///
-  ///  * [of], which will throw if it doesn't find a [ModelBinding] ancestor,
-  ///    instead of returning null.
+  ///  * [of], which is a similar function, except that it will throw an
+  ///   exception if a [ModelBinding] is not found in the given context.
   static T? maybeOf<T>(BuildContext context) {
     assert(
       // ignore: unnecessary_null_comparison
@@ -174,6 +177,14 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// Returns true if the model will update with a new one, false if the model
   /// has not changed.
+  ///
+  /// If there is no [ModelBinding] in scope, then this will assert in debug
+  /// mode, and throw an exception in release mode.
+  ///
+  /// See also:
+  ///
+  ///  * [debugCheckHasModelBinding], which asserts that the given context
+  ///    has a [ModelBinding] ancestor.
   static bool update<T>(BuildContext context, T newModel, {bool updateShouldNotify = false}) {
     assert(
       // ignore: unnecessary_null_comparison
@@ -288,14 +299,14 @@ bool debugCheckHasModelBinding<T>(BuildContext context) {
     if (context.widget is! _ModelBindingScope<T> && context.findAncestorWidgetOfExactType<_ModelBindingScope<T>>() == null) {
       throw FlutterError.fromParts(<DiagnosticsNode>[
         ErrorSummary('No ModelBinding<$T> widget ancestor found.'),
-        ErrorDescription('${context.widget.runtimeType} widgets require a ModelBinding<$T> widget ancestor.'),
+        ErrorDescription('${context.widget.runtimeType} widget require a ModelBinding<$T> widget ancestor.'),
         context.describeWidget('The specific widget that could not find a ModelBinding<$T> ancestor was'),
         context.describeOwnershipChain('The ownership chain for the affected widget is'),
         ErrorHint(
           'No ModelBinding<$T> ancestor could be found starting from the context '
           'that was passed to ModelBinding.of<$T>(). This can happen because you '
           'have not added a ModelBinding<$T> widget, or it can happen if the '
-          'context you use comes from a widget above that widgets.',
+          'context you use comes from a widget above that widget.',
         ),
       ]);
     }

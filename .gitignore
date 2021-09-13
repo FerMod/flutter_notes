@@ -23,9 +23,6 @@
 !.vscode/extensions.json
 *.code-workspace
 
-# Local History for Visual Studio Code
-.history/
-
 # Flutter/Dart/Pub related
 **/doc[?s]/api/
 **/ios/Flutter/.last_build_id
@@ -50,6 +47,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# Exceptions to above rules.
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages

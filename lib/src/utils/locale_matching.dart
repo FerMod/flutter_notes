@@ -53,7 +53,7 @@ class LocaleMatcher {
   /// When a desired locale matches more than one supported locale, it will
   /// resolve to the first matching locale listed in the [supportedLocales].
   ///
-  /// When no match at all is found, the "und" locale will be returned. If the
+  /// When no match at all is found, the `und` locale will be returned. If the
   /// fallback locale is given with [fallback] and the returned value is not
   /// null, that locale will used instead.
   ///
@@ -64,12 +64,11 @@ class LocaleMatcher {
   /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
   /// 1. [Locale.languageCode] only.
   /// 1. If [fallback] is defined and the returned value is not null returns
-  ///    the value fallback locale. Otherwise, returns "und" locale as a
+  ///    the value fallback locale. Otherwise, returns `und` locale as a
   ///    fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
-  @Deprecated('Not used')
   static Locale localeLookup(Locale? desiredLocale, Iterable<Locale> supportedLocales, {FallbackLocale? fallback}) {
     return _resolveLocale(
       [if (desiredLocale != null) desiredLocale],
@@ -96,22 +95,19 @@ class LocaleMatcher {
   /// When a desired locale matches more than one supported locale, it will
   /// resolve to the first matching locale listed in the [supportedLocales].
   ///
-  /// When no match at all is found, the "und" locale will be returned.
+  /// When no match at all is found, the `und` locale will be returned.
   ///
   /// To summarize, the main matching priority is:
   ///
-  ///  1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
-  ///  1. [Locale.languageCode] and [Locale.countryCode] only.
-  ///  1. [Locale.languageCode] and [Locale.scriptCode] only.
-  ///  1. [Locale.languageCode] only.
-  ///  1. Returns a locale "und" as a fallback.
+  /// 1. [Locale.languageCode], [Locale.scriptCode], and [Locale.countryCode].
+  /// 1. [Locale.languageCode] and [Locale.countryCode] only.
+  /// 1. [Locale.languageCode] and [Locale.scriptCode] only.
+  /// 1. [Locale.languageCode] only.
+  /// 1. Returns a `und` locale as a fallback.
   ///
   /// This algorithm does not take language distance (how similar languages are
   /// to each other) into account.
   static Locale _localeResolution(List<Locale>? desiredLocales, Iterable<Locale> supportedLocales) {
-    // Set best supported the first locale, if no desired locales are found that
-    // should be used as the default one.
-    // var bestSupported = supportedLocales.isNotEmpty ? supportedLocales.first : const Locale.fromSubtags();
     var bestSupported = const Locale.fromSubtags();
     if (desiredLocales?.isEmpty ?? true) return bestSupported;
 
@@ -132,20 +128,18 @@ class LocaleMatcher {
             // Full match, closest distance
             matchDistance = 0.0;
           } else if (supported.countryCode != null && supported.countryCode == desired.countryCode) {
-            // Language and country code match and both are not null
+            // Language and country code match, and they are not null
             matchDistance = 0.5;
           } else if (supported.scriptCode != null && supported.scriptCode == desired.scriptCode) {
-            // Language and country code match and both are not null
+            // Language and script code match, and they are not null
             matchDistance = 0.75;
           }
 
           // The more we go down the list the less the weight is
           final weightedDistance = i + matchDistance;
-          if (kDebugMode) {
-            print('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
-          }
+          debugPrint('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
           if (bestWeightedDistance == 0.0) {
-            // Cannot improve, is a perfect match, and the best without a doubt
+            // Cannot improve, is a perfect match and the best without a doubt
             return bestSupported;
           } else if (weightedDistance < bestWeightedDistance) {
             bestWeightedDistance = weightedDistance;
@@ -154,6 +148,7 @@ class LocaleMatcher {
         }
       }
     }
+
     return bestSupported;
   }
 
