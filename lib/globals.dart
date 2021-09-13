@@ -8,7 +8,7 @@ class Global {
 
   /// A constant that sets the URL strategy of the web app to use paths instead
   /// of a leading hash.
-  static const bool usePathUrlStrategy = true;
+  static const bool usePathUrlStrategy = false;
 
   /// A constant that configures the use of the Firebase Firestore emulator.
   static const bool useFirestoreEmulator = false;

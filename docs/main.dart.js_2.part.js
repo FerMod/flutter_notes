@@ -1,6 +1,6 @@
 self.$__dart_deferred_initializers__=self.$__dart_deferred_initializers__||Object.create(null)
 $__dart_deferred_initializers__.current=function(a,b,c,$){var A,B,C,D,E,F,G,H,J,K,L={
-aMQ(){return new L.nK(X.qu("en"))},
+aMN(){return new L.nK(X.qu("en"))},
 nK:function nK(d){this.a=d}},M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
 a.setFunctionNamesIfNecessary([L])
 A=c[0]
@@ -62,7 +62,7 @@ gUo(){return"Insert title..."},
 gQx(d){return"Insert text..."},
 gHD(){return"Save Changes?"},
 gHC(){return"Your changes have not been saved."},
-gkq(d){return"Email"},
+gkp(d){return"Email"},
 gup(d){return"Username"},
 gpQ(d){return"Password"},
 gGn(){return"Confirm password"},
@@ -89,4 +89,4 @@ gPG(){return"About"}}
 var z=a.updateTypes([]);(function inheritance(){var y=a.inherit
 y(L.nK,F.h4)})()
 H.arh(b.typeUniverse,JSON.parse('{"nK":{"h4":[]}}'))}
-$__dart_deferred_initializers__["V4Hs7SUp2sIiF4NAPIc6m8bACVs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["3rx4p4AZSuxWDwt0t1/S+JePGzU="] = $__dart_deferred_initializers__.current
