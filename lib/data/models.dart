@@ -1,5 +1,4 @@
 import 'dart:async';
-// ignore: unused_import
 import 'dart:developer' as developer;
 
 import 'package:collection/collection.dart' show IterableExtension;
@@ -7,30 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'firebase_service.dart';
+import 'data_provider.dart';
+import 'firebase/firebase_service.dart';
 import 'models/note_model.dart';
 import 'models/user_model.dart';
-
-@immutable
-class DataProvider {
-  DataProvider._internal();
-  static final DataProvider _instance = DataProvider._internal();
-  factory DataProvider() = DataProvider._internal;
-
-  static UserData<UserModel> get userData => _instance._userData;
-  late final UserData<UserModel> _userData = UserData(
-    converter: (user) => UserModel.fromAuthUser(user),
-  );
-
-  static Collection<NoteModel> get notes => _instance._notes;
-  late final Collection<NoteModel> _notes = Collection<NoteModel>.path(
-    'notes',
-    FirestoreConverter(
-      fromFirestore: (snapshot, options) => NoteModel.fromSnapshot(snapshot),
-      toFirestore: (value, options) => value.toMap(),
-    ),
-  );
-}
 
 class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   NotesListModel({List<NoteModel>? notes}) : _notes = notes ?? [];
@@ -41,7 +20,7 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Controller used to notify of the new data entries that are added.
   StreamController<List<NoteModel>>? _controller;
 
-  List<NoteModel> _notes = [];
+  List<NoteModel> _notes;
   List<NoteModel> get notes => _notes;
   set notes(List<NoteModel> notes) {
     _notes = notes;
@@ -59,8 +38,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// is set to true, it notifies that the data is loading and notifies again when
   /// is finished loading.
   ///
-  /// See:
-  /// * [isLoading], to obtain if is currently loading.
+  /// See also:
+  ///
+  ///  * [isLoading], to obtain if is currently loading.
   ///
   /// *It should be only used for debugging*
   @visibleForTesting
@@ -104,8 +84,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// future data is requested, and notifies again when the data is resolved and
   /// completed.
   ///
-  /// See:
-  /// * [isLoading], to obtain if is currently loading.
+  /// See also:
+  ///
+  ///  * [isLoading], to obtain if is currently loading.
   Future<List<NoteModel>> _load(Future<List<NoteModel>> Function() operation, {bool notifyIsLoading = false}) {
     _isLoading = true;
     if (notifyIsLoading) notifyListeners();
@@ -139,6 +120,8 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
       streamResult = notesCollection.stream(
         (query) => query.where('userId', isEqualTo: user!.uid).orderBy('lastEdit', descending: true),
       );
+    } else {
+      streamResult = Stream.value(_notes);
     }
 
     return _pipeStream(streamResult);
@@ -147,23 +130,22 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   /// Returns a stream from the the result stream of the [operation] execution.
   Stream<List<NoteModel>> _pipeStream(Stream<List<NoteModel>> operation) {
     var isDone = false;
-    //late StreamController<List<NoteModel>> streamController;
     late StreamSubscription<List<NoteModel>> subscription;
     void onListen() {
       developer.log('StreamController onListen');
       subscription = operation.listen(
         (value) {
-          developer.log('StreamController onData');
-          _notes = value;
-          _controller!.add(value);
+          developer.log('StreamController operation.onData');
+          _notes = [...value];
+          _controller!.add(_notes);
         },
         onError: (error, stack) {
-          developer.log('StreamController onError');
+          developer.log('StreamController operation.onError');
           _controller!.addError(error, stack);
         },
         onDone: () {
           isDone = true;
-          developer.log('StreamController onDone');
+          developer.log('StreamController operation.onDone');
           _controller!.close();
         },
       );
@@ -205,10 +187,9 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   void updateNote(NoteModel note) {
-    // ignore: unnecessary_null_comparison
-    assert(note.id != null);
+    assert(_notes.isNotEmpty);
     final replaceIndex = _notes.indexWhere((element) => element.id == note.id);
-    _notes.replaceRange(replaceIndex, replaceIndex + 1, [note]);
+    _notes[replaceIndex] = note;
     if (userData.isSignedIn) {
       notesCollection.update(note.id, note.toMap());
     } else {
@@ -231,6 +212,12 @@ class NotesListModel with ChangeNotifier, DiagnosticableTreeMixin {
     return _notes.firstWhereOrNull(
       (element) => element.id == id,
     );
+  }
+
+  @override
+  void dispose() {
+    _controller?.close();
+    super.dispose();
   }
 
   @override

@@ -1,5 +1,8 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import '../src/cache/cached_color.dart';
 
 class ColorToggleButtons extends StatefulWidget {
@@ -30,7 +33,7 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
     final colorsList = widget.colors;
     // Init list of selection state of buttons
     _isSelected = List.filled(colorsList.length, false);
-    print(_isSelected.toString());
+    developer.log(_isSelected.toString());
 
     // Find the index of the initial value and update the selection state.
     // If none is found, set the first index as default.

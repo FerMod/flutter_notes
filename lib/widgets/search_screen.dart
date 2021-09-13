@@ -7,18 +7,29 @@ import 'package:flutter/widgets.dart';
 ///
 /// The search page always shows an [AppBar] at the top where users can
 /// enter their search queries. The buttons shown before and after the title and
-/// search query text field can be customized via [SearchDelegate.buildLeading]
-/// and [SearchDelegate.buildActions]. Additonally, a widget can be placed
-/// across the bottom of the [AppBar] via [SearchDelegate.buildBottom].
+/// search query text field can be customized via [SearchScreenDelegate.buildLeading]
+/// and [SearchScreenDelegate.buildActions]. Additonally, a widget can be placed
+/// across the bottom of the [AppBar] via [SearchScreenDelegate.buildBottom].
 ///
 /// The body below the [AppBar] can show the results of the search as returned
-/// by [SearchDelegate.buildResults].
+/// by [SearchScreenDelegate.buildResults].
 ///
-/// [SearchDelegate.query] always contains the current query entered by the user
-/// and should be used to build the results.
+/// [SearchScreenDelegate.query] always contains the current query entered by
+/// the user and should be used to build the results.
 ///
-/// The results can be brought on screen by calling [SearchDelegate.showResults].
+/// The results can be brought on screen by calling [SearchScreenDelegate.showResults].
+///
+/// See also:
+///
+///  * [SearchDelegate], a search screen that is able to show suggestions.
 abstract class SearchScreenDelegate<T> {
+  /// Constructor to be called by subclasses.
+  ///
+  /// The [searchFieldHintStyle] and [searchFieldDecorationTheme] arguments
+  /// cannot both be supplied, since it would potentially result in the hint
+  /// style being overriden with the hint style defined in the input decoration
+  /// theme. To supply a decoration with a color, use
+  /// `searchFieldDecorationTheme: InputDecorationTheme(hintStyle: searchFieldHintStyle)`.
   SearchScreenDelegate({
     this.title,
     this.searchFieldHint,
@@ -48,9 +59,9 @@ abstract class SearchScreenDelegate<T> {
   /// A widget to display before the current query in the [AppBar].
   ///
   /// Typically an [IconButton] configured with a [BackButtonIcon]. One can also
-  /// use an [AnimatedIcon] driven by [transitionAnimation], which animates from,
-  /// for example, a hamburger menu to the back button as the search overlay
-  /// fades in.
+  /// use an [AnimatedIcon] to animate from an icon to another. For example, an
+  /// [AnimatedIcon] that animates from a hamburger menu to the back button as
+  /// the search overlay fades in.
   ///
   /// As default, when the search field is not visible, it uses the default
   /// [AppBar.leading] widget. When the search field is visible a [BackButton]
@@ -60,7 +71,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.leading], the intended use for the return value of this method.
+  ///  * [AppBar.leading], the intended use for the return value of this method.
   Widget? buildLeading(BuildContext context) {
     Widget? leadingWidget;
     if (isSearchFieldVisible) {
@@ -88,7 +99,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.actions], the intended use for the return value of this method.
+  ///  * [AppBar.actions], the intended use for the return value of this method.
   List<Widget>? buildActions(BuildContext context) {
     return [
       if (!isSearchFieldVisible)
@@ -107,7 +118,7 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBar.bottom], the intended use for the return value of this method.
+  ///  * [AppBar.bottom], the intended use for the return value of this method.
   PreferredSizeWidget? buildBottom(BuildContext context) => null;
 
   /// The theme used to configure the search page.
@@ -118,8 +129,8 @@ abstract class SearchScreenDelegate<T> {
   ///
   /// See also:
   ///
-  /// * [AppBarTheme], which configures the AppBar's appearance.
-  /// * [InputDecorationTheme], which configures the appearance of the search
+  ///  * [AppBarTheme], which configures the AppBar's appearance.
+  ///  * [InputDecorationTheme], which configures the appearance of the search
   ///   text field.
   ThemeData appBarTheme(BuildContext context) {
     final theme = Theme.of(context);
@@ -166,16 +177,16 @@ abstract class SearchScreenDelegate<T> {
 
   /// Hides the search field, removes focus and clears the [query] content.
   void hideSearchField(BuildContext context) {
-    clearResults(context);
     _isSearchFieldVisible = false;
+    clearResults(context);
     _focusNode?.unfocus();
   }
 
   /// Closes the search page and returns to the underlying route.
   ///
-  /// The value provided for `result` is used as the return value of the call
+  /// The value provided for [result] is used as the return value of the call
   /// to [showSearch] that launched the search initially.
-  void close(BuildContext context, T result) {
+  void close(BuildContext context, [T? result]) {
     hideSearchField(context);
     Navigator.pop(context, result);
   }
@@ -192,7 +203,7 @@ abstract class SearchScreenDelegate<T> {
   /// The hint text that is shown in the search field when it is empty.
   ///
   /// If this value is set to null, the value of
-  /// `MaterialLocalizations.of(context).searchFieldLabel` will be used instead.
+  /// [MaterialLocalizations.searchFieldLabel] will be used instead.
   final String? searchFieldHint;
 
   /// The style of the [searchFieldHint].
@@ -227,6 +238,7 @@ abstract class SearchScreenDelegate<T> {
   /// [IconButton]s returned by [buildLeading] or [buildActions]. It can also be
   /// used to animate [IconButton]s contained within the route below the search
   /// page.
+  @Deprecated('Not used in the widget.')
   Animation<double> get transitionAnimation => _proxyAnimation;
 
   // The focus node to use for manipulating focus on the search page. This is
@@ -325,8 +337,9 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));
+
     final theme = widget.delegate.appBarTheme(context);
-    final searchFieldLabel = widget.delegate.searchFieldHint ?? MaterialLocalizations.of(context).searchFieldLabel;
+
     Widget? titleWidget;
     if (widget.delegate.isSearchFieldVisible) {
       Widget? clearButton;
@@ -350,7 +363,7 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
           widget.delegate.showResults(context);
         },
         decoration: InputDecoration(
-          hintText: searchFieldLabel,
+          hintText: widget.delegate.searchFieldHint ?? MaterialLocalizations.of(context).searchFieldLabel,
           isDense: true,
           suffixIcon: clearButton,
           suffixIconConstraints: const BoxConstraints(
@@ -359,8 +372,6 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
           ),
         ),
       );
-    } else {
-      titleWidget = widget.delegate.title;
     }
 
     return Theme(
@@ -368,7 +379,7 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
       child: Scaffold(
         appBar: AppBar(
           leading: widget.delegate.buildLeading(context),
-          title: titleWidget,
+          title: titleWidget ?? widget.delegate.title,
           actions: widget.delegate.buildActions(context),
           bottom: widget.delegate.buildBottom(context),
         ),

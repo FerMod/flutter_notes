@@ -1,30 +1,28 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
 class Global {
-  const Global._internal();
-  static const Global _instance = Global._internal();
-  factory Global() => _instance;
+  /// This class is not meant to be instantiated or extended.
+  /// This constructor prevents instantiation and extension.
+  const Global._();
 
-  /// Sets the URL strategy of the web app to use paths instead of a leading
-  /// hash.
-  static const bool usePathUrlStrategy = false;
+  /// A constant that sets the URL strategy of the web app to use paths instead
+  /// of a leading hash.
+  static const bool usePathUrlStrategy = true;
 
-  /// A constant that is true if the application was compiled in debug mode.
-  static const bool isDebugMode = kDebugMode;
+  /// A constant that configures the use of the Firebase Firestore emulator.
+  static const bool useFirestoreEmulator = false;
 
-  /// A constant that is true if the application was compiled in release mode.
-  static const bool isReleaseMode = kReleaseMode;
+  /// A constant that configures if the made changes while offline should
+  /// persist.
+  ///
+  /// When reading and writing data, Firestore uses a local database which
+  /// automatically synchronizes with the server. Cloud Firestore functionality
+  /// continues offline, and automatically handles data synchronization when
+  /// connectivity is regained.
+  static const bool enableOfflineFirestore = true;
 
-  /// A constant that represents if should use the firebase firestore emulator.
-  static const bool useFirebaseFirestoreEmulator = false;
-
-  /// A constant that represents if should use the firebase auth emulator.
-  static const bool useFirebaseAuthEmulator = false;
-
-  /// A constant that represents if should persist the made changes.
-  static const bool persistChanges = true;
-
-  /// A constant that represents if should use local storage.
-  static const bool localStorage = true;
+  /// A constant that configures the use of the Firebase Authentication
+  /// emulator.
+  static const bool useAuthEmulator = false;
 }

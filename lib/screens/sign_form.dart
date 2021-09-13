@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
-import 'package:flutter_notes/widgets/message.dart';
 
-import '../widgets/drawer_menu.dart';
+import '../src/utils/device_type.dart';
 import '../widgets/banner_message.dart';
+import '../widgets/drawer_menu.dart';
+import '../widgets/message.dart';
 import 'settings.dart';
 
 class SignFormScreen extends StatelessWidget {
@@ -63,12 +63,14 @@ class _MessageCard extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final BannerMessageData message;
+  final MessageData message;
 
   @override
   Widget build(BuildContext context) {
+    assert(debugCheckHasBannerMessage(context));
+
     final theme = Theme.of(context);
-    final BannerMessageData data = message;
+    final MessageData data = message;
 
     Widget? titleWidget;
     if (data.message != null) {
@@ -78,7 +80,7 @@ class _MessageCard extends StatelessWidget {
     List<Widget>? actionsList;
     if (data.actions.isEmpty) {
       final materialLocalizations = MaterialLocalizations.of(context);
-      actionsList = [
+      actionsList = <Widget>[
         TextButton(
           onPressed: () => BannerMessage.hide(context),
           child: Text(materialLocalizations.closeButtonLabel),

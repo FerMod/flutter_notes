@@ -13,9 +13,9 @@ class CardHero extends StatelessWidget {
     this.width,
     this.color,
     this.backgroundColor,
-    this.child,
     this.onTap,
     this.onLongPress,
+    this.child,
   }) : super(key: key);
 
   /// The identifier for this particular hero. If the tag of this hero matches
@@ -46,11 +46,11 @@ class CardHero extends StatelessWidget {
   /// )
   /// ```
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [width] to change the border width.
-  /// * [color] to change the border color.
-  /// * [backgroundColor] to change the background color.
+  ///  * [width] to change the border width.
+  ///  * [color] to change the border color.
+  ///  * [backgroundColor] to change the background color.
   final Decoration? decoration;
 
   /// The width of the the default [decoration] border.
@@ -76,9 +76,9 @@ class CardHero extends StatelessWidget {
   ///
   /// Defines the card's [Material.elevation].
   ///
-  /// If this property is null then the default elevation of 8.0 is used.
+  /// If this property is null then the default elevation of 4.0 is used.
   final double? elevation;
-  static const double _defaultElevation = 8.0;
+  static const double _defaultElevation = 4.0;
 
   /// The empty space that surrounds the card.
   ///
@@ -107,9 +107,9 @@ class CardHero extends StatelessWidget {
     final theme = Theme.of(context);
     final cardTheme = CardTheme.of(context);
 
-    var resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
+    Color? resolvedCardColor = backgroundColor ?? cardTheme.color ?? theme.cardColor;
     if (backgroundColor == null && theme.brightness == Brightness.light) {
-      resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4)!;
+      resolvedCardColor = Color.lerp(resolvedCardColor, color, 0.4);
     }
 
     Widget content = Ink(
@@ -122,7 +122,6 @@ class CardHero extends StatelessWidget {
                 width: width ?? _defaultWidth,
               ),
             ),
-            color: resolvedCardColor,
           ),
       child: child,
     );
@@ -141,6 +140,7 @@ class CardHero extends StatelessWidget {
         elevation: elevation ?? _defaultElevation,
         shape: shape,
         margin: margin,
+        color: resolvedCardColor,
         clipBehavior: Clip.antiAlias,
         child: content,
       ),

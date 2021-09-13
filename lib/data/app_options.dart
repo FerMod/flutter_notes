@@ -5,8 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/model_binding.dart';
 import '../src/extensions/locale_utils.dart';
+import '../widgets/model_binding.dart';
 import 'local/app_shared_preferences.dart';
 
 /// The system-reported text scale.
@@ -36,19 +36,27 @@ List<Locale> get deviceLocales {
   return WidgetsFlutterBinding.ensureInitialized().platformDispatcher.locales;
 }
 
+/// The previous list of locales of [deviceLocales].
 List<Locale>? _lastDeviceLocales;
 
-Locale? _deviceResolvedLocale;
+/// The locale resolved from the full system-reported supported locales of the
+/// device. If no locale is resolved successfully, it returns a `und` locale.
+///
+/// Each time the setter is called it compares if the device locales have
+/// changed, if so, it updates with the new locale. If the device locales did
+/// not change, the [deviceResolvedLocale] value does not change, and keeps the
+/// previous value.
 Locale get deviceResolvedLocale => _deviceResolvedLocale ?? const Locale.fromSubtags();
+Locale? _deviceResolvedLocale;
 set deviceResolvedLocale(Locale locale) {
   final equalLocales = const IterableEquality<Locale>().equals(_lastDeviceLocales, deviceLocales);
   if (!equalLocales) {
     _deviceResolvedLocale = locale;
-    _lastDeviceLocales = deviceLocales;
+    _lastDeviceLocales = List.unmodifiable(deviceLocales);
   }
 }
 
-/// Fake locale to represent the system Locale option.
+/// Fake locale to represent the system [Locale] option.
 ///
 /// This locale does not exist, therefore is invalid and should be only used to
 /// indicate that the locale to try to use, is the one resolved from the system
@@ -84,11 +92,11 @@ class AppOptions {
   /// If no text scale or an invalid one is set, returns the value selected in the
   /// device's system settings.
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [isValidTextScale], to check if the text scale factor in the app
+  ///  * [isValidTextScale], to check if the text scale factor in the app
   ///   settings is considered valid.
-  double get textScaleFactor => isValidTextScale() ? _textScaleFactor : deviceTextScaleFactor;
+  double get textScaleFactor => isValidTextScale ? _textScaleFactor : deviceTextScaleFactor;
   final double _textScaleFactor;
 
   /// An identifier used to select a user's language and formatting preferences.
@@ -96,24 +104,20 @@ class AppOptions {
   /// If no locale is set or an invalid one is setor an invalid one is set, returns the supported language
   /// selected in the device's system settings.
   ///
-  /// See:
+  /// See also:
   ///
-  /// * [isValidLocale], to check if the locale in the app settings is
+  ///  * [isValidLocale], to check if the locale in the app settings is
   ///   considered valid.
-  Locale get locale => isValidLocale() ? _locale : deviceResolvedLocale;
+  Locale get locale => isValidLocale ? _locale : deviceResolvedLocale;
   final Locale _locale;
 
   /// Returns true if the text scale stored in the app settings is considered
   /// valid.
-  bool isValidTextScale() {
-    return _textScaleFactor > 0.0;
-  }
+  bool get isValidTextScale => _textScaleFactor > 0.0;
 
   /// Returns true if the locale that should be using is the one stored in these
   /// settings.
-  bool isValidLocale() {
-    return _locale != const Locale.fromSubtags();
-  }
+  bool get isValidLocale => _locale != const Locale.fromSubtags();
 
   /// Creates an instance of this class from a JSON object.
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
@@ -210,12 +214,9 @@ class AppOptions {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
-    }
-    if (other.runtimeType != runtimeType) {
-      return false;
     }
     return other is AppOptions && other.themeMode == themeMode && other._textScaleFactor == _textScaleFactor && other._locale == _locale;
   }

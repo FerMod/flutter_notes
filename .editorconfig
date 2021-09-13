@@ -10,3 +10,6 @@ insert_final_newline = true
 
 [*.{bash,zsh,sh}]
 end_of_line = lf
+
+[lib/l10n/untranslated_messages.json]
+insert_final_newline = false

@@ -6,10 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/routes.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
 
-import '../data/models.dart';
+import '../data/data_provider.dart';
+import '../data/firebase/auth_error_code.dart';
+import '../routes.dart';
+import '../src/utils/device_type.dart';
 import '../widgets/banner_message.dart';
 import '../widgets/form_widget.dart';
 import 'sign_form.dart';
@@ -94,13 +95,14 @@ class _SignUpFormState extends State<_SignUpForm> {
   String _errorMessage(String errorCode) {
     final localizations = AppLocalizations.of(context)!;
     switch (errorCode) {
-      case 'email-already-in-use':
+      case AuthErrorCode.emailAlreadyInUse:
         return localizations.errorEmailAlreadyInUse;
-      case 'invalid-email':
+      case AuthErrorCode.invalidEmail:
         return localizations.errorInvalidEmail;
-      case 'weak-password':
+      case AuthErrorCode.weakPassword:
         return localizations.errorWeakPassword;
-      case 'operation-not-allowed':
+      case AuthErrorCode.operationNotAllowed:
+        return localizations.errorOperationNotAllowed;
       default:
         return localizations.errorUnknown;
     }
@@ -186,7 +188,7 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  @Deprecated('Replaced by _validateWeakPassword')
+  @Deprecated('Replaced by _validateStrongPassword')
   Validation<String?> _validateMinLength(BuildContext context, int minLength) {
     final localizations = AppLocalizations.of(context)!;
     return Validation(
@@ -195,7 +197,7 @@ class _BodyWidget extends StatelessWidget {
     );
   }
 
-  Validation<String?> _validateWeakPassword(BuildContext context) {
+  Validation<String?> _validateStrongPassword(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final regExp = RegExp(r'^(?:(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{8,}|.{15,})$');
     return Validation(
@@ -256,7 +258,7 @@ class _BodyWidget extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           fieldValidator: FieldValidator([
             _validateNotEmpty(context, localizations.password),
-            _validateWeakPassword(context),
+            _validateStrongPassword(context),
           ]),
         ),
         TextFormInput(

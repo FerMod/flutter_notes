@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_notes/src/utils/device_type.dart';
 
-import 'screens/home_page.dart';
 import 'screens/notes_list.dart';
 import 'screens/settings.dart';
 import 'screens/sign_in.dart';
 import 'screens/sign_up.dart';
+import 'src/utils/device_type.dart';
 
 class AppRoute {
   static const String notes = '/notes';
   static const String settings = '/settings';
   static const String signIn = '/signIn';
   static const String signUp = '/signUp';
-  static const String home = '/home';
 
   static Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
     notes: (context) => NotesListScreen(),
     settings: (context) => const SettingsScreen(),
     signIn: (context) => const SignInScreen(),
     signUp: (context) => const SignUpScreen(),
-    home: (context) => const HomePage(),
   };
 }
 
@@ -66,10 +63,6 @@ class RouteConfiguration {
     Path(
       r'^' + AppRoute.signUp,
       (context, match) => const SignUpScreen(),
-    ),
-    Path(
-      r'^' + AppRoute.home,
-      (context, match) => const HomePage(),
     ),
   ];
 

@@ -6,19 +6,20 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_notes/widgets/user_account_tile.dart';
 import 'package:intl/intl.dart';
 
-import '../data/firebase_service.dart';
+import '../data/data_provider.dart';
+import '../data/firebase/firebase_service.dart';
 import '../data/models.dart';
 import '../data/models/note_model.dart';
+import '../routes.dart';
 import '../widgets/card_hero.dart';
 import '../widgets/drawer_menu.dart';
 import '../widgets/loader.dart';
+import '../widgets/user_account_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_note.dart';
 import 'settings.dart';
-import 'sign_in.dart';
 
 enum MenuAction {
   // share,
@@ -43,35 +44,25 @@ class NotesListScreen extends StatelessWidget {
     return result;
   }
 
-  void _navigate(BuildContext context, Widget widget) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => widget,
-      ),
-    );
-  }
-
-  void _newNote(BuildContext context, String userId) async {
+  Future<void> _newNote(BuildContext context, String userId) async {
     final note = NoteModel(userId: userId);
-
     final resultNote = await _navigateEditNote(context, note);
-    if (resultNote == null) return;
 
-    notesListModel.addNote(resultNote);
+    if (resultNote != null && (resultNote.title.isNotEmpty || resultNote.content.isNotEmpty)) {
+      notesListModel.addNote(resultNote);
+    }
   }
 
-  void _editNote(BuildContext context, NoteModel note) async {
+  Future<void> _editNote(BuildContext context, NoteModel note) async {
     final lastEdit = note.lastEdit;
     final resultNote = await _navigateEditNote(context, note);
-    if (resultNote == null) return;
 
-    if (lastEdit.isBefore(resultNote.lastEdit)) {
+    if (resultNote != null && lastEdit.isBefore(resultNote.lastEdit)) {
       notesListModel.updateNote(resultNote);
     }
   }
 
-  void _removeNote(BuildContext context, NoteModel note) async {
+  Future<void> _removeNote(BuildContext context, NoteModel note) async {
     final shouldRemove = await _showAlertDialog(context);
     if (shouldRemove) notesListModel.removeNote(note);
   }
@@ -95,7 +86,7 @@ class NotesListScreen extends StatelessWidget {
           onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
               ? null
               : () {
-                  _navigate(context, const SignInScreen());
+                  Navigator.pushNamed(context, AppRoute.signIn);
                 },
           userData: notesListModel.userData,
         ),
@@ -156,7 +147,6 @@ class _AccountWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
     final user = userData.currentUser;
 
     Widget? imageWidget;
@@ -180,6 +170,7 @@ class _AccountWidget extends StatelessWidget {
         onTap: onTapImage,
       );
     } else {
+      final localizations = AppLocalizations.of(context)!;
       imageWidget = const Icon(
         Icons.account_circle,
         size: UserAvatar.defaultRadius * 2.0,
@@ -269,14 +260,21 @@ class NoteListWidget extends StatelessWidget {
     );
   }
 
+  /// Returns true if the [date] is from a day ago.
   bool _isFromDayAgo(DateTime date) {
     final now = DateTime.now();
     final dayAgo = now.subtract(const Duration(days: 1));
     return !dayAgo.difference(date).isNegative;
   }
 
+  /// Returns a string that represents the [date] formatted in a format
+  /// according to the given [localeName].
+  ///
+  /// When the date is from less than a day, the returned value is shortened and
+  /// only returns the time of the date. Otherwise, if the date is from more
+  /// than a day, the returned value is the full date with the time.
   String _formatDate(String localeName, DateTime date) {
-    late final DateFormat dateFormat;
+    final DateFormat dateFormat;
     if (_isFromDayAgo(date)) {
       dateFormat = DateFormat.yMd(localeName).add_Hm();
     } else {
@@ -353,7 +351,7 @@ class NoteListWidget extends StatelessWidget {
                         itemBuilder: (context) => [
                           _buildPopMenuItem(MenuAction.delete, localizations.delete, const Icon(Icons.delete)),
                         ],
-                        onSelected: (value) => onMenuTap!(note, value),
+                        onSelected: (value) => onMenuTap?.call(note, value),
                         padding: EdgeInsets.zero,
                       ),
                     ),
@@ -393,8 +391,8 @@ class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var curve = Curves.easeInOut;
-    var tween = CurveTween(curve: curve);
+    const curve = Curves.easeInOut;
+    final tween = CurveTween(curve: curve);
     return FadeTransition(
       opacity: animation.drive(tween),
       child: child,

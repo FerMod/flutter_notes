@@ -24,7 +24,9 @@ class UserAccountDropdown extends StatefulWidget {
   }) : super(key: key);
 
   /// The height value of the account details.
-  static const double accountDetailsHeight = 56.0;
+  ///
+  /// This defaults to a minimum height of `56.0` defined by [kToolbarHeight].
+  static const double accountDetailsHeight = kToolbarHeight;
 
   /// The header's background. If decoration is null then a [BoxDecoration]
   /// with its background color set to the current theme's primaryColor is used.

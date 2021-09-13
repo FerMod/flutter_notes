@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:flutter_notes/routes.dart';
-import 'package:flutter_notes/widgets/about_app_widget.dart';
-import 'package:flutter_notes/widgets/drawer_header.dart';
-import 'package:flutter_notes/widgets/user_account_tile.dart';
-import 'package:flutter_notes/widgets/version_widget.dart';
 
 import '../data/app_options.dart';
-import '../data/firebase_service.dart';
-import '../data/models.dart';
+import '../data/data_provider.dart';
+import '../data/firebase/firebase_service.dart';
+import '../routes.dart';
+import '../widgets/about_app_widget.dart';
+import '../widgets/drawer_header.dart';
 import '../widgets/search_screen.dart';
 import '../widgets/setting_widget.dart';
+import '../widgets/user_account_tile.dart';
 import '../widgets/user_avatar.dart';
+import '../widgets/version_widget.dart';
 
 void _navigateSetting(BuildContext context, Widget widget) {
   Navigator.of(context).push(
@@ -233,18 +233,31 @@ class LocalizationSettingScreen extends StatefulWidget {
 }
 
 class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> with WidgetsBindingObserver {
-  final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
+  static final nativeLocaleNames = LocaleNamesLocalizationsDelegate.nativeLocaleNames;
+
+  /// A odered non-growable list of supported locales, created from the list of
+  /// [AppLocalizations.supportedLocales].
+  ///
+  /// This list is intended to provide a list of locale always in the same
+  /// order, independent of in which order the locales where added to the list.
+  /// The locales are ordered in alphabetical descendant order using their
+  /// Unicode BCP47 Locale Identifier defined in
+  /// <https://www.unicode.org/reports/tr35/>.
+  static final List<Locale> supportedLocales = _initSupportedLocales();
+  static List<Locale> _initSupportedLocales() {
+    return List<Locale>.of(
+      AppLocalizations.supportedLocales,
+      growable: false,
+    )..sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
+  }
 
   late Locale selectedOption;
   late Map<Locale, DisplayOption> optionsMap;
-  late List<Locale> supportedLocales;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
-    supportedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
-    supportedLocales.sort((a, b) => a.toLanguageTag().compareTo(b.toLanguageTag()));
   }
 
   @override
@@ -253,19 +266,15 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     super.dispose();
   }
 
-  bool _isSupportedLocale() {
-    return deviceResolvedLocale != const Locale.fromSubtags();
-  }
-
   @override
   void didChangeLocales(List<Locale>? locales) {
-    if (selectedOption != systemLocaleOption && optionsMap.containsKey(systemLocaleOption)) {
-      final subtitle = _capitalize(nativeLocaleNames[deviceResolvedLocale.toString()]);
-      final systemOption = optionsMap[systemLocaleOption]!.copyWith(subtitle: subtitle);
-      setState(() {
-        optionsMap[systemLocaleOption] = systemOption;
-      });
-    }
+    setState(() {
+      // Rebuild ourselves because device locale has changed.
+    });
+  }
+
+  bool _hasSupportedLocale() {
+    return deviceResolvedLocale != const Locale.fromSubtags();
   }
 
   String? _capitalize(String? value) {
@@ -277,9 +286,9 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     final localizations = AppLocalizations.of(context)!;
     final localeNames = LocaleNames.of(context)!;
 
-    // We assume there is at least one supported locale.
     return {
-      if (_isSupportedLocale())
+      // The device might not have any supported locale.
+      if (_hasSupportedLocale())
         systemLocaleOption: DisplayOption(
           title: localizations.settingsSystemDefault,
           subtitle: _capitalize(nativeLocaleNames[deviceResolvedLocale.toString()]),
@@ -297,23 +306,31 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
 
+    // Build a map of the options of locales.
     optionsMap = _buildOptionsMap(context);
-    selectedOption = _isSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
-    final localeSettingList = SettingRadioListItems<Locale>(
-      selectedOption: selectedOption,
-      optionsMap: optionsMap,
-      onChanged: (value) {
-        AppOptions.update(
-          context,
-          appSettings.copyWith(locale: value),
-        );
-      },
-    );
+
+    // Use the locale saved in the settings if the device has resolved
+    // succesfully a supported locale. Because, in case of the locale value
+    // stored in settings, being the fake locale with the language tag "system",
+    // it would select an invalid locale. In that case, don't select any option
+    // by setting the selected option to a undefined locale (using the language
+    // tag "und").
+    selectedOption = _hasSupportedLocale() ? appSettings.locale : deviceResolvedLocale;
+
     return SearchScreen(
-      delegate: SettingsSearchDelegate<Locale>(
+      delegate: SettingsSearchDelegate(
         title: Text(localizations.settingsLanguage),
         deviceDefault: optionsMap.keys.first,
-        settingList: localeSettingList,
+        settingList: SettingRadioListItems<Locale>(
+          selectedOption: selectedOption,
+          optionsMap: optionsMap,
+          onChanged: (value) {
+            AppOptions.update(
+              context,
+              appSettings.copyWith(locale: value),
+            );
+          },
+        ),
       ),
     );
   }
@@ -395,7 +412,7 @@ class TextScaleSettingScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final appSettings = AppOptions.of(context);
     final optionsMap = _buildOptionsMap(context);
-    final selectedOption = appSettings.isValidTextScale() ? appSettings.textScaleFactor : optionsMap.keys.first;
+    final selectedOption = appSettings.isValidTextScale ? appSettings.textScaleFactor : optionsMap.keys.first;
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsTextScale)),
       body: SettingRadioListItems<double>(
@@ -413,7 +430,7 @@ class TextScaleSettingScreen extends StatelessWidget {
   }
 }
 
-class SettingsSearchDelegate<T> extends SearchScreenDelegate<T?> {
+class SettingsSearchDelegate<T> extends SearchScreenDelegate<T> {
   SettingsSearchDelegate({
     Widget? title,
     this.deviceDefault,
@@ -423,22 +440,24 @@ class SettingsSearchDelegate<T> extends SearchScreenDelegate<T?> {
   final T? deviceDefault;
   final SettingRadioListItems<T> settingList;
 
-  @override
-  Widget buildResults(BuildContext context) {
-    final filteredOptions = Map<T, DisplayOption>.from(settingList.optionsMap);
-    if (query.isNotEmpty) {
-      filteredOptions.removeWhere((key, value) {
-        final regExp = RegExp('^$query', caseSensitive: false);
+  Map<T, DisplayOption> _filterMap(String query) {
+    if (query.isEmpty) return settingList.optionsMap;
 
+    final regExp = RegExp('^$query', caseSensitive: false);
+    return Map<T, DisplayOption>.of(settingList.optionsMap)
+      ..removeWhere((key, value) {
         final titleMatch = value.title.startsWith(regExp);
         final subtitleMatch = value.subtitle?.startsWith(regExp) ?? false;
         final isDeviceDefault = deviceDefault == key;
         return !titleMatch && !subtitleMatch && !isDeviceDefault;
       });
-    }
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
     return SettingRadioListItems<T>(
       selectedOption: settingList.selectedOption,
-      optionsMap: filteredOptions,
+      optionsMap: _filterMap(query),
       onChanged: settingList.onChanged,
     );
   }

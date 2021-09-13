@@ -14,6 +14,6 @@ var firebaseConfig = {
 };
 
 // Initialize Firebase
-var app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 // firebase.analytics();
 firebase.firestore();
