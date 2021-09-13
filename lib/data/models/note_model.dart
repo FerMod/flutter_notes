@@ -1,16 +1,19 @@
-import 'dart:ui';
-import 'package:uuid/uuid.dart';
+import 'dart:ui' show Color, hashValues;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show immutable;
+import 'package:uuid/uuid.dart';
 
+@immutable
 class NoteModel {
-  String id;
-  String? userId;
-  String title;
-  String content;
-  Color color;
-  DateTime lastEdit;
+  final String id;
+  final String? userId;
+  final String title;
+  final String content;
+  final Color color;
+  final DateTime lastEdit;
 
-  DocumentReference? reference;
+  final DocumentReference? reference;
 
   NoteModel({
     String? id,
@@ -23,7 +26,7 @@ class NoteModel {
   })  : id = id ?? const Uuid().v4(),
         lastEdit = lastEdit ?? DateTime.now();
 
-  factory NoteModel.fromSnapshot(DocumentSnapshot<Map<String, Object?>> snapshot) {
+  factory NoteModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     return NoteModel(
       id: snapshot.id,
       userId: snapshot['userId'],
@@ -65,6 +68,23 @@ class NoteModel {
       reference: reference ?? this.reference,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is NoteModel &&
+        other.id == id &&
+        other.userId == userId &&
+        other.title == title &&
+        other.content == content &&
+        other.color == color &&
+        other.lastEdit == lastEdit;
+  }
+
+  @override
+  int get hashCode => hashValues(id, userId, title, content, color, lastEdit);
 
   @override
   String toString() {

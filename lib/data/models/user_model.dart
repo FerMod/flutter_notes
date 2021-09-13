@@ -1,15 +1,19 @@
+import 'dart:ui' show hashValues;
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show immutable;
 import 'package:uuid/uuid.dart';
 
+@immutable
 class UserModel {
-  String id;
-  String? email;
-  String? displayName;
-  String? imageUrl;
+  final String id;
+  final String? email;
+  final String? displayName;
+  final String? imageUrl;
 
   UserModel({
     String? id,
-    this.email,
+    required this.email,
     this.displayName,
     this.imageUrl,
   }) : id = id ?? const Uuid().v4();
@@ -25,7 +29,7 @@ class UserModel {
 
   bool get isAnonymous => email == null;
 
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       // 'id': id,
       'email': email,
@@ -49,7 +53,18 @@ class UserModel {
   }
 
   @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is UserModel && other.id == id && other.email == email && other.displayName == displayName && other.imageUrl == imageUrl;
+  }
+
+  @override
+  int get hashCode => hashValues(id, email, displayName, imageUrl);
+
+  @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, displayName: $displayName, imageUrl: $imageUrl)';
+    return '$UserModel(id: $id, email: $email, displayName: $displayName, imageUrl: $imageUrl)';
   }
 }
