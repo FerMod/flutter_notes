@@ -29,9 +29,7 @@ jobs:
 
       # Create web build.
       - name: Create symbolic link
-        run: |
-          ln -s ./build/web ./docs
-          ln -s ./build/web/index.html ./build/web/404.html
+        run: ln -s ./build/web ./docs
       - name: Build project
         run: flutter build -v web --base-href "/flutter_notes/"
 
