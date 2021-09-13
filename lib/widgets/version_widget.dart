@@ -11,12 +11,11 @@ class VersionWidget extends StatelessWidget {
       child: FutureBuilder<PackageInfo>(
         future: PackageInfo.fromPlatform(),
         builder: (context, snapshot) {
-          final theme = Theme.of(context);
           final version = snapshot.data?.version;
           final containsVersion = version?.isNotEmpty ?? false;
           return Text(
             containsVersion ? 'v$version' : '',
-            style: theme.textTheme.caption,
+            style: Theme.of(context).textTheme.caption,
             textAlign: TextAlign.center,
           );
         },
