@@ -36,21 +36,21 @@ class AppSharedPreferences {
   ///
   /// Completes with a boolean once the operation finished. The boolean value
   /// indicates whethever the operation completed successfully or failed.
-  static Future<bool> save<T extends Object>(String key, T content) async {
-    if (content is bool) {
-      return instance!.setBool(key, content);
+  static Future<bool> save<T extends Object>(String key, T value) async {
+    if (value is bool) {
+      return instance!.setBool(key, value);
     }
-    if (content is int) {
-      return instance!.setInt(key, content);
+    if (value is int) {
+      return instance!.setInt(key, value);
     }
-    if (content is double) {
-      return instance!.setDouble(key, content);
+    if (value is double) {
+      return instance!.setDouble(key, value);
     }
-    if (content is List<String>) {
-      return instance!.setStringList(key, content);
+    if (value is List<String>) {
+      return instance!.setStringList(key, value);
     }
 
-    return instance!.setString(key, content as String);
+    return instance!.setString(key, value as String);
   }
 
   /// Removes from persistent storage the value associated with the [key].
