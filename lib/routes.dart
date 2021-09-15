@@ -127,11 +127,11 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var begin = const Offset(1.0, 0.0);
-    var end = Offset.zero;
-    var curve = Curves.easeIn;
+    const begin = Offset(1.0, 0.0);
+    const end = Offset.zero;
+    const curve = Curves.easeIn;
 
-    var tween = Tween(begin: begin, end: end);
+    final tween = Tween(begin: begin, end: end);
     tween.chain(CurveTween(curve: curve));
 
     return SlideTransition(
@@ -166,7 +166,7 @@ class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    const curve = Curves.easeInOut;
+    const curve = Curves.easeIn;
     final tween = CurveTween(curve: curve);
     return FadeTransition(
       opacity: animation.drive(tween),
