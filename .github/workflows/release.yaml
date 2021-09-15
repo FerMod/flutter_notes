@@ -15,47 +15,41 @@ jobs:
       matrix:
         target: [Android, Web] # [Android, iOS, Linux, macOS, Windows, Web]
         include:
-         # - os: ubuntu-20.04
-         #   target: Android
-         #   build_target: apk
-         #   build_path: build/app/outputs/apk/release
-         #   asset_extension: .apk
-         #   asset_content_type: application/vnd.android.package-archive
-         #   channel: stable
+          # - os: ubuntu-20.04
+          #   target: Android
+          #   build_target: appbundle
+          #   build_path: build/app/outputs/bundle/release
+          #   asset_extension: .aab
+          #   channel: stable
           - os: ubuntu-20.04
             target: Android
-            build_target: appbundle
-            build_path: build/app/outputs/bundle/release
-            asset_extension: .aab
-            asset_content_type: application/vnd.android.package-archive
+            build_target: apk
+            build_path: build/app/outputs/apk/release
+            asset_extension: .apk
             channel: stable
           # - os: ubuntu-20.04
           #   target: Linux
           #   build_target: linux
           #   build_path: build/linux/release/bundle
           #   asset_extension: .tar.gz
-          #   asset_content_type: application/gzip
           #   channel: stable
           # - os: macos-10.15
           #   target: macOS
           #   build_target: macos
           #   build_path: build/macos/Build/Products/Release
           #   asset_extension: .zip
-          #   asset_content_type: application/zip
           #   channel: stable
           # - os: windows-2019
           #   target: windows
           #   build_target: windows
           #   build_path: build/windows/runner/Release
           #   asset_extension: .zip
-          #   asset_content_type: application/zip
           #   channel: stable
           - os: ubuntu-20.04
             target: Web
             build_target: web
             build_path: build/web
             asset_extension: .tar.gz
-            asset_content_type: application/gzip
             channel: stable
       # Disable fail-fast as we want results from all even if one fails.
       fail-fast: false
