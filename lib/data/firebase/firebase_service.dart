@@ -425,6 +425,11 @@ class UserData<T> implements FirebaseAuthentication {
     await _auth.currentUser?.reload();
   }
 
+  /// Signs out the current user.
+  ///
+  /// If the operation is successful, it also notifies and updates any
+  /// [authStateChanges], [idTokenChanges] or [userChanges] stream listeners,
+  /// and [currentUser] will return `null`.
   @override
   Future<void> signOut() => _auth.signOut();
 }

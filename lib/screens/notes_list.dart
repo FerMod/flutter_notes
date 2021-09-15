@@ -83,7 +83,7 @@ class NotesListScreen extends StatelessWidget {
           onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
               ? null
               : () {
-                  Navigator.pushNamed(context, AppRoute.signIn);
+                  Navigator.pushReplacementNamed(context, AppRoute.signIn);
                 },
           userData: notesListModel.userData,
         ),

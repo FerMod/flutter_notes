@@ -66,11 +66,9 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      await Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoute.notes,
-        (route) => route.isFirst,
-      );
+      Navigator.of(context)
+        ..popUntil((route) => route.isFirst)
+        ..pushReplacementNamed(AppRoute.notes);
     } on FirebaseAuthException catch (e) {
       BannerMessage.show(context, message: _errorMessage(e.code));
     }

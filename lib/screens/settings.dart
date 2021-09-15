@@ -209,11 +209,9 @@ class AccountSettingScreen extends StatelessWidget {
               title: Text(localizations.signOut),
               onTap: () async {
                 await userData.signOut();
-                await Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoute.signIn,
-                  (route) => route.isFirst,
-                );
+                Navigator.of(context)
+                  ..popUntil((route) => route.isFirst)
+                  ..pushReplacementNamed(AppRoute.signIn);
               },
             ),
           ],
