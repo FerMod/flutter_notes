@@ -162,11 +162,11 @@ class BannerMessage extends StatefulWidget {
   /// To remove the message use [BannerMessage.hide] or call
   /// [MessageController.close] on the returned [MessageController].
   ///
-  /// The `T` type argument is the type of the return value of the message.
+  /// The [T] type argument is the type of the return value of the message.
   ///
   /// If there is no [BannerMessage] in scope, then this will assert in debug
   /// mode, and throw an exception in release mode.
-  static MessageController<T?> show<T extends Object?>(BuildContext context, {String? message, List<Widget>? actions}) {
+  static MessageController<T?> show<T>(BuildContext context, {String? message, List<Widget>? actions}) {
     return BannerMessage.of(context).show(message: message, actions: actions);
   }
 
@@ -175,12 +175,12 @@ class BannerMessage extends StatefulWidget {
   /// If non-null, [result] will be used as the result of the message that is
   /// closed.
   ///
-  /// The `T` type argument is the type of the return value of the closed
+  /// The [T] type argument is the type of the return value of the closed
   /// message.
   ///
   /// If there is no [BannerMessage] in scope, then this will assert in debug
   /// mode, and throw an exception in release mode.
-  static void hide<T extends Object?>(BuildContext context, [T? result]) {
+  static void hide<T>(BuildContext context, [T? result]) {
     BannerMessage.of(context).hide(result);
   }
 
@@ -197,8 +197,8 @@ class BannerMessageState extends State<BannerMessage> {
   late MessageData _data;
 
   /// The object that provides some control over the displayed message.
-  MessageController<dynamic>? get messageController => _messageController;
-  MessageController<dynamic>? _messageController;
+  MessageController<Object?>? get messageController => _messageController;
+  MessageController<Object?>? _messageController;
 
   @override
   void initState() {
@@ -218,12 +218,12 @@ class BannerMessageState extends State<BannerMessage> {
   /// The message text can be provided with the parameter [message] text and
   /// list of [actions].
   ///
-  /// The type argument [T] is the message's  result return type. The type
-  /// `void` may be used if the route does not return a value.
-  MessageController<T?> show<T extends Object?>({String? message, List<Widget>? actions}) {
+  /// The type argument [T] is the message's result return type. The type
+  /// `void` may be used if it does not return a value.
+  MessageController<T> show<T>({String? message, List<Widget>? actions}) {
     _update(isVisible: true, message: message, actions: actions);
-    _messageController ??= MessageController<T?>._(Completer<T?>(), hide);
-    return _messageController! as MessageController<T?>;
+    _messageController ??= MessageController<T>._(Completer<T>(), hide);
+    return _messageController as MessageController<T>;
   }
 
   /// Hides the message that most tightly encloses the given [context].
@@ -231,9 +231,9 @@ class BannerMessageState extends State<BannerMessage> {
   /// If non-null, [result] will be used as the result of the message that is
   /// closed.
   ///
-  /// The type argument [T] is the message's  result return type. The type
-  /// `void` may be used if the route does not return a value.
-  void hide<T extends Object?>([T? result]) {
+  /// The type argument [T] is the message's result return type. The type
+  /// `void` may be used if it does not return a value.
+  void hide<T>([T? result]) {
     _update(isVisible: false);
     final isClosed = _messageController?.isClosed ?? true;
     if (!isClosed) {
@@ -290,7 +290,7 @@ class _BannerMessageScope<T> extends InheritedWidget {
   final MessageData data;
 
   @override
-  bool updateShouldNotify(_BannerMessageScope old) => data != old.data;
+  bool updateShouldNotify(_BannerMessageScope old) => data != old.data || bannerMessageState != old.bannerMessageState;
 }
 
 /// An interface for controlling a message of a [BannerMessage].
@@ -304,14 +304,15 @@ class MessageController<T> {
   final Completer<T> _completer;
 
   /// Whether the [closed] future has been completed. Reflects whether
-  /// [complete] or [completeError] has been called. 
-  /// 
+  /// [Completer.complete] or [Completer.completeError] has been called.
+  ///
   /// When this value is `true`, calls to [close] with a result does not change
   /// the already existing value of [closed].
+
   bool get isClosed => _completer.isCompleted;
 
-  /// Remove the message that completes with the given [result].
-  final void Function([T result]) close;
+  /// Remove the message that completes with the given `result`.
+  final void Function([T? result]) close;
 }
 
 /// Asserts that the given context has a [BannerMessage] widget ancestor in

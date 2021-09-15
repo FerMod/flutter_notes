@@ -12,7 +12,7 @@ abstract class FirebaseDocument<T> {
 
   Future<T?> data();
   Stream<T?> stream();
-  Future<void> update(Map<String, dynamic> data);
+  Future<void> update(Map<String, Object?> data);
   Future<void> delete();
 }
 
@@ -22,7 +22,7 @@ abstract class FirebaseCollection<T> {
   Future<List<T>> data();
   Stream<List<T>> stream();
   Future<FirebaseDocument<T>> insert(T data, {String? id, bool merge = false});
-  Future<void> update(String id, Map<String, dynamic> data);
+  Future<void> update(String id, Map<String, Object?> data);
   Future<void> delete(String id);
 }
 
@@ -101,7 +101,7 @@ class Document<T> extends FirebaseDocument<T> {
   /// If the document does not exist, a [FirebaseException] with the error code
   /// `not-found` will be thrown.
   @override
-  Future<void> update(Map<String, dynamic> data) async {
+  Future<void> update(Map<String, Object?> data) async {
     try {
       return reference.update(data);
     } on FirebaseException catch (e) {
@@ -425,6 +425,11 @@ class UserData<T> implements FirebaseAuthentication {
     await _auth.currentUser?.reload();
   }
 
+  /// Signs out the current user.
+  ///
+  /// If the operation is successful, it also notifies and updates any
+  /// [authStateChanges], [idTokenChanges] or [userChanges] stream listeners,
+  /// and [currentUser] will return `null`.
   @override
   Future<void> signOut() => _auth.signOut();
 }

@@ -137,7 +137,7 @@ class LocaleMatcher {
 
           // The more we go down the list the less the weight is
           final weightedDistance = i + matchDistance;
-          debugPrint('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
+          if (kDebugMode) debugPrint('$i $desired $supported, WeightedDistance: $weightedDistance, BestWeightedDistance $bestWeightedDistance');
           if (bestWeightedDistance == 0.0) {
             // Cannot improve, is a perfect match and the best without a doubt
             return bestSupported;
