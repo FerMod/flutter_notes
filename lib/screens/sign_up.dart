@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:developer' as developer;
-import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
