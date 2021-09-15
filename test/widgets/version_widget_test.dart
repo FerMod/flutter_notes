@@ -5,25 +5,24 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
   group('VersionWidget', () {
-    late final PackageInfo packageInfo;
-    late final PackageInfo emptyPackageInfo;
+    final packageInfo = PackageInfo(
+      appName: 'TestApp',
+      packageName: 'com.test.app',
+      version: '1.2.3',
+      buildNumber: '4',
+      buildSignature: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3',
+    );
 
-    setUpAll(() {
+    final emptyPackageInfo = PackageInfo(
+      appName: '',
+      packageName: '',
+      version: '',
+      buildNumber: '',
+      buildSignature: '',
+    );
+
+    setUp(() {
       PackageInfo.disablePackageInfoPlatformOverride = true;
-      packageInfo = PackageInfo(
-        appName: 'TestApp',
-        packageName: 'com.test.app',
-        version: '1.2.3',
-        buildNumber: '4',
-        buildSignature: 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3',
-      );
-      emptyPackageInfo = PackageInfo(
-        appName: '',
-        packageName: '',
-        version: '',
-        buildNumber: '',
-        buildSignature: '',
-      );
     });
 
     void mockPackageInfo(PackageInfo packageInfo) {

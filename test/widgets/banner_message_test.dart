@@ -297,6 +297,32 @@ void main() {
         expect(firstController.isClosed, isFalse);
         expect(secondController, firstController);
       });
+
+      testWidgets('creates a MessageController of the correct type', (tester) async {
+        final bannerMessageKey = GlobalKey<BannerMessageState>();
+        Widget build() {
+          return BannerMessage(
+            key: bannerMessageKey,
+            messageBuilder: (context, value) => Container(),
+            child: Container(),
+          );
+        }
+
+        MessageController<T?> showMessage<T>() {
+          return bannerMessageKey.currentState!.show<T>(message: 'Test message');
+        }
+
+        await tester.pumpWidget(build());
+        expect(showMessage<String>(), isA<MessageController<String>>());
+        await tester.pumpWidget(Container());
+
+        await tester.pumpWidget(build());
+        expect(showMessage<bool>(), isA<MessageController<bool>>());
+        await tester.pumpWidget(Container());
+
+        await tester.pumpWidget(build());
+        expect(showMessage<void>(), isA<MessageController<void>>());
+      });
     });
 
     group('hide', () {
@@ -337,33 +363,39 @@ void main() {
 
       testWidgets('returns the correct value', (tester) async {
         final bannerMessageKey = GlobalKey<BannerMessageState>();
-
         Widget build() {
           return BannerMessage(
             key: bannerMessageKey,
-            messageBuilder: (context, message) => Container(),
+            messageBuilder: (context, value) => Container(),
             child: Container(),
           );
         }
 
+        void testHide<T>([T? result]) {
+          final bannerState = bannerMessageKey.currentState!;
+          final controller = bannerState.show<T>(message: 'Test');
+          expect(controller.closed, completion(allOf([isA<T>(), result])));
+          bannerState.hide<T>(result);
+        }
+
+        void testClose<T>([T? result]) {
+          final bannerState = bannerMessageKey.currentState!;
+          final controller = bannerState.show<T>(message: 'Test');
+          expect(controller.closed, completion(allOf([isA<T>(), result])));
+          controller.close(result);
+        }
+
         await tester.pumpWidget(build());
 
-        var messageController = bannerMessageKey.currentState!.show<String>();
-        await tester.pump();
+        testHide<String>('Test value');
+        testHide<int>(16);
+        testHide<bool>(true);
+        testHide<void>();
 
-        const resultValue = 'Result value';
-        expect(messageController.closed, completion(resultValue));
-        messageController.close(resultValue);
-        expect(() => bannerMessageKey.currentState!.hide(resultValue), returnsNormally);
-
-        await tester.pumpWidget(build());
-
-        messageController = bannerMessageKey.currentState!.show<String>();
-        await tester.pump();
-
-        const anotherResultValue = 'Another result value';
-        expect(() => bannerMessageKey.currentState!.hide(anotherResultValue), returnsNormally);
-        expect(messageController.closed, completion(anotherResultValue));
+        testClose<String>('Test value');
+        testClose<int>(16);
+        testClose<bool>(true);
+        testClose<void>();
       });
 
       testWidgets('multiple calls when already hidden does nothing', (tester) async {

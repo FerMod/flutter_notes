@@ -1,10 +1,7 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
@@ -86,7 +83,7 @@ class NotesListScreen extends StatelessWidget {
           onTap: userData.isSignedIn && !userData.currentUser!.isAnonymous
               ? null
               : () {
-                  Navigator.pushNamed(context, AppRoute.signIn);
+                  Navigator.pushReplacementNamed(context, AppRoute.signIn);
                 },
           userData: notesListModel.userData,
         ),

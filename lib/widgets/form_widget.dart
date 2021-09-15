@@ -88,10 +88,10 @@ class TextFormInput extends FormField<String> {
   final FieldValidator<String?> fieldValidator;
 }
 
-/// A widget that creates two [Dividers] with another widget positioned between
+/// A widget that creates two [Divider]s with another widget positioned between
 /// them.
 ///
-/// The [Dividers] can be at most as large as the available space, but is allowed
+/// The [Divider]s can be at most as large as the available space, but is allowed
 /// to be smaller.
 class DividerText extends StatelessWidget {
   /// Creates two [Divider]s with the given [child] positioned in the middle.

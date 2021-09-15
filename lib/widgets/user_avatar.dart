@@ -167,6 +167,7 @@ class UserAvatar extends StatelessWidget {
             fit: fit,
             child: AnimatedContainer(
               duration: kThemeChangeDuration,
+              curve: Curves.easeIn,
               constraints: BoxConstraints(
                 minWidth: _minDiameter,
                 minHeight: _minDiameter,

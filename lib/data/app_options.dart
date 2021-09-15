@@ -123,13 +123,13 @@ class AppOptions {
   factory AppOptions.fromJson(String str) => AppOptions.fromMap(json.decode(str));
 
   /// Creates an instance of this class from a map.
-  factory AppOptions.fromMap(Map<String, dynamic> map) {
+  factory AppOptions.fromMap(Map<String, Object?> map) {
     return AppOptions(
       themeMode: ThemeMode.values.firstWhereOrNull(
         (e) => describeEnum(e) == map['themeMode'],
       ),
-      textScaleFactor: map['textScaleFactor'],
-      locale: LocaleUtils.localeFromLanguageTag(map['locale']),
+      textScaleFactor: map['textScaleFactor'] as double,
+      locale: LocaleUtils.localeFromLanguageTag(map['locale'] as String),
     );
   }
 
@@ -205,7 +205,7 @@ class AppOptions {
   String toJson() => json.encode(toMap());
 
   /// Converts this class to a [Map].
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {
       'themeMode': describeEnum(themeMode),
       'textScaleFactor': _textScaleFactor,
