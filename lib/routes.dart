@@ -104,15 +104,19 @@ class RouteConfiguration {
 
 class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
   SettingsRouteBuilder({
-    required this.builder,
     RouteSettings? settings,
+    required this.builder,
+    Duration transitionDuration = const Duration(milliseconds: 300),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 300),
     bool maintainState = true,
     bool fullscreenDialog = false,
   }) : super(
+          settings: settings,
           pageBuilder: (context, animation, secondaryAnimation) {
             return builder(context);
           },
-          settings: settings,
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
           maintainState: maintainState,
           fullscreenDialog: fullscreenDialog,
         ) {
@@ -132,6 +136,40 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
 
     return SlideTransition(
       position: animation.drive(tween),
+      child: child,
+    );
+  }
+}
+
+class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
+  NoteRouteBuilder({
+    RouteSettings? settings,
+    required this.builder,
+    Duration transitionDuration = const Duration(milliseconds: 400),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 400),
+    bool maintainState = true,
+    bool fullscreenDialog = true,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return builder(context);
+          },
+          settings: settings,
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+          maintainState: maintainState,
+          fullscreenDialog: fullscreenDialog,
+        ) {
+    assert(opaque);
+  }
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    const curve = Curves.easeInOut;
+    final tween = CurveTween(curve: curve);
+    return FadeTransition(
+      opacity: animation.drive(tween),
       child: child,
     );
   }

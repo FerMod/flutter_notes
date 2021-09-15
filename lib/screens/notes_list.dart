@@ -362,37 +362,3 @@ class NoteListWidget extends StatelessWidget {
     );
   }
 }
-
-class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
-  NoteRouteBuilder({
-    required this.builder,
-    RouteSettings? settings,
-    Duration transitionDuration = const Duration(milliseconds: 400),
-    Duration reverseTransitionDuration = const Duration(milliseconds: 400),
-    bool maintainState = true,
-    bool fullscreenDialog = true,
-  }) : super(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return builder(context);
-          },
-          settings: settings,
-          transitionDuration: transitionDuration,
-          reverseTransitionDuration: reverseTransitionDuration,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
-        ) {
-    assert(opaque);
-  }
-
-  final WidgetBuilder builder;
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    const curve = Curves.easeInOut;
-    final tween = CurveTween(curve: curve);
-    return FadeTransition(
-      opacity: animation.drive(tween),
-      child: child,
-    );
-  }
-}
