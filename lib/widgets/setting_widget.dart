@@ -54,10 +54,10 @@ class DisplayOption {
 
 class SettingsGroup extends StatelessWidget {
   const SettingsGroup({
-    Key? key,
+    super.key,
     this.title,
     this.children = const <Widget>[],
-  }) : super(key: key);
+  });
 
   final Widget? title;
   final List<Widget> children;
@@ -76,32 +76,29 @@ class SettingsGroup extends StatelessWidget {
 
 class SettingsHeader extends StatelessWidget {
   const SettingsHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  }) : super(key: key);
+  });
 
   final Widget title;
   final Widget? subtitle;
   final EdgeInsetsGeometry padding;
 
-  Color? _textColor(ThemeData theme, ListTileTheme? tileTheme, Color? defaultColor) {
-    if (tileTheme?.textColor != null) {
-      return tileTheme!.textColor;
-    }
-    return defaultColor;
+  Color? _textColor(ThemeData theme, ListTileThemeData tileTheme, Color? defaultColor) {
+    return tileTheme.textColor ?? defaultColor;
   }
 
-  TextStyle _titleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
-    final TextStyle style = theme.textTheme.subtitle1!;
+  TextStyle _titleTextStyle(ThemeData theme, ListTileThemeData tileTheme) {
+    final TextStyle style = theme.textTheme.titleMedium!;
     final Color? color = _textColor(theme, tileTheme, style.color);
     return style.copyWith(color: color, fontSize: 13.0);
   }
 
-  TextStyle _subtitleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
-    final TextStyle style = theme.textTheme.bodyText2!;
-    final Color? color = _textColor(theme, tileTheme, theme.textTheme.caption!.color);
+  TextStyle _subtitleTextStyle(ThemeData theme, ListTileThemeData tileTheme) {
+    final TextStyle style = theme.textTheme.bodyMedium!;
+    final Color? color = _textColor(theme, tileTheme, theme.textTheme.bodySmall!.color);
     return style.copyWith(color: color, fontSize: 12.0);
   }
 
@@ -140,13 +137,13 @@ class SettingsHeader extends StatelessWidget {
 
 class SettingListTile extends StatelessWidget {
   const SettingListTile({
-    Key? key,
+    super.key,
     required this.title,
     this.icon,
     this.subtitle,
     this.trailing,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final Widget? icon;
   final Widget title;
@@ -168,7 +165,7 @@ class SettingListTile extends StatelessWidget {
           trailing ??
               Icon(
                 Icons.chevron_right,
-                color: theme.textTheme.caption!.color,
+                color: theme.textTheme.bodySmall!.color,
               ),
         ],
       ),
@@ -179,11 +176,11 @@ class SettingListTile extends StatelessWidget {
 
 class SettingRadioListItems<T> extends StatelessWidget {
   const SettingRadioListItems({
-    Key? key,
+    super.key,
     required this.selectedOption,
     required this.optionsMap,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   /// The currently selected value.
   final T selectedOption;

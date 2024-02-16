@@ -14,7 +14,7 @@ import '../widgets/form_widget.dart';
 import 'sign_form.dart';
 
 class SignInScreen extends StatelessWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SignInScreen extends StatelessWidget {
 }
 
 class _SignInForm extends StatefulWidget {
-  const _SignInForm({Key? key}) : super(key: key);
+  const _SignInForm({super.key});
 
   @override
   _SignInFormState createState() => _SignInFormState();
@@ -66,10 +66,12 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
-      Navigator.of(context)
-        ..popUntil((route) => route.isFirst)
-        ..pushReplacementNamed(AppRoute.notes);
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      navigator.popUntil((route) => route.isFirst);
+      await navigator.pushReplacementNamed(AppRoute.notes);
     } on FirebaseAuthException catch (e) {
+      if (!mounted) rethrow;
       BannerMessage.show(context, message: _errorMessage(e.code));
     }
   }
@@ -106,7 +108,7 @@ class _SignInFormState extends State<_SignInForm> {
         children: [
           Text(
             localizations.signIn,
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
           ),
           Card(
             margin: const EdgeInsets.all(8.0),
@@ -136,11 +138,11 @@ class _SignInFormState extends State<_SignInForm> {
 
 class _BodyWidget extends StatelessWidget {
   const _BodyWidget({
-    Key? key,
+    super.key,
     required this.emailController,
     required this.passwordController,
     this.onSignIn,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onSignIn;
 
@@ -197,9 +199,8 @@ class _BodyWidget extends StatelessWidget {
   }
 
   void _handleFieldSubmitted(String value) {
-    if (DeviceType.isDesktopOrWeb) {
-      onSignIn?.call();
-    }
+    if (!DeviceType.isDesktopOrWeb) return;
+    onSignIn?.call();
   }
 
   @override
@@ -240,9 +241,9 @@ class _BodyWidget extends StatelessWidget {
 
 class _NoAccount extends StatelessWidget {
   const _NoAccount({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
 
@@ -263,9 +264,9 @@ class _NoAccount extends StatelessWidget {
 
 class _SignInButton extends StatelessWidget {
   const _SignInButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onPressed;
 
@@ -284,9 +285,9 @@ class _SignInButton extends StatelessWidget {
 
 class _SignUpButton extends StatelessWidget {
   const _SignUpButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
 

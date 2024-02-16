@@ -10,13 +10,12 @@ typedef Dispose<T> = void Function(BuildContext context, T value);
 
 class _ModelBindingScope<T> extends InheritedWidget {
   const _ModelBindingScope({
-    Key? key,
+    super.key,
     required this.model,
     required this.modelBindingState,
     bool updateShouldNotify = false,
-    required Widget child,
-  })  : _updateShouldNotify = updateShouldNotify,
-        super(key: key, child: child);
+    required super.child,
+  }) : _updateShouldNotify = updateShouldNotify;
 
   final T model;
   final _ModelBindingState<T> modelBindingState;
@@ -48,16 +47,15 @@ class ModelBinding<T> extends StatefulWidget {
   ///
   /// A least a [child] or a [builder] must be provided.
   const ModelBinding({
-    Key? key,
+    super.key,
     required this.initialModel,
     this.child,
     this.builder,
     this.dispose,
-  })  : assert(
+  }) : assert(
           child != null || builder != null,
           'Must provide at least a child or a builder',
-        ),
-        super(key: key);
+        );
 
   /// Contains the model data.
   final T initialModel;
@@ -67,7 +65,7 @@ class ModelBinding<T> extends StatefulWidget {
 
   /// Called to obtain the [child] widget from this callback, every time the
   /// [initialModel] value changes.
-  /// 
+  ///
   /// This builder builds a widget given a [BuildContext] (as `context`) and a
   /// [Widget] (as `child`). If the child is `null`, it is the responsibility of
   /// the [builder] to provide a valid one.
@@ -206,7 +204,7 @@ class ModelBinding<T> extends StatefulWidget {
   }
 
   @override
-  _ModelBindingState<T> createState() => _ModelBindingState<T>();
+  State<ModelBinding<T>> createState() => _ModelBindingState<T>();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {

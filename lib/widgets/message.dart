@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// A message widget that displays displays an important, succinct message, and
@@ -33,7 +32,7 @@ class MessageWidget extends StatelessWidget {
   /// color. To supply a decoration with a color, use
   /// `decoration: BoxDecoration(color: color)`.
   const MessageWidget({
-    Key? key,
+    super.key,
     this.leading,
     this.content,
     this.contentTextStyle,
@@ -46,12 +45,11 @@ class MessageWidget extends StatelessWidget {
     this.margin,
     this.minActionsHeight = kToolbarHeight,
     this.forceActionsBelow = false,
-  })  : assert(
+  }) : assert(
           color == null || decoration == null,
           'Cannot provide both a color and a decoration\n'
           'To provide both, use "decoration: BoxDecoration(color: color)".',
-        ),
-        super(key: key);
+        );
 
   /// A widget to display before the content.
   ///
@@ -66,7 +64,7 @@ class MessageWidget extends StatelessWidget {
   /// Style for the text in the [content] of the [MessageWidget].
   ///
   /// If `null`, [MaterialBannerThemeData.contentTextStyle] is used. If that is
-  /// also `null`, [TextTheme.bodyText2] of [ThemeData.textTheme] is used.
+  /// also `null`, [TextTheme.bodyMedium] of [ThemeData.textTheme] is used.
   final TextStyle? contentTextStyle;
 
   /// The set of actions that are displayed at the bottom or trailing side of
@@ -155,7 +153,7 @@ class MessageWidget extends StatelessWidget {
   }
 
   TextStyle _textStyle(ThemeData theme, MaterialBannerThemeData bannerTheme) {
-    final style = contentTextStyle ?? bannerTheme.contentTextStyle ?? theme.textTheme.bodyText2!;
+    final style = contentTextStyle ?? bannerTheme.contentTextStyle ?? theme.textTheme.bodyMedium!;
     final color = _textColor(theme, bannerTheme, style.color);
     return _isSingleRow ? style.copyWith(fontSize: 15.0, color: color) : style.copyWith(color: color);
   }

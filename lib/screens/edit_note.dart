@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -16,14 +15,14 @@ enum ChangesAction {
 
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({
-    Key? key,
+    super.key,
     required this.note,
-  }) : super(key: key);
+  });
 
   final NoteModel note;
 
   @override
-  _EditNoteScreenState createState() => _EditNoteScreenState();
+  State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
@@ -71,6 +70,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     if (changesAction != ChangesAction.none) {
       // In this section the NoteEditingController should contain clean data.
       assert(!noteEditingController.dirty);
+      if (!mounted) return;
       Navigator.pop(context, noteEditingController.value);
     }
   }
@@ -87,7 +87,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final theme = Theme.of(context);
     return TextButton(
       onPressed: _handleSave,
-      style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
+      style: TextButton.styleFrom(foregroundColor: theme.primaryIconTheme.color),
       child: Text(localizations.saveButton),
     );
   }
@@ -162,10 +162,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 }
 
 class NoteEditingController extends DataStateNotifier<NoteModel> {
-  NoteEditingController(NoteModel value)
+  NoteEditingController(super.value)
       : titleController = TextEditingController(text: value.title),
-        contentController = TextEditingController(text: value.content),
-        super(value) {
+        contentController = TextEditingController(text: value.content) {
     titleController.addListener(_onTitleChanged);
     contentController.addListener(_onContentChanged);
   }
@@ -211,12 +210,12 @@ class NoteEditingController extends DataStateNotifier<NoteModel> {
 
 class _ColorOptionsNavBar extends StatefulWidget {
   const _ColorOptionsNavBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.colors,
     this.backgroundColor,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final int selectedIndex;
   final List<Color> colors;
@@ -282,11 +281,11 @@ class _ColorOptionsNavBarState extends State<_ColorOptionsNavBar> {
 
 class _ScrollableContent extends StatelessWidget {
   const _ScrollableContent({
-    Key? key,
+    super.key,
     required this.scrollController,
     required this.titleEditingController,
     required this.contentEditingController,
-  }) : super(key: key);
+  });
 
   final ScrollController scrollController;
   final TextEditingController? titleEditingController;
@@ -296,7 +295,7 @@ class _ScrollableContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scrollbar(
       controller: scrollController,
-      showTrackOnHover: true,
+      trackVisibility: true,
       child: CustomScrollView(
         controller: scrollController,
         slivers: [
@@ -322,9 +321,9 @@ class _ScrollableContent extends StatelessWidget {
 
 class _NoteTitleInput extends StatelessWidget {
   const _NoteTitleInput({
-    Key? key,
+    super.key,
     required this.titleEditingController,
-  }) : super(key: key);
+  });
 
   final TextEditingController? titleEditingController;
 
@@ -339,7 +338,7 @@ class _NoteTitleInput extends StatelessWidget {
         decoration: InputDecoration.collapsed(
           hintText: localizations.titleHint,
         ),
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.titleLarge,
       ),
     );
   }
@@ -347,9 +346,9 @@ class _NoteTitleInput extends StatelessWidget {
 
 class _NoteContentInput extends StatelessWidget {
   const _NoteContentInput({
-    Key? key,
+    super.key,
     required this.contentEditingController,
-  }) : super(key: key);
+  });
 
   final TextEditingController? contentEditingController;
 
@@ -373,7 +372,7 @@ class _NoteContentInput extends StatelessWidget {
 }
 
 class _SectionDivider extends StatelessWidget {
-  const _SectionDivider({Key? key}) : super(key: key);
+  const _SectionDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +385,7 @@ class _SectionDivider extends StatelessWidget {
 }
 
 class _SaveChangesAlertDialog extends StatelessWidget {
-  const _SaveChangesAlertDialog({Key? key}) : super(key: key);
+  const _SaveChangesAlertDialog({super.key});
 
   Widget _createButton(BuildContext context, String text, ChangesAction action) {
     return TextButton(
@@ -426,7 +425,6 @@ enum PredefinedColor {
 }
 
 extension PredefinedColorExtension on PredefinedColor {
-  String get name => describeEnum(this);
   int get value => color.value;
 
   Color get color {
