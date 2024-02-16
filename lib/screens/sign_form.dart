@@ -8,10 +8,10 @@ import 'settings.dart';
 
 class SignFormScreen extends StatelessWidget {
   const SignFormScreen({
-    Key? key,
+    super.key,
     this.title,
     required this.builder,
-  }) : super(key: key);
+  });
 
   /// The [AppBar.title] title widget.
   final Widget? title;
@@ -36,8 +36,8 @@ class SignFormScreen extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 if (DeviceType.isDesktopOrWeb) {
-                  final textScaleFactor = MediaQuery.textScaleFactorOf(context);
-                  final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor - 1);
+                  final textScaleFactor = MediaQuery.textScalerOf(context);
+                  final desktopMaxWidth = 400.0 + 100.0 * (textScaleFactor.textScaleFactor - 1);
                   constraints = constraints.copyWith(maxWidth: desktopMaxWidth);
                 }
 
@@ -58,9 +58,9 @@ class SignFormScreen extends StatelessWidget {
 
 class _MessageCard extends StatelessWidget {
   const _MessageCard({
-    Key? key,
+    super.key,
     required this.message,
-  }) : super(key: key);
+  });
 
   final MessageData message;
 
@@ -113,9 +113,9 @@ class DismissibleKeyboard extends StatelessWidget {
   ///
   /// The [child] argument is required and must not be null.
   const DismissibleKeyboard({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

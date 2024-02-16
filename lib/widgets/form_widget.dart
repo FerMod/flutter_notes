@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 
 class FormFields extends StatelessWidget {
   const FormFields({
-    Key? key,
+    super.key,
     this.separator = const SizedBox(height: 16.0),
     this.children = const <Widget>[],
-  }) : super(key: key);
+  });
 
   final List<Widget> children;
   final Widget separator;
@@ -19,13 +19,13 @@ class FormFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _listLength = children.length * 2 - 1;
+    final listLength = children.length * 2 - 1;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < _listLength; i++) _buildItem(i),
+        for (var i = 0; i < listLength; i++) _buildItem(i),
       ],
     );
   }
@@ -33,7 +33,7 @@ class FormFields extends StatelessWidget {
 
 class TextFormInput extends FormField<String> {
   TextFormInput({
-    Key? key,
+    super.key,
     Icon? icon,
     String? labelText,
     TextInputAction? textInputAction,
@@ -51,7 +51,6 @@ class TextFormInput extends FormField<String> {
     ValueChanged<String>? onFieldSubmitted,
     FormFieldSetter<String>? onSaved,
   }) : super(
-          key: key,
           builder: (state) => TextFormField(
             controller: controller,
             textInputAction: textInputAction,
@@ -96,9 +95,9 @@ class TextFormInput extends FormField<String> {
 class DividerText extends StatelessWidget {
   /// Creates two [Divider]s with the given [child] positioned in the middle.
   const DividerText({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// The widget placed between the two [Divider]. Normally a [Text] widget.
   final Widget child;
@@ -164,7 +163,7 @@ class FieldValidator<T> {
 }
 
 /// The function signature that runs a validation over [value].
-typedef _Assertion<T> = bool Function(T value);
+typedef Assertion<T> = bool Function(T value);
 
 /// Represents a [FormField] validation.
 ///
@@ -175,7 +174,7 @@ class Validation<T> {
   /// condition.
   const Validation({
     required this.errorMessage,
-    required _Assertion<T?> assertion,
+    required Assertion<T?> assertion,
   }) : _assertion = assertion;
 
   /// The message that explaining the why the validation failed.
@@ -183,7 +182,7 @@ class Validation<T> {
 
   /// The function that contains the validation assertion, invoked when calling
   /// the function [isValid].
-  final _Assertion<T?> _assertion;
+  final Assertion<T?> _assertion;
 
   /// Whether the [value] is valid.
   ///
@@ -210,9 +209,11 @@ class Validation<T> {
     if (identical(this, other)) {
       return true;
     }
-    return other is Validation<T> && other.errorMessage == errorMessage && other._assertion == _assertion;
+    return other is Validation<T> && //
+        other.errorMessage == errorMessage &&
+        other._assertion == _assertion;
   }
 
   @override
-  int get hashCode => hashValues(errorMessage, _assertion);
+  int get hashCode => Object.hash(errorMessage, _assertion);
 }

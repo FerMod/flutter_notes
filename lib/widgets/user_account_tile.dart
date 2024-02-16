@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UserAccountTile extends StatelessWidget {
   const UserAccountTile({
-    Key? key,
+    super.key,
     this.image,
     this.title,
     this.subtitle,
@@ -12,7 +12,7 @@ class UserAccountTile extends StatelessWidget {
     this.decoration,
     this.onTap,
     this.onLongPress,
-  }) : super(key: key);
+  });
 
   final Widget? image;
   final Widget? title;
@@ -43,7 +43,7 @@ class UserAccountTile extends StatelessWidget {
     Widget? titleWidget;
     if (title != null) {
       titleWidget = DefaultTextStyle(
-        style: theme.primaryTextTheme.bodyText1!,
+        style: theme.primaryTextTheme.bodyLarge!,
         child: title!,
       );
     }
@@ -51,7 +51,7 @@ class UserAccountTile extends StatelessWidget {
     Widget? subtitleWidget;
     if (subtitle != null) {
       subtitleWidget = DefaultTextStyle(
-        style: theme.primaryTextTheme.bodyText2!,
+        style: theme.primaryTextTheme.bodyMedium!,
         child: subtitle!,
       );
     }

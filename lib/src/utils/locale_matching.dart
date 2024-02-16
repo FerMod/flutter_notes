@@ -115,7 +115,7 @@ class LocaleMatcher {
 
     for (var i = 0; i < desiredLocales!.length; i++) {
       final desired = desiredLocales[i];
-      for (var supported in supportedLocales) {
+      for (final supported in supportedLocales) {
         // Match priority (of desired):
         // language_script_country > language_country > language_script > language
         //
@@ -151,5 +151,4 @@ class LocaleMatcher {
 
     return bestSupported;
   }
-
 }

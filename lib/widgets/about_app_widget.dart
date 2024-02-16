@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AboutAppWidget extends StatelessWidget {
-  const AboutAppWidget({Key? key}) : super(key: key);
+  const AboutAppWidget({super.key});
 
   static const logoAssetName = 'assets/images/flutter_notes_logo.png';
   static const legalNotice = 'Copyright (C) 2021  Ferran Tudela\n'

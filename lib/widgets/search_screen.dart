@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
 /// Delegate for [SearchScreen] to define the content of the search page.
 ///
@@ -259,9 +256,9 @@ abstract class SearchScreenDelegate<T> {
 
 class SearchScreen<T> extends StatefulWidget {
   const SearchScreen({
-    Key? key,
+    super.key,
     required this.delegate,
-  }) : super(key: key);
+  });
 
   final SearchScreenDelegate<T> delegate;
 
@@ -356,7 +353,7 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
       titleWidget = TextField(
         controller: widget.delegate._queryTextController,
         focusNode: focusNode,
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.titleLarge,
         textInputAction: widget.delegate.textInputAction,
         keyboardType: widget.delegate.keyboardType,
         onSubmitted: (value) {

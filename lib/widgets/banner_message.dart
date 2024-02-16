@@ -46,10 +46,10 @@ class MessageData with Diagnosticable {
 
   @override
   int get hashCode {
-    return hashValues(
+    return Object.hash(
       isVisible,
       message,
-      hashList(actions),
+      Object.hashAll(actions),
     );
   }
 
@@ -94,11 +94,11 @@ class BannerMessage extends StatefulWidget {
   /// The [child] and [messageBuilder] are required parameters, and must not be
   /// null.
   const BannerMessage({
-    Key? key,
+    super.key,
     this.data = const MessageData.empty(),
     required this.messageBuilder,
     required this.child,
-  }) : super(key: key);
+  });
 
   final MessageData data;
   final MessageBuilder<MessageData> messageBuilder;
@@ -280,11 +280,11 @@ class BannerMessageState extends State<BannerMessage> {
 
 class _BannerMessageScope<T> extends InheritedWidget {
   const _BannerMessageScope({
-    Key? key,
+    super.key,
     required this.bannerMessageState,
     required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final BannerMessageState bannerMessageState;
   final MessageData data;
