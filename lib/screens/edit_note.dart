@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -23,7 +22,7 @@ class EditNoteScreen extends StatefulWidget {
   final NoteModel note;
 
   @override
-  _EditNoteScreenState createState() => _EditNoteScreenState();
+  State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
@@ -71,6 +70,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     if (changesAction != ChangesAction.none) {
       // In this section the NoteEditingController should contain clean data.
       assert(!noteEditingController.dirty);
+      if (!mounted) return;
       Navigator.pop(context, noteEditingController.value);
     }
   }
@@ -87,7 +87,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final theme = Theme.of(context);
     return TextButton(
       onPressed: _handleSave,
-      style: TextButton.styleFrom(primary: theme.primaryIconTheme.color),
+      style: TextButton.styleFrom(foregroundColor: theme.primaryIconTheme.color),
       child: Text(localizations.saveButton),
     );
   }
@@ -296,7 +296,7 @@ class _ScrollableContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scrollbar(
       controller: scrollController,
-      showTrackOnHover: true,
+      trackVisibility: true,
       child: CustomScrollView(
         controller: scrollController,
         slivers: [
@@ -339,7 +339,7 @@ class _NoteTitleInput extends StatelessWidget {
         decoration: InputDecoration.collapsed(
           hintText: localizations.titleHint,
         ),
-        style: theme.textTheme.headline6,
+        style: theme.textTheme.titleLarge,
       ),
     );
   }
@@ -426,7 +426,6 @@ enum PredefinedColor {
 }
 
 extension PredefinedColorExtension on PredefinedColor {
-  String get name => describeEnum(this);
   int get value => color.value;
 
   Color get color {

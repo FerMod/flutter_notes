@@ -66,10 +66,12 @@ class _SignInFormState extends State<_SignInForm> {
     try {
       final credential = await userData.signIn(_emailController.text, _passwordController.text);
       developer.log('$credential');
+      if (!mounted) return;
       Navigator.of(context)
         ..popUntil((route) => route.isFirst)
         ..pushReplacementNamed(AppRoute.notes);
     } on FirebaseAuthException catch (e) {
+      if (!mounted) rethrow;
       BannerMessage.show(context, message: _errorMessage(e.code));
     }
   }
@@ -106,7 +108,7 @@ class _SignInFormState extends State<_SignInForm> {
         children: [
           Text(
             localizations.signIn,
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
           ),
           Card(
             margin: const EdgeInsets.all(8.0),
@@ -197,9 +199,8 @@ class _BodyWidget extends StatelessWidget {
   }
 
   void _handleFieldSubmitted(String value) {
-    if (DeviceType.isDesktopOrWeb) {
-      onSignIn?.call();
-    }
+    if (!DeviceType.isDesktopOrWeb) return;
+    onSignIn?.call();
   }
 
   @override
