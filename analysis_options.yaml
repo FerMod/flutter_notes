@@ -25,10 +25,11 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    avoid_print: true
     prefer_single_quotes: true
+    cancel_subscriptions: true
+    unawaited_futures: true
+    always_declare_return_types: true
+    sort_child_properties_last: true
+    use_full_hex_values_for_flutter_colors: true
+    prefer_final_in_for_each: true
     prefer_relative_imports: true
-
-    # Experimental lints
-    null_check_on_nullable_type_parameter: true
-    invariant_booleans: true

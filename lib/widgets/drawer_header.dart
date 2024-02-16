@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class TitleDrawerHeader extends StatelessWidget {
   const TitleDrawerHeader({
-    Key? key,
+    super.key,
     this.decoration,
     this.margin = const EdgeInsets.only(bottom: 8.0),
     this.padding = const EdgeInsets.all(16.0),
     this.duration = const Duration(milliseconds: 250),
     this.curve = Curves.fastOutSlowIn,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Decoration? decoration;
   final EdgeInsets margin;

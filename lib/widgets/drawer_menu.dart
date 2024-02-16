@@ -10,7 +10,7 @@ import 'user_avatar.dart';
 import 'version_widget.dart';
 
 class DrawerMenu extends StatelessWidget {
-  DrawerMenu({Key? key}) : super(key: key);
+  DrawerMenu({super.key});
 
   final userData = DataProvider.userData;
 

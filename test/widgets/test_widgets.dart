@@ -3,7 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Copied from: https://github.com/flutter/flutter/blob/master/packages/flutter/test/widgets/test_widgets.dart
 class FlipWidget extends StatefulWidget {
-  const FlipWidget({Key? key, required this.left, required this.right}) : super(key: key);
+  const FlipWidget({
+    super.key,
+    required this.left,
+    required this.right,
+  });
 
   final Widget left;
   final Widget right;

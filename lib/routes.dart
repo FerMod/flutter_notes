@@ -104,21 +104,20 @@ class RouteConfiguration {
 
 class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
   SettingsRouteBuilder({
-    RouteSettings? settings,
+    super.settings,
     required this.builder,
-    Duration transitionDuration = const Duration(milliseconds: 300),
-    Duration reverseTransitionDuration = const Duration(milliseconds: 300),
-    bool maintainState = true,
-    bool fullscreenDialog = false,
+    super.transitionsBuilder,
+    super.transitionDuration,
+    super.reverseTransitionDuration,
+    super.opaque,
+    super.barrierDismissible,
+    super.barrierColor,
+    super.barrierLabel,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
   }) : super(
-          settings: settings,
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return builder(context);
-          },
-          transitionDuration: transitionDuration,
-          reverseTransitionDuration: reverseTransitionDuration,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
+          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
         ) {
     assert(opaque);
   }
@@ -143,21 +142,20 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
 
 class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
   NoteRouteBuilder({
-    RouteSettings? settings,
+    super.settings,
     required this.builder,
-    Duration transitionDuration = const Duration(milliseconds: 400),
-    Duration reverseTransitionDuration = const Duration(milliseconds: 400),
-    bool maintainState = true,
-    bool fullscreenDialog = true,
+    super.transitionsBuilder,
+    super.transitionDuration = const Duration(milliseconds: 400),
+    super.reverseTransitionDuration = const Duration(milliseconds: 400),
+    super.opaque,
+    super.barrierDismissible,
+    super.barrierColor,
+    super.barrierLabel,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
   }) : super(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return builder(context);
-          },
-          settings: settings,
-          transitionDuration: transitionDuration,
-          reverseTransitionDuration: reverseTransitionDuration,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
+          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
         ) {
     assert(opaque);
   }
@@ -177,9 +175,13 @@ class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
 
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
   NoAnimationMaterialPageRoute({
-    required WidgetBuilder builder,
-    RouteSettings? settings,
-  }) : super(builder: builder, settings: settings);
+    required super.builder,
+    super.settings,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
+    super.barrierDismissible,
+  });
 
   @override
   Widget buildTransitions(

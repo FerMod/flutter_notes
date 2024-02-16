@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import '../src/cache/cached_color.dart';
 
@@ -15,7 +14,7 @@ class UserAvatar extends StatelessWidget {
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAvatar({
-    Key? key,
+    super.key,
     String? imageUrl,
     String? nameText,
     this.fit = BoxFit.cover,
@@ -32,8 +31,7 @@ class UserAvatar extends StatelessWidget {
           radius == null || (minRadius == null && maxRadius == null),
           'Cannot provide a radius and also a minRadius and/or maxRadius\n'
           'Use only radius or use only minRadius and/or maxRadius.',
-        ),
-        super(key: key);
+        );
 
   /// The user image url string.
   final String imageUrl;
@@ -131,7 +129,9 @@ class UserAvatar extends StatelessWidget {
         accountWidget = MediaQuery(
           // Need to ignore the ambient textScaleFactor here so that the
           // text doesn't escape the avatar when the textScaleFactor is large.
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
           child: Text(
             match.toUpperCase(),
             style: TextStyle(

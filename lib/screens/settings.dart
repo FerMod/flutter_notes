@@ -23,9 +23,7 @@ void _navigateSetting(BuildContext context, Widget widget) {
 /// Creates an [IconButton], that on click navigates to the [SettingsScreen]
 /// screen.
 class SettingsScreenButton extends StatelessWidget {
-  const SettingsScreenButton({
-    Key? key,
-  }) : super(key: key);
+  const SettingsScreenButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +39,7 @@ class SettingsScreenButton extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   void _navigate(BuildContext context, String routeName) {
     // Pop the settings screen and navigate to the new route
@@ -166,11 +164,11 @@ class SettingsScreen extends StatelessWidget {
 
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({
-    Key? key,
+    super.key,
     required this.userData,
     this.onTap,
     this.onTapImage,
-  }) : super(key: key);
+  });
 
   final UserData userData;
 
@@ -210,9 +208,9 @@ class AccountSettingScreen extends StatelessWidget {
               onTap: () async {
                 await userData.signOut();
                 if (!context.mounted) return;
-                Navigator.of(context)
-                  ..popUntil((route) => route.isFirst)
-                  ..pushReplacementNamed(AppRoute.signIn);
+                final navigator = Navigator.of(context);
+                navigator.popUntil((route) => route.isFirst);
+                await navigator.pushReplacementNamed(AppRoute.signIn);
               },
             ),
           ],
@@ -224,8 +222,8 @@ class AccountSettingScreen extends StatelessWidget {
 
 class LocalizationSettingScreen extends StatefulWidget {
   const LocalizationSettingScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<LocalizationSettingScreen> createState() => _LocalizationSettingScreenState();
@@ -336,7 +334,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
 }
 
 class ThemeModeSettingScreen extends StatelessWidget {
-  const ThemeModeSettingScreen({Key? key}) : super(key: key);
+  const ThemeModeSettingScreen({super.key});
 
   Map<ThemeMode, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -368,7 +366,7 @@ class ThemeModeSettingScreen extends StatelessWidget {
 }
 
 class TextScaleSettingScreen extends StatelessWidget {
-  const TextScaleSettingScreen({Key? key}) : super(key: key);
+  const TextScaleSettingScreen({super.key});
 
   Widget _buildText(String value, {required TextScaler textScaler}) {
     return Text(
@@ -443,10 +441,10 @@ class TextScaleSettingScreen extends StatelessWidget {
 
 class SettingsSearchDelegate<T> extends SearchScreenDelegate<T> {
   SettingsSearchDelegate({
-    Widget? title,
+    super.title,
     this.deviceDefault,
     required this.settingList,
-  }) : super(title: title);
+  });
 
   final T? deviceDefault;
   final SettingRadioListItems<T> settingList;

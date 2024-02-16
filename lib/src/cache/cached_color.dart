@@ -1,8 +1,6 @@
 import 'dart:collection';
 import 'dart:math' as math;
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 /// Stores a [Color] value and keeps the created instance in a cache for later
@@ -69,7 +67,7 @@ class CachedColor {
   /// returned color is [Colors.black], otherwise, returns [Colors.white].
   ///
   /// See also:
-  /// 
+  ///
   ///  * [CachedColor.brightness], to obtain the estimated [Brightness] value of
   ///   the color.
   Color contrastingColor() {

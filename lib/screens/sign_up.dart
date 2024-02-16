@@ -14,7 +14,7 @@ import '../widgets/form_widget.dart';
 import 'sign_form.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SignUpScreen extends StatelessWidget {
 }
 
 class _SignUpForm extends StatefulWidget {
-  const _SignUpForm({Key? key}) : super(key: key);
+  const _SignUpForm({super.key});
 
   @override
   _SignUpFormState createState() => _SignUpFormState();
@@ -80,10 +80,12 @@ class _SignUpFormState extends State<_SignUpForm> {
         displayName: _usernameController.text,
       );
       developer.log('$credential');
-      Navigator.of(context)
-        ..popUntil((route) => route.isFirst)
-        ..pushReplacementNamed(AppRoute.notes);
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      navigator.popUntil((route) => route.isFirst);
+      await navigator.pushReplacementNamed(AppRoute.notes);
     } on FirebaseAuthException catch (e) {
+      if (!mounted) rethrow;
       BannerMessage.show(context, message: _errorMessage(e.code));
     }
   }
@@ -120,7 +122,7 @@ class _SignUpFormState extends State<_SignUpForm> {
         children: [
           Text(
             localizations.signUpTitle,
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
           ),
           Card(
             margin: const EdgeInsets.all(8.0),
@@ -152,13 +154,13 @@ class _SignUpFormState extends State<_SignUpForm> {
 
 class _BodyWidget extends StatelessWidget {
   const _BodyWidget({
-    Key? key,
+    super.key,
     required this.usernameController,
     required this.emailController,
     required this.passwordController,
     required this.confirmPasswordController,
     this.onSignUp,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onSignUp;
 
@@ -277,9 +279,9 @@ class _BodyWidget extends StatelessWidget {
 
 class _HaveAccount extends StatelessWidget {
   const _HaveAccount({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
 
@@ -300,9 +302,9 @@ class _HaveAccount extends StatelessWidget {
 
 class _SignInButton extends StatelessWidget {
   const _SignInButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onPressed;
 
@@ -321,9 +323,9 @@ class _SignInButton extends StatelessWidget {
 
 class _SignUpButton extends StatelessWidget {
   const _SignUpButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onPressed;
 

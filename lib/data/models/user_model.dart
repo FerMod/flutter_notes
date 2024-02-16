@@ -1,5 +1,3 @@
-import 'dart:ui' show hashValues;
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:uuid/uuid.dart';
@@ -61,7 +59,12 @@ class UserModel {
   }
 
   @override
-  int get hashCode => hashValues(id, email, displayName, imageUrl);
+  int get hashCode => Object.hash(
+        id,
+        email,
+        displayName,
+        imageUrl,
+      );
 
   @override
   String toString() {

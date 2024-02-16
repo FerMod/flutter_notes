@@ -24,7 +24,7 @@ enum MenuAction {
 }
 
 class NotesListScreen extends StatelessWidget {
-  NotesListScreen({Key? key}) : super(key: key);
+  NotesListScreen({super.key});
 
   final NotesListModel notesListModel = NotesListModel();
 
@@ -132,11 +132,11 @@ class NotesListScreen extends StatelessWidget {
 
 class _AccountWidget extends StatelessWidget {
   const _AccountWidget({
-    Key? key,
+    super.key,
     required this.userData,
     this.onTap,
     this.onTapImage,
-  }) : super(key: key);
+  });
 
   final UserData userData;
   final VoidCallback? onTap;
@@ -187,7 +187,7 @@ class _AccountWidget extends StatelessWidget {
 }
 
 class _DeleteAlertDialog extends StatelessWidget {
-  const _DeleteAlertDialog({Key? key}) : super(key: key);
+  const _DeleteAlertDialog({super.key});
 
   TextButton _createButton(BuildContext context, String text, bool result) {
     return TextButton(
@@ -218,14 +218,13 @@ class _DeleteAlertDialog extends StatelessWidget {
 
 class NoteListWidget extends StatelessWidget {
   const NoteListWidget({
-    Key? key,
+    super.key,
     required List<NoteModel>? notes,
     this.onTap,
     this.onMenuTap,
     this.onRefresh,
     this.controller,
-  })  : notes = notes ?? const [],
-        super(key: key);
+  })  : notes = notes ?? const [];
 
   final List<NoteModel> notes;
   final void Function(NoteModel)? onTap;
@@ -287,7 +286,7 @@ class NoteListWidget extends StatelessWidget {
 
     return Scrollbar(
       controller: controller,
-      showTrackOnHover: true,
+      trackVisibility: true,
       radius: Radius.zero,
       child: ListView.builder(
         controller: controller,
@@ -328,7 +327,7 @@ class NoteListWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
                     _formatDate(localizations.localeName, note.lastEdit),
-                    style: theme.textTheme.caption,
+                    style: theme.textTheme.bodySmall,
                   ),
                 ),
                 Row(

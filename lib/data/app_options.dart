@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../src/extensions/locale_utils.dart';
@@ -126,7 +125,7 @@ class AppOptions {
   factory AppOptions.fromMap(Map<String, Object?> map) {
     return AppOptions(
       themeMode: ThemeMode.values.firstWhereOrNull(
-        (e) => describeEnum(e) == map['themeMode'],
+        (e) => e.name == map['themeMode'],
       ),
       textScaleFactor: map['textScaleFactor'] as double,
       locale: LocaleUtils.localeFromLanguageTag(map['locale'] as String),
@@ -207,7 +206,7 @@ class AppOptions {
   /// Converts this class to a [Map].
   Map<String, Object?> toMap() {
     return {
-      'themeMode': describeEnum(themeMode),
+      'themeMode': themeMode.name,
       'textScaleFactor': _textScaleFactor,
       'locale': _locale.toLanguageTag(),
     };
@@ -222,7 +221,7 @@ class AppOptions {
   }
 
   @override
-  int get hashCode => hashValues(
+  int get hashCode => Object.hash(
         themeMode,
         textScaleFactor,
         locale,

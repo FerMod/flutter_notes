@@ -1,4 +1,4 @@
-import 'dart:ui' show Color, hashValues;
+import 'dart:ui' show Color;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show immutable;
@@ -84,10 +84,24 @@ class NoteModel {
   }
 
   @override
-  int get hashCode => hashValues(id, userId, title, content, color, lastEdit);
+  int get hashCode => Object.hash(
+        id,
+        userId,
+        title,
+        content,
+        color,
+        lastEdit,
+      );
 
   @override
   String toString() {
-    return 'NoteModel(id: $id, userId: $userId, title: $title, content: $content, color: $color, lastEdit: $lastEdit, reference: $reference)';
+    return 'NoteModel('
+        'id: $id, '
+        'userId: $userId, '
+        'title: $title, '
+        'content: $content, '
+        'color: $color, '
+        'lastEdit: $lastEdit, '
+        'reference: $reference)';
   }
 }

@@ -1,24 +1,23 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../src/cache/cached_color.dart';
 
 class ColorToggleButtons extends StatefulWidget {
   const ColorToggleButtons({
-    Key? key,
+    super.key,
     this.initialValue,
     this.colors = const <Color>[],
     this.onPressed,
-  }) : super(key: key);
+  });
 
   final List<Color?> colors;
   final Color? initialValue;
   final void Function(int index)? onPressed;
 
   @override
-  _ColorToggleButtonsState createState() => _ColorToggleButtonsState();
+  State<ColorToggleButtons> createState() => _ColorToggleButtonsState();
 }
 
 class _ColorToggleButtonsState extends State<ColorToggleButtons> {
@@ -97,10 +96,10 @@ class _ColorToggleButtonsState extends State<ColorToggleButtons> {
 
 class ColorButton extends StatelessWidget {
   const ColorButton({
-    Key? key,
+    super.key,
     required this.color,
     this.icon,
-  }) : super(key: key);
+  });
 
   final Color? color;
   final Widget? icon;
