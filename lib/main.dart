@@ -10,15 +10,15 @@ import 'package:url_strategy/url_strategy.dart';
 import 'data/app_options.dart';
 import 'data/data_provider.dart';
 import 'data/local/app_shared_preferences.dart';
+import 'firebase_options.dart';
 import 'globals.dart';
 import 'routes.dart';
-import 'src/utils/device_type.dart';
 import 'src/utils/locale_matching.dart';
 import 'widgets/model_binding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _configureFirebase();
   await AppSharedPreferences.initialize();
 
@@ -48,11 +48,6 @@ Future<void> _initFirebaseFirestore() async {
         )
         // Internally Android uses '10.0.2.2' as the host.
         ..useFirestoreEmulator('localhost', 8080);
-
-      // Only for web platforms.
-      if (Global.enableOfflineFirestore && DeviceType.isWeb) {
-        await FirebaseFirestore.instance.enablePersistence();
-      }
     } catch (e) {
       // When performing a hot reload in web version of Firestore, it throws a
       // 'FirebaseError: [code=failed-precondition]' exception. This happens
@@ -79,9 +74,9 @@ Future<void> _initFirebaseAuth() async {
 
 class NotesApp extends StatelessWidget {
   const NotesApp({
-    Key? key,
+    super.key,
     this.useBaselineMaterialTheme = true,
-  }) : super(key: key);
+  });
 
   /// Use the light and dark themes based on the ones given by Material Design,
   /// that have colors that meet accessibility standards. Theese themes uses a
@@ -146,7 +141,7 @@ class NotesApp extends StatelessWidget {
         final appSettings = AppOptions.of(context);
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaleFactor: appSettings.textScaleFactor,
+            textScaler: TextScaler.linear(appSettings.textScaleFactor),
           ),
           child: child!,
         );

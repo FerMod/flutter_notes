@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSharedPreferences {
   AppSharedPreferences._internal();
-  static late final AppSharedPreferences _instance = AppSharedPreferences._internal();
+  static final AppSharedPreferences _instance = AppSharedPreferences._internal();
 
   /// The current [SharedPreferences] instance, if one has been created.
   ///

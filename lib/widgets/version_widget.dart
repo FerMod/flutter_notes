@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class VersionWidget extends StatelessWidget {
-  const VersionWidget({Key? key}) : super(key: key);
+  const VersionWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class VersionWidget extends StatelessWidget {
           final containsVersion = version?.isNotEmpty ?? false;
           return Text(
             containsVersion ? 'v$version' : '',
-            style: Theme.of(context).textTheme.caption,
+            style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.center,
           );
         },

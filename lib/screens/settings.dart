@@ -23,9 +23,7 @@ void _navigateSetting(BuildContext context, Widget widget) {
 /// Creates an [IconButton], that on click navigates to the [SettingsScreen]
 /// screen.
 class SettingsScreenButton extends StatelessWidget {
-  const SettingsScreenButton({
-    Key? key,
-  }) : super(key: key);
+  const SettingsScreenButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +39,7 @@ class SettingsScreenButton extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   void _navigate(BuildContext context, String routeName) {
     // Pop the settings screen and navigate to the new route
@@ -147,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(localizations.settingsTitle),
       ),
       body: Scrollbar(
-        showTrackOnHover: true,
+        trackVisibility: true,
         radius: Radius.zero,
         child: ListView(
           //padding: const EdgeInsets.all(8.0),
@@ -166,11 +164,11 @@ class SettingsScreen extends StatelessWidget {
 
 class AccountSettingScreen extends StatelessWidget {
   const AccountSettingScreen({
-    Key? key,
+    super.key,
     required this.userData,
     this.onTap,
     this.onTapImage,
-  }) : super(key: key);
+  });
 
   final UserData userData;
 
@@ -188,7 +186,7 @@ class AccountSettingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
       body: Scrollbar(
-        showTrackOnHover: true,
+        trackVisibility: true,
         radius: Radius.zero,
         child: ListView(
           children: [
@@ -209,9 +207,10 @@ class AccountSettingScreen extends StatelessWidget {
               title: Text(localizations.signOut),
               onTap: () async {
                 await userData.signOut();
-                Navigator.of(context)
-                  ..popUntil((route) => route.isFirst)
-                  ..pushReplacementNamed(AppRoute.signIn);
+                if (!context.mounted) return;
+                final navigator = Navigator.of(context);
+                navigator.popUntil((route) => route.isFirst);
+                await navigator.pushReplacementNamed(AppRoute.signIn);
               },
             ),
           ],
@@ -223,11 +222,11 @@ class AccountSettingScreen extends StatelessWidget {
 
 class LocalizationSettingScreen extends StatefulWidget {
   const LocalizationSettingScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _LocalizationSettingScreenState createState() => _LocalizationSettingScreenState();
+  State<LocalizationSettingScreen> createState() => _LocalizationSettingScreenState();
 }
 
 class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> with WidgetsBindingObserver {
@@ -255,12 +254,12 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -335,7 +334,7 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
 }
 
 class ThemeModeSettingScreen extends StatelessWidget {
-  const ThemeModeSettingScreen({Key? key}) : super(key: key);
+  const ThemeModeSettingScreen({super.key});
 
   Map<ThemeMode, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -367,40 +366,45 @@ class ThemeModeSettingScreen extends StatelessWidget {
 }
 
 class TextScaleSettingScreen extends StatelessWidget {
-  const TextScaleSettingScreen({Key? key}) : super(key: key);
+  const TextScaleSettingScreen({super.key});
 
   Map<double, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return {
       systemTextScaleFactorOption: DisplayOption(
         title: localizations.settingsSystemDefault,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: deviceTextScaleFactor);
-        },
+        titleBuilder: (context, value) => Text(
+          value,
+          textScaler: TextScaler.linear(deviceTextScaleFactor),
+        ),
       ),
       0.8: DisplayOption(
         title: localizations.settingsTextScaleSmall,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 0.8);
-        },
+        titleBuilder: (context, value) => Text(
+          value,
+          textScaler: const TextScaler.linear(0.8),
+        ),
       ),
       1.0: DisplayOption(
         title: localizations.settingsTextScaleNormal,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.0);
-        },
+        titleBuilder: (context, value) => Text(
+          value,
+          textScaler: const TextScaler.linear(1.0),
+        ),
       ),
       1.5: DisplayOption(
         title: localizations.settingsTextScaleLarge,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.5);
-        },
+        titleBuilder: (context, value) => Text(
+          value,
+          textScaler: const TextScaler.linear(1.5),
+        ),
       ),
       1.8: DisplayOption(
         title: localizations.settingsTextScaleHuge,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.8);
-        },
+        titleBuilder: (context, value) => Text(
+          value,
+          textScaler: const TextScaler.linear(1.8),
+        ),
       ),
     };
   }
@@ -430,10 +434,10 @@ class TextScaleSettingScreen extends StatelessWidget {
 
 class SettingsSearchDelegate<T> extends SearchScreenDelegate<T> {
   SettingsSearchDelegate({
-    Widget? title,
+    super.title,
     this.deviceDefault,
     required this.settingList,
-  }) : super(title: title);
+  });
 
   final T? deviceDefault;
   final SettingRadioListItems<T> settingList;

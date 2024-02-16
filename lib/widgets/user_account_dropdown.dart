@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/foundation.dart';
 
 /// A material design that identifies the app's user.
 ///
@@ -12,7 +10,7 @@ class UserAccountDropdown extends StatefulWidget {
   ///
   /// Requires one of its ancestors to be a [Material] widget.
   const UserAccountDropdown({
-    Key? key,
+    super.key,
     this.decoration,
     this.margin = const EdgeInsets.only(bottom: 8.0),
     this.accountPicture,
@@ -21,7 +19,7 @@ class UserAccountDropdown extends StatefulWidget {
     this.onTap,
     this.showArrow = false,
     this.arrowColor = Colors.white,
-  }) : super(key: key);
+  });
 
   /// The height value of the account details.
   ///
@@ -59,7 +57,7 @@ class UserAccountDropdown extends StatefulWidget {
   final Color arrowColor;
 
   @override
-  _UserAccountDropdownState createState() => _UserAccountDropdownState();
+  State<UserAccountDropdown> createState() => _UserAccountDropdownState();
 }
 
 class _UserAccountDropdownState extends State<UserAccountDropdown> {
@@ -104,7 +102,7 @@ class _UserAccountDropdownState extends State<UserAccountDropdown> {
 
 class _AccountDetails extends StatefulWidget {
   const _AccountDetails({
-    Key? key,
+    super.key,
     this.accountPicture,
     this.accountName,
     this.accountEmail,
@@ -113,7 +111,7 @@ class _AccountDetails extends StatefulWidget {
     required this.isOpen,
     this.showArrow = false,
     this.arrowColor,
-  }) : super(key: key);
+  });
 
   final Widget? accountPicture;
   final Widget? accountName;
@@ -199,7 +197,7 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: DefaultTextStyle(
-                style: theme.primaryTextTheme.bodyText1!,
+                style: theme.primaryTextTheme.bodyLarge!,
                 overflow: TextOverflow.ellipsis,
                 child: widget.accountName as Widget,
               ),
@@ -211,7 +209,7 @@ class _AccountDetailsState extends State<_AccountDetails> with SingleTickerProvi
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: DefaultTextStyle(
-                style: theme.primaryTextTheme.bodyText2!,
+                style: theme.primaryTextTheme.bodyMedium!,
                 overflow: TextOverflow.ellipsis,
                 child: widget.accountEmail as Widget,
               ),
@@ -345,14 +343,13 @@ class _AccountDetailsLayout extends MultiChildLayoutDelegate {
 
 class _AnimatedArrow extends AnimatedWidget {
   const _AnimatedArrow({
-    Key? key,
+    super.key,
     this.onTap,
     this.height,
     this.width,
     this.color,
     required Animation<double> animation,
   }) : super(
-          key: key,
           listenable: animation,
         );
 

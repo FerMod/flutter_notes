@@ -104,17 +104,20 @@ class RouteConfiguration {
 
 class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
   SettingsRouteBuilder({
+    super.settings,
     required this.builder,
-    RouteSettings? settings,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
+    super.transitionsBuilder,
+    super.transitionDuration,
+    super.reverseTransitionDuration,
+    super.opaque,
+    super.barrierDismissible,
+    super.barrierColor,
+    super.barrierLabel,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
   }) : super(
-          pageBuilder: (context, animation, secondaryAnimation) {
-            return builder(context);
-          },
-          settings: settings,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
+          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
         ) {
     assert(opaque);
   }
@@ -123,11 +126,11 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    var begin = const Offset(1.0, 0.0);
-    var end = Offset.zero;
-    var curve = Curves.easeIn;
+    const begin = Offset(1.0, 0.0);
+    const end = Offset.zero;
+    const curve = Curves.easeIn;
 
-    var tween = Tween(begin: begin, end: end);
+    final tween = Tween(begin: begin, end: end);
     tween.chain(CurveTween(curve: curve));
 
     return SlideTransition(
@@ -137,11 +140,48 @@ class SettingsRouteBuilder<T> extends PageRouteBuilder<T> {
   }
 }
 
+class NoteRouteBuilder<T> extends PageRouteBuilder<T> {
+  NoteRouteBuilder({
+    super.settings,
+    required this.builder,
+    super.transitionsBuilder,
+    super.transitionDuration = const Duration(milliseconds: 400),
+    super.reverseTransitionDuration = const Duration(milliseconds: 400),
+    super.opaque,
+    super.barrierDismissible,
+    super.barrierColor,
+    super.barrierLabel,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
+  }) : super(
+          pageBuilder: (context, animation, secondaryAnimation) => builder(context),
+        ) {
+    assert(opaque);
+  }
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    const curve = Curves.easeIn;
+    final tween = CurveTween(curve: curve);
+    return FadeTransition(
+      opacity: animation.drive(tween),
+      child: child,
+    );
+  }
+}
+
 class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
   NoAnimationMaterialPageRoute({
-    required WidgetBuilder builder,
-    RouteSettings? settings,
-  }) : super(builder: builder, settings: settings);
+    required super.builder,
+    super.settings,
+    super.maintainState,
+    super.fullscreenDialog,
+    super.allowSnapshotting,
+    super.barrierDismissible,
+  });
 
   @override
   Widget buildTransitions(

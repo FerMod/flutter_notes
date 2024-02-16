@@ -10,7 +10,7 @@ import 'user_avatar.dart';
 import 'version_widget.dart';
 
 class DrawerMenu extends StatelessWidget {
-  DrawerMenu({Key? key}) : super(key: key);
+  DrawerMenu({super.key});
 
   final userData = DataProvider.userData;
 
@@ -23,6 +23,7 @@ class DrawerMenu extends StatelessWidget {
     }
 
     navigator.pop();
+    return null;
   }
 
   Widget _buildDrawerHeader(BuildContext context) {

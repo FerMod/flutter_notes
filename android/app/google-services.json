@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "787552385461-unrffto1s4r79293qomcag80f3km03fv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fermod.flutter_notes",
+            "certificate_hash": "15ebddfc02fd08578c1384240e1e3761f5b9946e"
+          }
+        },
+        {
           "client_id": "787552385461-9uf4kcbc939j2cjn88ss5jeqsa7h4jpk.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -30,6 +38,13 @@
             {
               "client_id": "787552385461-9uf4kcbc939j2cjn88ss5jeqsa7h4jpk.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "787552385461-bkl07ddvad16kpr96vkmc4e8vl9jj9kv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fermod.flutterNotes"
+              }
             }
           ]
         }

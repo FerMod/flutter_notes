@@ -2,22 +2,16 @@ import 'package:flutter/material.dart';
 
 class CheckboxFormField extends FormField<bool> {
   CheckboxFormField({
-    Key? key,
+    super.key,
     Widget? title,
-    FormFieldSetter<bool>? onSaved,
-    FormFieldValidator<bool>? validator,
+    super.onSaved,
+    super.validator,
     ValueChanged<bool?>? onChanged,
-    bool initialValue = false,
-    bool enabled = true,
-    AutovalidateMode? autovalidateMode,
+    bool super.initialValue = false,
+    super.enabled,
+    super.autovalidateMode,
     ListTileControlAffinity controlAffinity = ListTileControlAffinity.leading,
   }) : super(
-          key: key,
-          onSaved: onSaved,
-          validator: validator,
-          initialValue: initialValue,
-          enabled: enabled,
-          autovalidateMode: autovalidateMode,
           builder: (state) {
             // ignore: avoid_positional_boolean_parameters
             void onChangedHandler(bool? value) {
@@ -32,12 +26,12 @@ class CheckboxFormField extends FormField<bool> {
               onChanged: onChangedHandler,
               subtitle: state.hasError
                   ? Builder(
-                      builder: (context) {
-                        return Text(
-                          state.errorText!,
-                          style: TextStyle(color: Theme.of(context).errorColor),
-                        );
-                      },
+                      builder: (context) => Text(
+                        state.errorText!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
                     )
                   : null,
               controlAffinity: controlAffinity,

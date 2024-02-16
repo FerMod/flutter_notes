@@ -1,10 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class CardHero extends StatelessWidget {
   const CardHero({
-    Key? key,
+    super.key,
     required this.tag,
     this.shape,
     this.elevation,
@@ -16,7 +14,7 @@ class CardHero extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.child,
-  }) : super(key: key);
+  });
 
   /// The identifier for this particular hero. If the tag of this hero matches
   /// the tag of a hero on a [PageRoute] that we're navigating to or from, then
