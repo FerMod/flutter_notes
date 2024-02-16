@@ -10,6 +10,7 @@ import 'package:url_strategy/url_strategy.dart';
 import 'data/app_options.dart';
 import 'data/data_provider.dart';
 import 'data/local/app_shared_preferences.dart';
+import 'firebase_options.dart';
 import 'globals.dart';
 import 'routes.dart';
 import 'src/utils/locale_matching.dart';
@@ -17,7 +18,7 @@ import 'widgets/model_binding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _configureFirebase();
   await AppSharedPreferences.initialize();
 
