@@ -368,47 +368,40 @@ class ThemeModeSettingScreen extends StatelessWidget {
 class TextScaleSettingScreen extends StatelessWidget {
   const TextScaleSettingScreen({super.key});
 
-  Widget _buildText(String value, {required TextScaler textScaler}) {
-    return Text(
-      value,
-      textScaler: TextScaler.linear(deviceTextScaleFactor),
-    );
-  }
-
   Map<double, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return {
       systemTextScaleFactorOption: DisplayOption(
         title: localizations.settingsSystemDefault,
-        titleBuilder: (context, value) => _buildText(
+        titleBuilder: (context, value) => Text(
           value,
           textScaler: TextScaler.linear(deviceTextScaleFactor),
         ),
       ),
       0.8: DisplayOption(
         title: localizations.settingsTextScaleSmall,
-        titleBuilder: (context, value) => _buildText(
+        titleBuilder: (context, value) => Text(
           value,
           textScaler: const TextScaler.linear(0.8),
         ),
       ),
       1.0: DisplayOption(
         title: localizations.settingsTextScaleNormal,
-        titleBuilder: (context, value) => _buildText(
+        titleBuilder: (context, value) => Text(
           value,
           textScaler: const TextScaler.linear(1.0),
         ),
       ),
       1.5: DisplayOption(
         title: localizations.settingsTextScaleLarge,
-        titleBuilder: (context, value) => _buildText(
+        titleBuilder: (context, value) => Text(
           value,
           textScaler: const TextScaler.linear(1.5),
         ),
       ),
       1.8: DisplayOption(
         title: localizations.settingsTextScaleHuge,
-        titleBuilder: (context, value) => _buildText(
+        titleBuilder: (context, value) => Text(
           value,
           textScaler: const TextScaler.linear(1.8),
         ),
