@@ -21,10 +21,6 @@ void main() {
       buildSignature: '',
     );
 
-    setUp(() {
-      PackageInfo.disablePackageInfoPlatformOverride = true;
-    });
-
     void mockPackageInfo(PackageInfo packageInfo) {
       PackageInfo.setMockInitialValues(
         appName: packageInfo.appName,

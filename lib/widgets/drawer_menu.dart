@@ -23,6 +23,7 @@ class DrawerMenu extends StatelessWidget {
     }
 
     navigator.pop();
+    return null;
   }
 
   Widget _buildDrawerHeader(BuildContext context) {

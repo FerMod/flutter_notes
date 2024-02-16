@@ -147,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(localizations.settingsTitle),
       ),
       body: Scrollbar(
-        showTrackOnHover: true,
+        trackVisibility: true,
         radius: Radius.zero,
         child: ListView(
           //padding: const EdgeInsets.all(8.0),
@@ -188,7 +188,7 @@ class AccountSettingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.settingsAccount)),
       body: Scrollbar(
-        showTrackOnHover: true,
+        trackVisibility: true,
         radius: Radius.zero,
         child: ListView(
           children: [
@@ -209,6 +209,7 @@ class AccountSettingScreen extends StatelessWidget {
               title: Text(localizations.signOut),
               onTap: () async {
                 await userData.signOut();
+                if (!context.mounted) return;
                 Navigator.of(context)
                   ..popUntil((route) => route.isFirst)
                   ..pushReplacementNamed(AppRoute.signIn);
@@ -227,7 +228,7 @@ class LocalizationSettingScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LocalizationSettingScreenState createState() => _LocalizationSettingScreenState();
+  State<LocalizationSettingScreen> createState() => _LocalizationSettingScreenState();
 }
 
 class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> with WidgetsBindingObserver {
@@ -255,12 +256,12 @@ class _LocalizationSettingScreenState extends State<LocalizationSettingScreen> w
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -369,38 +370,50 @@ class ThemeModeSettingScreen extends StatelessWidget {
 class TextScaleSettingScreen extends StatelessWidget {
   const TextScaleSettingScreen({Key? key}) : super(key: key);
 
+  Widget _buildText(String value, {required TextScaler textScaler}) {
+    return Text(
+      value,
+      textScaler: TextScaler.linear(deviceTextScaleFactor),
+    );
+  }
+
   Map<double, DisplayOption> _buildOptionsMap(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return {
       systemTextScaleFactorOption: DisplayOption(
         title: localizations.settingsSystemDefault,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: deviceTextScaleFactor);
-        },
+        titleBuilder: (context, value) => _buildText(
+          value,
+          textScaler: TextScaler.linear(deviceTextScaleFactor),
+        ),
       ),
       0.8: DisplayOption(
         title: localizations.settingsTextScaleSmall,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 0.8);
-        },
+        titleBuilder: (context, value) => _buildText(
+          value,
+          textScaler: const TextScaler.linear(0.8),
+        ),
       ),
       1.0: DisplayOption(
         title: localizations.settingsTextScaleNormal,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.0);
-        },
+        titleBuilder: (context, value) => _buildText(
+          value,
+          textScaler: const TextScaler.linear(1.0),
+        ),
       ),
       1.5: DisplayOption(
         title: localizations.settingsTextScaleLarge,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.5);
-        },
+        titleBuilder: (context, value) => _buildText(
+          value,
+          textScaler: const TextScaler.linear(1.5),
+        ),
       ),
       1.8: DisplayOption(
         title: localizations.settingsTextScaleHuge,
-        titleBuilder: (context, value) {
-          return Text(value, textScaleFactor: 1.8);
-        },
+        titleBuilder: (context, value) => _buildText(
+          value,
+          textScaler: const TextScaler.linear(1.8),
+        ),
       ),
     };
   }
